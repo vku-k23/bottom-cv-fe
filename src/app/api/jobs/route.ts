@@ -1,16 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { jobSearchSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const _query = searchParams.get('query')
-    const _location = searchParams.get('location')
-    const _type = searchParams.get('type')
-    const _workLocation = searchParams.get('workLocation')
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    
+    // Parse and validate search parameters
+    const searchData = {
+      query: searchParams.get('query') || undefined,
+      location: searchParams.get('location') || undefined,
+      jobType: searchParams.get('jobType') || undefined,
+      isRemote: searchParams.get('isRemote') === 'true' ? true : undefined,
+      salaryMin: searchParams.get('salaryMin') ? parseInt(searchParams.get('salaryMin')!) : undefined,
+      salaryMax: searchParams.get('salaryMax') ? parseInt(searchParams.get('salaryMax')!) : undefined,
+      experienceLevel: searchParams.get('experienceLevel') || undefined,
+      skills: searchParams.get('skills')?.split(',') || undefined,
+      companyId: searchParams.get('companyId') ? parseInt(searchParams.get('companyId')!) : undefined,
+      page: parseInt(searchParams.get('page') || '1'),
+      limit: parseInt(searchParams.get('limit') || '10'),
+      sortBy: searchParams.get('sortBy') || 'createdAt',
+      sortOrder: searchParams.get('sortOrder') || 'desc',
+    }
 
-    // TODO: Implement job search logic with Prisma
+    const validatedData = jobSearchSchema.parse(searchData)
+
+    // TODO: Implement job search logic with backend API
     const jobs: unknown[] = []
     const total = 0
 
@@ -18,12 +32,12 @@ export async function GET(request: NextRequest) {
       success: true,
       data: jobs,
       pagination: {
-        page,
-        limit,
+        page: validatedData.page,
+        limit: validatedData.limit,
         total,
-        totalPages: Math.ceil(total / limit),
-        hasNext: page < Math.ceil(total / limit),
-        hasPrev: page > 1,
+        totalPages: Math.ceil(total / validatedData.limit),
+        hasNext: validatedData.page < Math.ceil(total / validatedData.limit),
+        hasPrev: validatedData.page > 1,
       },
     })
   } catch (error) {
@@ -40,8 +54,8 @@ export async function POST(request: NextRequest) {
     const _body = await request.json()
 
     // TODO: Implement job creation logic
-    // Validate user permissions (employer only)
-    // Create job with Prisma
+    // Validate user permissions (HR role only)
+    // Create job via backend API
 
     return NextResponse.json(
       {

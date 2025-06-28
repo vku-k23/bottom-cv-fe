@@ -1,246 +1,313 @@
-// Core Types
-export interface User {
-  id: string
-  email: string
-  name?: string
-  image?: string
-  role: UserRole
-  status: UserStatus
-  createdAt: Date
-  updatedAt: Date
+import { ReactNode } from 'react'
+
+// Enums
+export enum Role {
+  ADMIN = 'ADMIN',
+  HR = 'HR',
+  USER = 'USER'
 }
 
-export type UserRole = 'JOB_SEEKER' | 'EMPLOYER' | 'ADMIN'
-export type UserStatus = 'ACTIVE' | 'SUSPENDED' | 'PENDING_VERIFICATION'
+export enum JobType {
+  FULL_TIME = 'FULL_TIME',
+  PART_TIME = 'PART_TIME',
+  CONTRACT = 'CONTRACT',
+  INTERNSHIP = 'INTERNSHIP'
+}
 
-// Job Types
+export enum JobStatus {
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
+  DRAFT = 'DRAFT'
+}
+
+export enum ApplicationStatus {
+  PENDING = 'PENDING',
+  REVIEWED = 'REVIEWED',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED'
+}
+
+export enum ExperienceLevel {
+  ENTRY = 'ENTRY',
+  MID = 'MID',
+  SENIOR = 'SENIOR',
+  LEAD = 'LEAD'
+}
+
+export enum EducationLevel {
+  HIGH_SCHOOL = 'HIGH_SCHOOL',
+  BACHELOR = 'BACHELOR',
+  MASTER = 'MASTER',
+  PHD = 'PHD'
+}
+
+export enum SkillLevel {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  EXPERT = 'EXPERT'
+}
+
+// Core Types
+export interface User {
+  id: number
+  email: string
+  passwordHash: string
+  fullName?: string | null
+  phoneNumber?: string | null
+  address?: string | null
+  dateOfBirth?: Date | null
+  role: Role
+  avatar?: string | null
+  isEmailVerified: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | null
+  refreshToken?: string | null
+  refreshTokenExpiry?: Date | null
+  lastLogin?: Date | null
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  profile?: Profile | null
+  jobs?: Job[]
+  applications?: Application[]
+  companies?: Company[]
+  savedJobs?: SavedJob[]
+  notifications?: Notification[]
+  sentMessages?: Message[]
+  receivedMessages?: Message[]
+  auditLogs?: AuditLog[]
+}
+
+export interface Profile {
+  id: number
+  userId: number
+  summary?: string | null
+  skills: string[]
+  experienceLevel: ExperienceLevel
+  portfolio?: string | null
+  linkedinUrl?: string | null
+  githubUrl?: string | null
+  websiteUrl?: string | null
+  location?: string | null
+  preferredSalary?: number | null
+  isOpenToWork: boolean
+  resumeUrl?: string | null
+  createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  user: User
+  experiences?: Experience[]
+  educations?: Education[]
+  userSkills?: UserSkill[]
+}
+
+export interface Company {
+  id: number
+  name: string
+  description?: string | null
+  industry?: string | null
+  size?: string | null
+  website?: string | null
+  logo?: string | null
+  location?: string | null
+  foundedYear?: number | null
+  createdById: number
+  createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  createdBy: User
+  jobs?: Job[]
+}
+
 export interface Job {
-  id: string
+  id: number
   title: string
   slug: string
   description: string
-  requirements: string
-  responsibilities?: string
-  benefits?: string
-  salaryMin?: number
-  salaryMax?: number
+  requirements: string[]
+  responsibilities: string[]
+  benefits: string[]
+  salaryMin?: number | null
+  salaryMax?: number | null
   currency: string
-  type: JobType
-  workLocation: WorkLocation
-  location?: string
-  remote: boolean
-  experienceLevel?: string
+  location?: string | null
+  isRemote: boolean
+  jobType: JobType
+  experienceLevel: ExperienceLevel
   status: JobStatus
-  featured: boolean
-  expiresAt?: Date
+  applicationDeadline?: Date | null
+  postedById: number
+  companyId: number
+  viewCount: number
   createdAt: Date
   updatedAt: Date
+  
+  // Relations
+  postedBy: User
   company: Company
-  author: User
   applications?: Application[]
   savedBy?: SavedJob[]
-  skills?: JobSkill[]
-  tags?: JobTag[]
-  _count?: {
-    applications: number
-    savedBy: number
-  }
+  jobSkills?: JobSkill[]
 }
 
-export type JobType =
-  | 'FULL_TIME'
-  | 'PART_TIME'
-  | 'CONTRACT'
-  | 'FREELANCE'
-  | 'INTERNSHIP'
-export type WorkLocation = 'REMOTE' | 'ONSITE' | 'HYBRID'
-export type JobStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'CLOSED' | 'EXPIRED'
-
-// Company Types
-export interface Company {
-  id: string
-  name: string
-  slug: string
-  description?: string
-  website?: string
-  logo?: string
-  size?: string
-  industry?: string
-  location?: string
-  founded?: number
-  createdAt: Date
-  updatedAt: Date
-  user: User
-  jobs?: Job[]
-  _count?: {
-    jobs: number
-  }
-}
-
-// Profile Types
-export interface JobSeekerProfile {
-  id: string
-  userId: string
-  firstName: string
-  lastName: string
-  phone?: string
-  location?: string
-  summary?: string
-  resume?: string
-  portfolio?: string
-  linkedIn?: string
-  github?: string
-  website?: string
-  salaryMin?: number
-  salaryMax?: number
-  isOpenToWork: boolean
-  createdAt: Date
-  updatedAt: Date
-  user: User
-  experiences?: WorkExperience[]
-  educations?: Education[]
-  skills?: ProfileSkill[]
-  certificates?: Certificate[]
-}
-
-export interface WorkExperience {
-  id: string
-  profileId: string
-  title: string
-  company: string
-  location?: string
-  startDate: Date
-  endDate?: Date
-  current: boolean
-  description?: string
-}
-
-export interface Education {
-  id: string
-  profileId: string
-  institution: string
-  degree: string
-  field?: string
-  startDate: Date
-  endDate?: Date
-  current: boolean
-  gpa?: number
-  description?: string
-}
-
-export interface Certificate {
-  id: string
-  profileId: string
-  name: string
-  issuer: string
-  issueDate: Date
-  expiryDate?: Date
-  credentialId?: string
-  credentialUrl?: string
-}
-
-// Application Types
 export interface Application {
-  id: string
-  coverLetter?: string
-  resume?: string
+  id: number
+  jobId: number
+  applicantId: number
+  coverLetter?: string | null
+  resumeUrl?: string | null
   status: ApplicationStatus
   appliedAt: Date
+  reviewedAt?: Date | null
+  notes?: string | null
+  createdAt: Date
   updatedAt: Date
-  reviewedAt?: Date
-  interviewAt?: Date
-  rejectedAt?: Date
-  withdrawnAt?: Date
+  
+  // Relations
   job: Job
   applicant: User
 }
 
-export type ApplicationStatus =
-  | 'APPLIED'
-  | 'SCREENING'
-  | 'INTERVIEWING'
-  | 'OFFERED'
-  | 'REJECTED'
-  | 'WITHDRAWN'
-  | 'HIRED'
-
-// Skill Types
-export interface Skill {
-  id: string
-  name: string
-  category?: string
-  description?: string
+export interface Experience {
+  id: number
+  profileId: number
+  jobTitle: string
+  company: string
+  location?: string | null
+  startDate: Date
+  endDate?: Date | null
+  isCurrent: boolean
+  description?: string | null
   createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  profile: Profile
 }
 
-export interface ProfileSkill {
-  id: string
-  profileId: string
-  skillId: string
-  proficiency: number
-  yearsOfExp?: number
+export interface Education {
+  id: number
+  profileId: number
+  institution: string
+  degree: string
+  fieldOfStudy?: string | null
+  startDate: Date
+  endDate?: Date | null
+  isCurrent: boolean
+  grade?: string | null
+  description?: string | null
+  educationLevel: EducationLevel
+  createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  profile: Profile
+}
+
+export interface Skill {
+  id: number
+  name: string
+  category?: string | null
+  createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  userSkills?: UserSkill[]
+  jobSkills?: JobSkill[]
+}
+
+export interface UserSkill {
+  id: number
+  profileId: number
+  skillId: number
+  level: SkillLevel
+  yearsOfExperience?: number | null
+  createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  profile: Profile
   skill: Skill
 }
 
 export interface JobSkill {
-  id: string
-  jobId: string
-  skillId: string
-  required: boolean
-  weight: number
+  id: number
+  jobId: number
+  skillId: number
+  isRequired: boolean
+  experienceYears?: number | null
+  createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  job: Job
   skill: Skill
 }
 
-// Utility Types
 export interface SavedJob {
-  id: string
-  userId: string
-  jobId: string
+  id: number
+  userId: number
+  jobId: number
   savedAt: Date
+  
+  // Relations
   user: User
   job: Job
 }
 
-export interface Tag {
-  id: string
-  name: string
-  color: string
-}
-
-export interface JobTag {
-  id: string
-  jobId: string
-  tagId: string
-  tag: Tag
-}
-
 export interface Notification {
-  id: string
-  userId: string
-  type: NotificationType
+  id: number
+  userId: number
   title: string
   message: string
-  read: boolean
-  data?: Record<string, unknown>
+  type: string
+  isRead: boolean
+  data?: Record<string, unknown> | null
   createdAt: Date
+  updatedAt: Date
+  
+  // Relations
+  user: User
 }
 
-export type NotificationType =
-  | 'APPLICATION_UPDATE'
-  | 'NEW_JOB_MATCH'
-  | 'MESSAGE'
-  | 'SYSTEM'
-
 export interface Message {
-  id: string
-  senderId: string
-  receiverId: string
+  id: number
+  senderId: number
+  receiverId: number
   subject: string
   content: string
-  read: boolean
+  isRead: boolean
+  parentMessageId?: number | null
   createdAt: Date
+  updatedAt: Date
+  
+  // Relations
   sender: User
   receiver: User
+  parentMessage?: Message | null
+  replies?: Message[]
+}
+
+export interface AuditLog {
+  id: number
+  userId?: number | null
+  action: string
+  entityType: string
+  entityId?: number | null
+  oldValues?: Record<string, unknown> | null
+  newValues?: Record<string, unknown> | null
+  ipAddress?: string | null
+  userAgent?: string | null
+  createdAt: Date
+  
+  // Relations
+  user?: User | null
 }
 
 // API Response Types
@@ -263,99 +330,196 @@ export interface ApiResponse<T = unknown> {
   message?: string
 }
 
-// Search Types
+// Search and Filter Types
 export interface JobSearchParams {
   query?: string
   location?: string
-  type?: JobType
-  workLocation?: WorkLocation
+  jobType?: JobType
+  isRemote?: boolean
   salaryMin?: number
   salaryMax?: number
-  experienceLevel?: string
+  experienceLevel?: ExperienceLevel
   skills?: string[]
-  companySize?: string
+  companyId?: number
   page?: number
   limit?: number
-  sortBy?: 'createdAt' | 'salary' | 'relevance'
+  sortBy?: 'createdAt' | 'salaryMin' | 'salaryMax' | 'viewCount'
   sortOrder?: 'asc' | 'desc'
 }
 
 export interface JobFilters {
-  types: JobType[]
-  workLocations: WorkLocation[]
-  experienceLevels: string[]
+  jobTypes: JobType[]
+  experienceLevels: ExperienceLevel[]
   salaryRanges: { min: number; max: number; label: string }[]
-  companySizes: string[]
   skills: Skill[]
+  companies: Company[]
+  locations: string[]
 }
 
 // Form Types
 export interface CreateJobForm {
   title: string
   description: string
-  requirements: string
-  responsibilities?: string
-  benefits?: string
+  requirements: string[]
+  responsibilities: string[]
+  benefits: string[]
   salaryMin?: number
   salaryMax?: number
   currency: string
-  type: JobType
-  workLocation: WorkLocation
   location?: string
-  remote: boolean
-  experienceLevel?: string
-  expiresAt?: Date
-  skills: string[]
-  tags: string[]
+  isRemote: boolean
+  jobType: JobType
+  experienceLevel: ExperienceLevel
+  applicationDeadline?: Date
+  companyId: number
+  skillIds: number[]
+}
+
+export interface UpdateJobForm extends Partial<CreateJobForm> {
+  id: number
 }
 
 export interface ProfileForm {
-  firstName: string
-  lastName: string
-  phone?: string
-  location?: string
   summary?: string
-  resume?: string
+  skills: string[]
+  experienceLevel: ExperienceLevel
   portfolio?: string
-  linkedIn?: string
-  github?: string
-  website?: string
-  salaryMin?: number
-  salaryMax?: number
+  linkedinUrl?: string
+  githubUrl?: string
+  websiteUrl?: string
+  location?: string
+  preferredSalary?: number
   isOpenToWork: boolean
 }
 
 export interface CompanyForm {
   name: string
   description?: string
-  website?: string
-  size?: string
   industry?: string
+  size?: string
+  website?: string
   location?: string
-  founded?: number
+  foundedYear?: number
+}
+
+export interface ApplicationForm {
+  jobId: number
+  coverLetter?: string
+  resumeUrl?: string
+}
+
+export interface ExperienceForm {
+  jobTitle: string
+  company: string
+  location?: string
+  startDate: Date
+  endDate?: Date
+  isCurrent: boolean
+  description?: string
+}
+
+export interface EducationForm {
+  institution: string
+  degree: string
+  fieldOfStudy?: string
+  startDate: Date
+  endDate?: Date
+  isCurrent: boolean
+  grade?: string
+  description?: string
+  educationLevel: EducationLevel
+}
+
+export interface UserSkillForm {
+  skillId: number
+  level: SkillLevel
+  yearsOfExperience?: number
+}
+
+export interface ChangePasswordForm {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export interface ForgotPasswordForm {
+  email: string
+}
+
+export interface ResetPasswordForm {
+  token: string
+  newPassword: string
+  confirmPassword: string
+}
+
+// Authentication Types
+export interface LoginForm {
+  email: string
+  password: string
+  rememberMe?: boolean
+}
+
+export interface RegisterForm {
+  email: string
+  password: string
+  confirmPassword: string
+  fullName: string
+  role: Role
+}
+
+export interface AuthUser {
+  id: number
+  email: string
+  fullName?: string
+  role: Role
+  avatar?: string
+  isEmailVerified: boolean
+  isActive: boolean
+}
+
+export interface AuthTokens {
+  accessToken: string
+  refreshToken: string
+  expiresIn: number
+}
+
+export interface AuthResponse {
+  user: AuthUser
+  tokens: AuthTokens
 }
 
 // Dashboard Types
 export interface DashboardStats {
   totalJobs: number
   totalApplications: number
-  totalViews: number
+  totalUsers: number
+  totalCompanies: number
   activeJobs: number
   pendingApplications: number
-  scheduledInterviews: number
+  recentApplications: number
+  jobViews: number
 }
 
-export interface ApplicationStats {
-  total: number
-  applied: number
-  screening: number
-  interviewing: number
-  offered: number
-  rejected: number
-  hired: number
+export interface UserDashboardStats {
+  appliedJobs: number
+  savedJobs: number
+  profileViews: number
+  unreadMessages: number
+  recentApplications: Application[]
+  recommendedJobs: Job[]
 }
 
-// Chart Types
+export interface CompanyDashboardStats {
+  totalJobs: number
+  activeJobs: number
+  totalApplications: number
+  pendingApplications: number
+  totalViews: number
+  recentApplications: Application[]
+  topJobs: Job[]
+}
+
+// Chart and Analytics Types
 export interface ChartData {
   labels: string[]
   datasets: {
@@ -363,5 +527,111 @@ export interface ChartData {
     data: number[]
     backgroundColor?: string[]
     borderColor?: string[]
+    borderWidth?: number
   }[]
 }
+
+export interface ApplicationStats {
+  total: number
+  pending: number
+  reviewed: number
+  accepted: number
+  rejected: number
+}
+
+export interface JobStats {
+  total: number
+  open: number
+  closed: number
+  draft: number
+  views: number
+  applications: number
+}
+
+// Utility Types
+export interface SelectOption {
+  value: string | number
+  label: string
+  disabled?: boolean
+}
+
+export interface TableColumn<T> {
+  key: keyof T
+  label: string
+  sortable?: boolean
+  render?: (value: unknown, item: T) => ReactNode
+}
+
+export interface TableProps<T> {
+  data: T[]
+  columns: TableColumn<T>[]
+  loading?: boolean
+  pagination?: {
+    page: number
+    limit: number
+    total: number
+    onPageChange: (page: number) => void
+  }
+  onSort?: (key: keyof T, direction: 'asc' | 'desc') => void
+}
+
+// Error Types
+export interface ValidationError {
+  field: string
+  message: string
+}
+
+export interface ApiError {
+  message: string
+  statusCode: number
+  errors?: ValidationError[]
+}
+
+// File Upload Types
+export interface FileUploadResponse {
+  url: string
+  filename: string
+  size: number
+  mimetype: string
+}
+
+export interface UploadProgress {
+  loaded: number
+  total: number
+  percentage: number
+}
+
+// Notification Types
+export interface NotificationSettings {
+  emailNotifications: boolean
+  jobAlerts: boolean
+  applicationUpdates: boolean
+  messages: boolean
+  promotions: boolean
+}
+
+// Privacy and Settings Types
+export interface PrivacySettings {
+  profileVisibility: 'PUBLIC' | 'PRIVATE' | 'CONNECTIONS'
+  showEmail: boolean
+  showPhone: boolean
+  showResume: boolean
+  allowJobRecommendations: boolean
+}
+
+export interface UserSettings {
+  notifications: NotificationSettings
+  privacy: PrivacySettings
+  language: string
+  timezone: string
+  currency: string
+}
+
+// Export all enums as types for backward compatibility
+export type UserRole = Role
+export type JobTypeType = JobType
+export type JobStatusType = JobStatus
+export type ApplicationStatusType = ApplicationStatus
+export type ExperienceLevelType = ExperienceLevel
+export type EducationLevelType = EducationLevel
+export type SkillLevelType = SkillLevel

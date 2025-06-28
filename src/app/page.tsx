@@ -304,7 +304,7 @@ export default function HomePage() {
               Find Jobs
             </Link>
             <Link
-              href="/auth/signup?role=employer"
+              href="/auth/signup?role=HR"
               className="inline-flex items-center rounded-md border-2 border-white px-8 py-3 text-base font-medium text-white hover:bg-blue-700"
             >
               Post Jobs

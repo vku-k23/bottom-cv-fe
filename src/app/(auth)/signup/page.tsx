@@ -14,14 +14,14 @@ import { Input } from '@/components/ui/input'
 
 function SignUpForm() {
   const searchParams = useSearchParams()
-  const defaultRole = searchParams.get('role') || 'job-seeker'
+  const defaultRole = searchParams.get('role') || 'USER'
 
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: defaultRole as 'job-seeker' | 'employer',
+    role: defaultRole as 'USER' | 'HR',
   })
   const [loading, setLoading] = useState(false)
 
@@ -94,25 +94,25 @@ function SignUpForm() {
                   onChange={handleInputChange}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
                 >
-                  <option value="job-seeker">Find a job</option>
-                  <option value="employer">Hire talent</option>
+                  <option value="USER">Find a job</option>
+                  <option value="HR">Hire talent</option>
                 </select>
               </div>
 
               <div>
                 <label
-                  htmlFor="name"
+                  htmlFor="fullName"
                   className="mb-1 block text-sm font-medium text-gray-700"
                 >
                   Full name
                 </label>
                 <Input
-                  id="name"
-                  name="name"
+                  id="fullName"
+                  name="fullName"
                   type="text"
                   autoComplete="name"
                   required
-                  value={formData.name}
+                  value={formData.fullName}
                   onChange={handleInputChange}
                   placeholder="Enter your full name"
                 />
