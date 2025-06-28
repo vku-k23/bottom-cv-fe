@@ -1,0 +1,387 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum UserRole {
+  JOB_SEEKER
+  EMPLOYER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  emailVerified DateTime?
+  image         String?
+  name          String?
+  role          UserRole   @default(JOB_SEEKER)
+  status        UserStatus @default(PENDING_VERIFICATION)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  // Job Seeker specific
+  profile          JobSeekerProfile?
+  applications     Application[]
+  savedJobs        SavedJob[]
+  skillEndorsements SkillEndorsement[]
+
+  // Employer specific
+  company    Company?
+  postedJobs Job[]
+
+  // Common
+  notifications Notification[]
+  messages      Message[]
+}
+
+model JobSeekerProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  firstName   String
+  lastName    String
+  phone       String?
+  location    String?
+  summary     String?  @db.Text
+  resume      String?  // URL to uploaded resume
+  portfolio   String?  // URL to portfolio
+  linkedIn    String?
+  github      String?
+  website     String?
+  salaryMin   Int?
+  salaryMax   Int?
+  isOpenToWork Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experiences  WorkExperience[]
+  educations   Education[]
+  skills       ProfileSkill[]
+  certificates Certificate[]
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  website     String?
+  logo        String?
+  size        String?  // e.g., "1-10", "11-50", "51-200", etc.
+  industry    String?
+  location    String?
+  founded     Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs Job[]
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  INTERNSHIP
+}
+
+enum WorkLocation {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+enum JobStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  CLOSED
+  EXPIRED
+}
+
+model Job {
+  id             String       @id @default(cuid())
+  title          String
+  slug           String       @unique
+  description    String       @db.Text
+  requirements   String       @db.Text
+  responsibilities String?    @db.Text
+  benefits       String?      @db.Text
+  salaryMin      Int?
+  salaryMax      Int?
+  currency       String       @default("USD")
+  type           JobType
+  workLocation   WorkLocation
+  location       String?
+  remote         Boolean      @default(false)
+  experienceLevel String?     // Junior, Mid, Senior, Lead, etc.
+  status         JobStatus    @default(DRAFT)
+  featured       Boolean      @default(false)
+  expiresAt      DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  applications Application[]
+  savedBy      SavedJob[]
+  skills       JobSkill[]
+  tags         JobTag[]
+
+  @@index([status, createdAt])
+  @@index([companyId])
+  @@index([workLocation])
+  @@index([type])
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SCREENING
+  INTERVIEWING
+  OFFERED
+  REJECTED
+  WITHDRAWN
+  HIRED
+}
+
+model Application {
+  id           String            @id @default(cuid())
+  coverLetter  String?           @db.Text
+  resume       String?           // URL to uploaded resume
+  status       ApplicationStatus @default(APPLIED)
+  appliedAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  reviewedAt   DateTime?
+  interviewAt  DateTime?
+  rejectedAt   DateTime?
+  withdrawnAt  DateTime?
+
+  jobId        String
+  job          Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applicantId  String
+  applicant    User   @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, applicantId])
+  @@index([applicantId])
+  @@index([status])
+}
+
+model SavedJob {
+  id     String @id @default(cuid())
+  userId String
+  jobId  String
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  savedAt   DateTime @default(now())
+
+  @@unique([userId, jobId])
+}
+
+model Skill {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String?  // Programming, Design, Marketing, etc.
+  description String?
+  createdAt   DateTime @default(now())
+
+  profiles      ProfileSkill[]
+  jobs          JobSkill[]
+  endorsements  SkillEndorsement[]
+}
+
+model ProfileSkill {
+  id            String @id @default(cuid())
+  profileId     String
+  skillId       String
+  proficiency   Int    @default(1) // 1-5 scale
+  yearsOfExp    Int?   // Years of experience with this skill
+
+  profile JobSeekerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill   Skill             @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, skillId])
+}
+
+model JobSkill {
+  id        String  @id @default(cuid())
+  jobId     String
+  skillId   String
+  required  Boolean @default(true)
+  weight    Int     @default(1) // Importance weight
+
+  job   Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, skillId])
+}
+
+model SkillEndorsement {
+  id          String   @id @default(cuid())
+  skillId     String
+  endorserId  String
+  endorseeId  String
+  createdAt   DateTime @default(now())
+
+  skill     Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  endorser  User  @relation("SkillEndorser", fields: [endorserId], references: [id], onDelete: Cascade)
+  endorsee  User  @relation("SkillEndorsee", fields: [endorseeId], references: [id], onDelete: Cascade)
+
+  @@unique([skillId, endorserId, endorseeId])
+}
+
+model WorkExperience {
+  id          String    @id @default(cuid())
+  profileId   String
+  title       String
+  company     String
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  description String?   @db.Text
+
+  profile JobSeekerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  profileId   String
+  institution String
+  degree      String
+  field       String?
+  startDate   DateTime
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  gpa         Float?
+  description String?
+
+  profile JobSeekerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Certificate {
+  id            String    @id @default(cuid())
+  profileId     String
+  name          String
+  issuer        String
+  issueDate     DateTime
+  expiryDate    DateTime?
+  credentialId  String?
+  credentialUrl String?
+
+  profile JobSeekerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  color String @default("#3B82F6")
+
+  jobs JobTag[]
+}
+
+model JobTag {
+  id    String @id @default(cuid())
+  jobId String
+  tagId String
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, tagId])
+}
+
+enum NotificationType {
+  APPLICATION_UPDATE
+  NEW_JOB_MATCH
+  MESSAGE
+  SYSTEM
+}
+
+model Notification {
+  id      String           @id @default(cuid())
+  userId  String
+  type    NotificationType
+  title   String
+  message String           @db.Text
+  read    Boolean          @default(false)
+  data    Json?            // Additional data for the notification
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  subject    String
+  content    String   @db.Text
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId, read])
+}
