@@ -4,48 +4,48 @@ import { ReactNode } from 'react'
 export enum Role {
   ADMIN = 'ADMIN',
   HR = 'HR',
-  USER = 'USER'
+  USER = 'USER',
 }
 
 export enum JobType {
   FULL_TIME = 'FULL_TIME',
   PART_TIME = 'PART_TIME',
   CONTRACT = 'CONTRACT',
-  INTERNSHIP = 'INTERNSHIP'
+  INTERNSHIP = 'INTERNSHIP',
 }
 
 export enum JobStatus {
   OPEN = 'OPEN',
   CLOSED = 'CLOSED',
-  DRAFT = 'DRAFT'
+  DRAFT = 'DRAFT',
 }
 
 export enum ApplicationStatus {
   PENDING = 'PENDING',
   REVIEWED = 'REVIEWED',
   ACCEPTED = 'ACCEPTED',
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
 }
 
 export enum ExperienceLevel {
   ENTRY = 'ENTRY',
   MID = 'MID',
   SENIOR = 'SENIOR',
-  LEAD = 'LEAD'
+  LEAD = 'LEAD',
 }
 
 export enum EducationLevel {
   HIGH_SCHOOL = 'HIGH_SCHOOL',
   BACHELOR = 'BACHELOR',
   MASTER = 'MASTER',
-  PHD = 'PHD'
+  PHD = 'PHD',
 }
 
 export enum SkillLevel {
   BEGINNER = 'BEGINNER',
   INTERMEDIATE = 'INTERMEDIATE',
   ADVANCED = 'ADVANCED',
-  EXPERT = 'EXPERT'
+  EXPERT = 'EXPERT',
 }
 
 // Core Types
@@ -69,7 +69,7 @@ export interface User {
   isActive: boolean
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   profile?: Profile | null
   jobs?: Job[]
@@ -98,7 +98,7 @@ export interface Profile {
   resumeUrl?: string | null
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   user: User
   experiences?: Experience[]
@@ -119,7 +119,7 @@ export interface Company {
   createdById: number
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   createdBy: User
   jobs?: Job[]
@@ -147,7 +147,7 @@ export interface Job {
   viewCount: number
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   postedBy: User
   company: Company
@@ -168,7 +168,7 @@ export interface Application {
   notes?: string | null
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   job: Job
   applicant: User
@@ -186,7 +186,7 @@ export interface Experience {
   description?: string | null
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   profile: Profile
 }
@@ -205,7 +205,7 @@ export interface Education {
   educationLevel: EducationLevel
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   profile: Profile
 }
@@ -216,7 +216,7 @@ export interface Skill {
   category?: string | null
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   userSkills?: UserSkill[]
   jobSkills?: JobSkill[]
@@ -230,7 +230,7 @@ export interface UserSkill {
   yearsOfExperience?: number | null
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   profile: Profile
   skill: Skill
@@ -244,7 +244,7 @@ export interface JobSkill {
   experienceYears?: number | null
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   job: Job
   skill: Skill
@@ -255,7 +255,7 @@ export interface SavedJob {
   userId: number
   jobId: number
   savedAt: Date
-  
+
   // Relations
   user: User
   job: Job
@@ -271,7 +271,7 @@ export interface Notification {
   data?: Record<string, unknown> | null
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   user: User
 }
@@ -286,7 +286,7 @@ export interface Message {
   parentMessageId?: number | null
   createdAt: Date
   updatedAt: Date
-  
+
   // Relations
   sender: User
   receiver: User
@@ -305,7 +305,7 @@ export interface AuditLog {
   ipAddress?: string | null
   userAgent?: string | null
   createdAt: Date
-  
+
   // Relations
   user?: User | null
 }

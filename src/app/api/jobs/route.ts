@@ -4,18 +4,24 @@ import { jobSearchSchema } from '@/lib/validations'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    
+
     // Parse and validate search parameters
     const searchData = {
       query: searchParams.get('query') || undefined,
       location: searchParams.get('location') || undefined,
       jobType: searchParams.get('jobType') || undefined,
       isRemote: searchParams.get('isRemote') === 'true' ? true : undefined,
-      salaryMin: searchParams.get('salaryMin') ? parseInt(searchParams.get('salaryMin')!) : undefined,
-      salaryMax: searchParams.get('salaryMax') ? parseInt(searchParams.get('salaryMax')!) : undefined,
+      salaryMin: searchParams.get('salaryMin')
+        ? parseInt(searchParams.get('salaryMin')!)
+        : undefined,
+      salaryMax: searchParams.get('salaryMax')
+        ? parseInt(searchParams.get('salaryMax')!)
+        : undefined,
       experienceLevel: searchParams.get('experienceLevel') || undefined,
       skills: searchParams.get('skills')?.split(',') || undefined,
-      companyId: searchParams.get('companyId') ? parseInt(searchParams.get('companyId')!) : undefined,
+      companyId: searchParams.get('companyId')
+        ? parseInt(searchParams.get('companyId')!)
+        : undefined,
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '10'),
       sortBy: searchParams.get('sortBy') || 'createdAt',

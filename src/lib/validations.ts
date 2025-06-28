@@ -2,12 +2,32 @@ import { z } from 'zod'
 
 // Enum validation schemas
 export const roleSchema = z.enum(['ADMIN', 'HR', 'USER'])
-export const jobTypeSchema = z.enum(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP'])
+export const jobTypeSchema = z.enum([
+  'FULL_TIME',
+  'PART_TIME',
+  'CONTRACT',
+  'INTERNSHIP',
+])
 export const jobStatusSchema = z.enum(['OPEN', 'CLOSED', 'DRAFT'])
-export const applicationStatusSchema = z.enum(['PENDING', 'REVIEWED', 'ACCEPTED', 'REJECTED'])
+export const applicationStatusSchema = z.enum([
+  'PENDING',
+  'REVIEWED',
+  'ACCEPTED',
+  'REJECTED',
+])
 export const experienceLevelSchema = z.enum(['ENTRY', 'MID', 'SENIOR', 'LEAD'])
-export const educationLevelSchema = z.enum(['HIGH_SCHOOL', 'BACHELOR', 'MASTER', 'PHD'])
-export const skillLevelSchema = z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'])
+export const educationLevelSchema = z.enum([
+  'HIGH_SCHOOL',
+  'BACHELOR',
+  'MASTER',
+  'PHD',
+])
+export const skillLevelSchema = z.enum([
+  'BEGINNER',
+  'INTERMEDIATE',
+  'ADVANCED',
+  'EXPERT',
+])
 
 // User validation schemas
 export const userSchema = z.object({
@@ -74,7 +94,12 @@ export const companySchema = z.object({
   website: z.string().url().optional().nullable(),
   logo: z.string().url().optional().nullable(),
   location: z.string().optional().nullable(),
-  foundedYear: z.number().min(1800).max(new Date().getFullYear()).optional().nullable(),
+  foundedYear: z
+    .number()
+    .min(1800)
+    .max(new Date().getFullYear())
+    .optional()
+    .nullable(),
   createdById: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -118,8 +143,12 @@ export const jobSchema = z.object({
 export const createJobSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   description: z.string().min(1, 'Description is required'),
-  requirements: z.array(z.string().min(1)).min(1, 'At least one requirement is needed'),
-  responsibilities: z.array(z.string().min(1)).min(1, 'At least one responsibility is needed'),
+  requirements: z
+    .array(z.string().min(1))
+    .min(1, 'At least one requirement is needed'),
+  responsibilities: z
+    .array(z.string().min(1))
+    .min(1, 'At least one responsibility is needed'),
   benefits: z.array(z.string().min(1)).optional().default([]),
   salaryMin: z.number().positive().optional(),
   salaryMax: z.number().positive().optional(),
@@ -260,21 +289,25 @@ export const jobSearchSchema = z.object({
   companyId: z.number().optional(),
   page: z.number().positive().default(1),
   limit: z.number().positive().max(50).default(10),
-  sortBy: z.enum(['createdAt', 'salaryMin', 'salaryMax', 'viewCount']).default('createdAt'),
+  sortBy: z
+    .enum(['createdAt', 'salaryMin', 'salaryMax', 'viewCount'])
+    .default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 })
 
 // Auth validation schemas
-export const registerSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-  fullName: z.string().min(1, 'Full name is required'),
-  role: roleSchema,
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+export const registerSchema = z
+  .object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+    fullName: z.string().min(1, 'Full name is required'),
+    role: roleSchema,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 export const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -286,23 +319,27 @@ export const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
 })
 
-export const resetPasswordSchema = z.object({
-  token: z.string().min(1, 'Token is required'),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, 'Token is required'),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
-export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 // Message validation schemas
 export const messageSchema = z.object({
