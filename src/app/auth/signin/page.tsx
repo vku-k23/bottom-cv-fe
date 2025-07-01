@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -12,16 +11,10 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
-function SignUpForm() {
-  const searchParams = useSearchParams()
-  const defaultRole = searchParams.get('role') || 'USER'
-
+export default function SignInPage() {
   const [formData, setFormData] = useState({
-    fullName: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    role: defaultRole as 'USER' | 'HR',
   })
   const [loading, setLoading] = useState(false)
 
@@ -30,23 +23,16 @@ function SignUpForm() {
     setLoading(true)
 
     try {
-      if (formData.password !== formData.confirmPassword) {
-        alert('Passwords do not match')
-        return
-      }
-
-      // TODO: Implement registration logic
-      console.log('Sign up:', formData)
+      // TODO: Implement authentication logic
+      console.log('Sign in:', formData)
     } catch (error) {
-      console.error('Sign up error:', error)
+      console.error('Sign in error:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -58,73 +44,29 @@ function SignUpForm() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Create your account
+            Sign in to your account
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Or{' '}
             <Link
-              href="/signin"
+              href="/auth/signup"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              sign in to your existing account
+              create a new account
             </Link>
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Get started today</CardTitle>
+            <CardTitle>Welcome back</CardTitle>
             <CardDescription>
-              Join thousands of professionals finding their dream jobs
+              Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label
-                  htmlFor="role"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  I want to
-                </label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
-                >
-                  <option value="USER">Find a job</option>
-                  <option value="HR">Hire talent</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="fullName"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Full name
-                </label>
-                <Input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  placeholder="Enter your full name"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Email address
-                </label>
+              <div className='relative'>
                 <Input
                   id="email"
                   name="email"
@@ -135,6 +77,13 @@ function SignUpForm() {
                   onChange={handleInputChange}
                   placeholder="Enter your email"
                 />
+                <label
+                  htmlFor="email"
+                  className="mb-1 block text-sm font-medium text-gray-700
+                  peer-placeholder-shown:upper-case absolute left-3 -top-2.5 bg-gray-50 px-1"
+                >
+                  Email address
+                </label>
               </div>
 
               <div>
@@ -148,72 +97,51 @@ function SignUpForm() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="new-password"
+                  autoComplete="current-password"
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Create a strong password"
-                />
-                <p className="mt-1 text-sm text-gray-500">
-                  Must be at least 8 characters long
-                </p>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Confirm password
-                </label>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  placeholder="Confirm your password"
+                  placeholder="Enter your password"
                 />
               </div>
 
-              <div className="flex items-center">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  required
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <label
-                  htmlFor="terms"
-                  className="ml-2 block text-sm text-gray-900"
-                >
-                  I agree to the{' '}
-                  <Link
-                    href="/terms"
-                    className="text-blue-600 hover:text-blue-500"
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-900"
                   >
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
+                    Remember me
+                  </label>
+                </div>
+
+                <div className="text-sm">
                   <Link
-                    href="/privacy"
-                    className="text-blue-600 hover:text-blue-500"
+                    href="/forgot-password"
+                    className="font-medium text-blue-600 hover:text-blue-500"
                   >
-                    Privacy Policy
+                    Forgot your password?
                   </Link>
-                </label>
+                </div>
               </div>
 
               <div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  className="group relative flex w-full justify-center 
+                  rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm 
+                  font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 
+                  focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed
+                  disabled:opacity-50"
                 >
-                  {loading ? 'Creating account...' : 'Create account'}
+                  {loading ? 'Signing in...' : 'Sign in'}
                 </button>
               </div>
 
@@ -275,19 +203,5 @@ function SignUpForm() {
         </Card>
       </div>
     </div>
-  )
-}
-
-export default function SignUpPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          Loading...
-        </div>
-      }
-    >
-      <SignUpForm />
-    </Suspense>
   )
 }
