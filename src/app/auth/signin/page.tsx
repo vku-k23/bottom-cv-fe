@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import { Input } from '@/components/ui/auth_input'
+import { Label } from '@/components/ui/auth_input_label'
 
 export default function SignInPage() {
   const [formData, setFormData] = useState({
@@ -40,7 +41,12 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="absolute left-5 top-3">
+            <Link href="/" className="text-2xl font-bold text-blue-600">
+              JobPortal
+            </Link>
+      </div>
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
@@ -75,25 +81,12 @@ export default function SignInPage() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Enter your email"
-                />
-                <label
-                  htmlFor="email"
-                  className="mb-1 block text-sm font-medium text-gray-700
-                  peer-placeholder-shown:upper-case absolute left-3 -top-2.5 bg-gray-50 px-1"
-                >
-                  Email address
-                </label>
+                  placeholder="chatgpt@mail.ln"
+                />        
+                <Label htmlFor="email">Email address</Label>
               </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Password
-                </label>
-                <Input
+              <div className='relative'>
+                  <Input
                   id="password"
                   name="password"
                   type="password"
@@ -103,6 +96,7 @@ export default function SignInPage() {
                   onChange={handleInputChange}
                   placeholder="Enter your password"
                 />
+                <Label htmlFor='password'>Password</Label>
               </div>
 
               <div className="flex items-center justify-between">
@@ -135,9 +129,17 @@ export default function SignInPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="group relative flex w-full justify-center 
-                  rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm 
-                  font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 
+                  className="group 
+                  relative 
+                  flex 
+                  w-full 
+                  justify-center 
+                  rounded-md 
+                  border 
+                  border-transparent 
+                  transition duration-50
+                  bg-blue-400 px-4 py-2 text-sm 
+                  font-medium text-white hover:bg-blue-500 focus:ring-2 focus:ring-blue-500 
                   focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed
                   disabled:opacity-50"
                 >
@@ -151,16 +153,16 @@ export default function SignInPage() {
                     <div className="w-full border-t border-gray-300" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="bg-white px-2 text-gray-500">
+                    <span className="bg-gray-50 px-2 text-gray-500">
                       Or continue with
                     </span>
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="mt-6 grid grid-cols-1 gap-3">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+                    className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
                     <svg className="h-5 w-5" viewBox="0 0 24 24">
                       <path
@@ -185,7 +187,7 @@ export default function SignInPage() {
 
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+                    className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
                     <svg
                       className="h-5 w-5"
