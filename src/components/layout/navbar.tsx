@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { navbarScroll } from '@/utils/dom/navbarScroll'
 
 // Simple SVG icon components
 const SearchIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
@@ -126,19 +127,28 @@ const navigation = [
 
 export function Navbar() {
   const pathname = usePathname()
+  const [tabletMenuOpen, setTabletMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const navbarRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (navbarRef.current) {
+      navbarScroll()
+    }
+  }, [])
 
   return (
-    <nav className="border-b bg-white shadow-sm fixed w-full z-100">
+    <nav ref={navbarRef} className="border-b bg-white shadow-sm transition-transform duration-100 fixed w-full z-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-between">
+        <div className="flex h-16 justify-between ">
           <div className="flex">
-            <div className="flex flex-shrink-0 items-center">
+            <div className="flex items-center sm:absolute sm:left-[42.857%] sm:translate-y-1/2
+             sm:items-center sm:shrink-0 lg:static lg:left-auto lg:translate-y-0 lg:flex ">
               <Link href="/" className="text-2xl font-bold text-blue-600">
                 JobPortal
               </Link>
             </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+            <div className="hidden sm:ml-6 lg:flex sm:space-x-8 ">
               {navigation.map((item) => {
                 const Icon = item.icon
                 return (
@@ -180,17 +190,26 @@ export function Navbar() {
               </Link>
             </div>
           </div>
-
-          <div className="sm:hidden">
+          <div className="order-last sm:order-first lg:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+              className="rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-500"
             >
               {mobileMenuOpen ? <XIcon /> : <MenuIcon />}
             </button>
           </div>
         </div>
       </div>
+      {/* Tablet menu */}
+      {tabletMenuOpen && (
+        <div className="lg:hidden">
+          <div className=''>
+              <Link href="/" className="text-2xl font-bold text-blue-600">
+                JobPortal
+              </Link>
+          </div>
+        </div>
+      )}
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
