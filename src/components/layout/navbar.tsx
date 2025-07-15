@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { navbarScroll } from '@/utils/dom/navbarScroll'
+import { navbarScroll, SetUpScroll } from '@/utils/dom/navbarScroll'
 
 // Simple SVG icon components
 const SearchIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
@@ -132,13 +132,14 @@ export function Navbar() {
   const navbarRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    if (navbarRef.current) {
-      navbarScroll()
+    if (navbarRef.current){
+    const cleanup = SetUpScroll(navbarRef.current);
+    return cleanup
     }
   }, [])
 
   return (
-    <nav ref={navbarRef} className="border-b bg-white shadow-sm transition-transform duration-100 fixed w-full z-100">
+    <nav ref={navbarRef} className="border-b bg-white shadow-sm transition-transform duration-200 fixed w-full z-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between ">
           <div className="flex">

@@ -229,7 +229,7 @@ function SignUpForm() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="mt-6 grid grid-cols-1 gap-3">
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"

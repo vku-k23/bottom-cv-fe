@@ -5,13 +5,14 @@ import { cn } from '@/lib/utils'
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className,style, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      'bg-card text-card-foreground rounded-lg shadow-md',
+      'bg-card text-card-foreground rounded-lg inset-shadow-sm shadow-xl',
       className
     )}
+    style={{background: 'linear-gradient(to right, white 0%, white 20%, #f9fafb 45%, #f9fafb 55%, white 75%, white 100%', ...style}}
     {...props}
   />
 ))

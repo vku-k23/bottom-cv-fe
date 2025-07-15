@@ -16,7 +16,8 @@ const Label = React.forwardRef <
         absolute 
         left-3 
         -top-3
-        bg-gray-50
+        bg-white
+        rounded-xl
         px-1
         font-medium 
         transition-all
