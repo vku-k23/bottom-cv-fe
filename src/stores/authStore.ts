@@ -83,27 +83,22 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         set({ isLoading: true, error: null })
 
         try {
-          const [firstName, ...lastNameParts] = userData.fullName
-            .trim()
-            .split(' ')
-          const lastName = lastNameParts.join(' ') || firstName
-
           const formattedDate = new Date(userData.dayOfBirth)
-
           const today = new Date()
           if (formattedDate >= today) {
             throw new Error('Date of birth must be in the past')
           }
 
+          // Convert from input yyyy-MM-dd to dd-MM-yyyy
           const dayOfBirth = `${formattedDate.getDate().toString().padStart(2, '0')}-${(formattedDate.getMonth() + 1).toString().padStart(2, '0')}-${formattedDate.getFullYear()}`
 
           const registerRequest: RegisterRequest = {
-            username: userData.email, // Use email as username
+            username: userData.username,
             password: userData.password,
             email: userData.email,
             phoneNumber: userData.phoneNumber,
-            firstName,
-            lastName,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
             dayOfBirth,
           }
 

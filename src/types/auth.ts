@@ -65,12 +65,14 @@ export interface LoginFormData {
 }
 
 export interface SignupFormData {
-  fullName: string
-  email: string
+  username: string
   password: string
   confirmPassword: string
+  email: string
   phoneNumber: string
-  dayOfBirth: string
+  firstName: string
+  lastName: string
+  dayOfBirth: string // Format: "dd-MM-yyyy" for backend submission, captured as YYYY-MM-DD from input then transformed
 }
 
 // Auth store state

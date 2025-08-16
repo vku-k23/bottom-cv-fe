@@ -12,21 +12,22 @@ export const loginSchema = z.object({
 // Signup form validation schema
 export const signupSchema = z
   .object({
-    fullName: z
+    username: z
       .string()
-      .min(1, 'Full name is required')
-      .min(3, 'Name must be at least 3 characters')
-      .max(50, 'Name must be less than 50 characters'),
-    email: z.string().min(1, 'Email is required').email('Invalid email format'),
+      .min(1, 'Username is required')
+      .min(3, 'Username must be between 3 and 50 characters')
+      .max(50, 'Username must be between 3 and 50 characters'),
     password: z
       .string()
       .min(1, 'Password is required')
       .min(6, 'Password must be at least 6 characters')
+      .max(50, 'Password must be at most 50 characters')
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
-        'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+        'Password must contain like Az0@1 and be at least 6 characters long'
       ),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
+    email: z.string().min(1, 'Email is required').email('Invalid email format'),
     phoneNumber: z
       .string()
       .min(1, 'Phone number is required')
@@ -34,6 +35,16 @@ export const signupSchema = z
         /^[0-9]{10,15}$/,
         'Phone number must contain only digits and be between 10-15 characters'
       ),
+    firstName: z
+      .string()
+      .min(1, 'First name is required')
+      .min(3, 'First name must between 3 and 25 character')
+      .max(25, 'First name must between 3 and 25 character'),
+    lastName: z
+      .string()
+      .min(1, 'Last name is required')
+      .min(3, 'Last name must between 3 and 25 character')
+      .max(25, 'Last name must between 3 and 25 character'),
     dayOfBirth: z
       .string()
       .min(1, 'Date of birth is required')
@@ -42,8 +53,6 @@ export const signupSchema = z
         const today = new Date()
         return birthDate < today
       }, 'Date of birth must be in the past'),
-    address: z.string().optional(),
-    role: z.enum(['USER', 'HR']),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
