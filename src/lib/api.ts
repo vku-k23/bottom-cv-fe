@@ -10,6 +10,10 @@ export const API_ENDPOINTS = {
     login: '/auth/login',
     signup: '/auth/signup',
     refreshToken: '/auth/refresh-token',
+    forgotPassword: '/auth/forgot-password',
+    resetPassword: '/auth/reset-password',
+    confirmForgotPassword: '/auth/confirm-forgot-password',
+    verifyEmail: '/auth/verify-email',
   },
   user: {
     profile: '/front/profile', // adjusted to match prior usage (/api/front/profile) with new base /api/v1
@@ -75,13 +79,27 @@ export class ApiClient {
 
         let errorMessage = `HTTP Error: ${response.status}`
         try {
-          const errorData = await response.json()
-          errorMessage = errorData.message || errorMessage
+          const errorData: unknown = await response.json()
+          if (typeof errorData === 'object' && errorData !== null) {
+            const ed = errorData as Record<string, unknown>
+            const candidates = [
+              ed.errorMessage,
+              ed.message,
+              ed.error,
+              ed.detail,
+              ed.description,
+            ]
+            const found = candidates.find(
+              (v): v is string => typeof v === 'string' && v.trim().length > 0
+            )
+            if (found) errorMessage = found
+          }
         } catch {
-          // If JSON parsing fails, use the default error message
+          // ignore json parse error
         }
 
-        throw new Error(errorMessage)
+        const error = new Error(errorMessage)
+        throw error
       }
 
       // Handle empty responses
