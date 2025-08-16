@@ -2,7 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuthStore } from '@/stores/authStore'
+import { UserAvatar } from '@/components/ui/UserAvatar'
 
 // Simple SVG icon components
 const SearchIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
@@ -127,9 +129,25 @@ const navigation = [
 export function Navbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { isAuthenticated, user, logout, fetchCurrentUser } = useAuthStore()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      fetchCurrentUser()
+    }
+  }, [isAuthenticated, user, fetchCurrentUser])
+
+  // Ensure auth-dependent UI only renders after client mount to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
-    <nav className="border-b bg-white shadow-sm fixed w-full z-100">
+    <nav
+      className="fixed z-100 w-full border-b bg-white shadow-sm"
+      suppressHydrationWarning
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex">
@@ -159,26 +177,37 @@ export function Navbar() {
             </div>
           </div>
 
-          <div className="hidden space-x-4 sm:ml-6 sm:flex sm:items-center">
+          <div
+            className="hidden space-x-4 sm:ml-6 sm:flex sm:items-center"
+            suppressHydrationWarning
+          >
             <button className="relative p-2 text-gray-400 hover:text-gray-500">
               <BellIcon />
               <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
             </button>
 
-            <div className="flex items-center space-x-3">
-              <Link
-                href="/auth/signin"
-                className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-              >
-                Sign Up
-              </Link>
-            </div>
+            {mounted ? (
+              isAuthenticated && user ? (
+                <UserAvatar user={user} onLogout={logout} />
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <Link
+                    href="/auth/signin"
+                    className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )
+            ) : (
+              <div className="h-9 w-20 animate-pulse rounded-md bg-gray-100" />
+            )}
           </div>
 
           <div className="sm:hidden">
@@ -216,21 +245,47 @@ export function Navbar() {
             })}
           </div>
           <div className="border-t border-gray-200 pt-4 pb-3">
-            <div className="flex flex-col items-center space-y-3 px-4">
-              <Link
-                href="/auth/signin"
-                className="block text-base font-medium text-gray-500 hover:text-gray-800"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="block rounded-md bg-blue-600 px-4 py-2 text-base font-medium text-white hover:bg-blue-700"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sign Up
-              </Link>
+            <div
+              className="flex flex-col items-center space-y-3 px-4"
+              suppressHydrationWarning
+            >
+              {mounted && isAuthenticated ? (
+                <div className="flex flex-col items-center space-y-2">
+                  <UserAvatar
+                    user={user!}
+                    onLogout={() => {
+                      logout()
+                      setMobileMenuOpen(false)
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      logout()
+                      setMobileMenuOpen(false)
+                    }}
+                    className="text-sm text-red-600 hover:text-red-700"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/signin"
+                    className="block text-base font-medium text-gray-500 hover:text-gray-800"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="block rounded-md bg-blue-600 px-4 py-2 text-base font-medium text-white hover:bg-blue-700"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

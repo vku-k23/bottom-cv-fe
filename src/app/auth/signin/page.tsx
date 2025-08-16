@@ -11,26 +11,30 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/auth_input'
 import { Label } from '@/components/ui/auth_input_label'
+import { useAuth, useRedirectIfAuthenticated } from '@/hooks/useAuth'
+import { LoginFormData } from '@/types/auth'
 
 export default function SignInPage() {
-  const [formData, setFormData] = useState({
-    email: '',
+  const { login, isLoading } = useAuth()
+
+  // Redirect if already authenticated
+  useRedirectIfAuthenticated()
+
+  const [formData, setFormData] = useState<LoginFormData>({
+    username: '',
     password: '',
   })
-  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
 
-    try {
-      // TODO: Implement authentication logic
-      console.log('Sign in:', formData)
-    } catch (error) {
-      console.error('Sign in error:', error)
-    } finally {
-      setLoading(false)
+    // Basic validation
+    if (!formData.username || !formData.password) {
+      alert('Please fill in all fields')
+      return
     }
+
+    await login(formData)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,11 +45,11 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
-      <div className="absolute left-5 top-3">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              JobPortal
-            </Link>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="absolute top-3 left-5">
+        <Link href="/" className="text-2xl font-bold text-blue-600">
+          JobPortal
+        </Link>
       </div>
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
@@ -64,7 +68,7 @@ export default function SignInPage() {
         </div>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="text-black">
             <CardTitle>Welcome back</CardTitle>
             <CardDescription>
               Enter your credentials to access your account
@@ -72,21 +76,21 @@ export default function SignInPage() {
           </CardHeader>
           <CardContent>
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className='relative'>
+              <div className="relative">
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="text"
                   required
-                  value={formData.email}
+                  value={formData.username}
                   onChange={handleInputChange}
                   placeholder="chatgpt@mail.ln"
-                />        
-                <Label htmlFor="email">Email address</Label>
+                />
+                <Label htmlFor="username">Username</Label>
               </div>
-              <div className='relative'>
-                  <Input
+              <div className="relative">
+                <Input
                   id="password"
                   name="password"
                   type="password"
@@ -96,7 +100,7 @@ export default function SignInPage() {
                   onChange={handleInputChange}
                   placeholder="Enter your password"
                 />
-                <Label htmlFor='password'>Password</Label>
+                <Label htmlFor="password">Password</Label>
               </div>
 
               <div className="flex items-center justify-between">
@@ -128,22 +132,10 @@ export default function SignInPage() {
               <div>
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="group 
-                  relative 
-                  flex 
-                  w-full 
-                  justify-center 
-                  rounded-md 
-                  border 
-                  border-transparent 
-                  transition duration-50
-                  bg-blue-400 px-4 py-2 text-sm 
-                  font-medium text-white hover:bg-blue-500 focus:ring-2 focus:ring-blue-500 
-                  focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed
-                  disabled:opacity-50"
+                  disabled={isLoading}
+                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-400 px-4 py-2 text-sm font-medium text-white transition duration-50 hover:bg-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {loading ? 'Signing in...' : 'Sign in'}
+                  {isLoading ? 'Signing in...' : 'Sign in'}
                 </button>
               </div>
 

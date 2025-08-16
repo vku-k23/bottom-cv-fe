@@ -1,5 +1,9 @@
 // Environment variables configuration
 export const env = {
+  // API Configuration
+  NEXT_PUBLIC_API_URL:
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8088/api/v1',
+
   // Database
   DATABASE_URL: process.env.DATABASE_URL!,
 
