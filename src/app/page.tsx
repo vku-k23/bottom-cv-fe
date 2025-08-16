@@ -1,11 +1,7 @@
 import Link from 'next/link'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { JobCard } from '@/components/design/JobCard'
+import { CompanyCard } from '@/components/design/CompanyCard'
+import { Badge } from '@/components/ui/badge'
 
 const featuredJobs = [
   {
@@ -140,59 +136,43 @@ export default function HomePage() {
       {/* Featured Jobs */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-gray-900">
-              Featured Jobs
-            </h2>
-            <p className="text-lg text-gray-600">
-              Discover opportunities from top companies
-            </p>
+          <div className="mb-12 flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
+            <div>
+              <h2 className="mb-2 text-3xl font-bold text-gray-900">
+                Featured Jobs
+              </h2>
+              <p className="text-lg text-gray-600">
+                Discover opportunities from top companies
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <Badge variant="outline">Remote Friendly</Badge>
+              <Badge variant="outline">High Paying</Badge>
+              <Badge variant="outline">Trending</Badge>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {featuredJobs.map((job) => (
-              <Card
-                key={job.id}
-                className="cursor-pointer transition-shadow hover:shadow-lg"
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{job.title}</CardTitle>
-                      <CardDescription className="font-medium text-blue-600">
-                        {job.company}
-                      </CardDescription>
-                    </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-200">
-                      <span className="text-sm font-bold">
-                        {job.company.slice(0, 2)}
-                      </span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <span>📍 {job.location}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                        {job.type}
-                      </span>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {job.salary}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {featuredJobs.map((j) => (
+              <JobCard
+                key={j.id}
+                id={j.id}
+                title={j.title}
+                company={j.company}
+                location={j.location}
+                salary={j.salary}
+                type={j.type}
+                level={j.type === 'Contract' ? 'Mid' : 'Senior'}
+                postedAt="Today"
+                tags={[j.type, 'Featured']}
+              />
             ))}
           </div>
 
-          <div className="mt-8 text-center">
+          <div className="mt-10 text-center">
             <Link
               href="/jobs"
-              className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700"
+              className="inline-flex items-center rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
             >
               View All Jobs
             </Link>
@@ -212,102 +192,27 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
-            {topCompanies.map((company) => (
-              <div
-                key={company.name}
-                className="cursor-pointer rounded-lg bg-white p-6 text-center transition-shadow hover:shadow-md"
-              >
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-gray-200">
-                  <span className="text-lg font-bold">
-                    {company.name.slice(0, 2)}
-                  </span>
-                </div>
-                <h3 className="mb-1 font-semibold text-gray-900">
-                  {company.name}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {company.jobs} open positions
-                </p>
-              </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {topCompanies.slice(0, 8).map((c, i) => (
+              <CompanyCard
+                key={c.name}
+                id={i + 1}
+                name={c.name}
+                logoUrl={c.logo}
+                openings={c.jobs}
+                location={i % 2 ? 'Remote' : 'USA'}
+                industry={i % 3 ? 'Technology' : 'Software'}
+                description={`${c.name} is a leading innovator in the tech space.`}
+                compact
+              />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-gray-900">
-              How It Works
-            </h2>
-            <p className="text-lg text-gray-600">Get hired in 3 simple steps</p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                <span className="text-2xl">👤</span>
-              </div>
-              <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                Create Your Profile
-              </h3>
-              <p className="text-gray-600">
-                Build a compelling profile that showcases your skills and
-                experience
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                <span className="text-2xl">🔍</span>
-              </div>
-              <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                Search & Apply
-              </h3>
-              <p className="text-gray-600">
-                Browse thousands of jobs and apply to positions that match your
-                goals
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                <span className="text-2xl">🎉</span>
-              </div>
-              <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                Get Hired
-              </h3>
-              <p className="text-gray-600">
-                Connect with employers and land your dream job
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-blue-600 py-16">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="mb-4 text-3xl font-bold text-white">
-            Ready to Start Your Journey?
-          </h2>
-          <p className="mb-8 text-xl text-blue-100">
-            Join thousands of professionals who found their dream jobs
-          </p>
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+          <div className="mt-10 text-center">
             <Link
-              href="/auth/signup?role=job-seeker"
-              className="inline-flex items-center rounded-md border border-transparent bg-white px-8 py-3 text-base font-medium text-blue-600 hover:bg-gray-50"
+              href="/companies"
+              className="inline-flex items-center rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
             >
-              Find Jobs
-            </Link>
-            <Link
-              href="/auth/signup?role=HR"
-              className="inline-flex items-center rounded-md border-2 border-white px-8 py-3 text-base font-medium text-white hover:bg-blue-700"
-            >
-              Post Jobs
+              View All Companies
             </Link>
           </div>
         </div>
