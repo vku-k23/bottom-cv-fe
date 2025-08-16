@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { UserAvatar } from '@/components/ui/UserAvatar'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 // Simple SVG icon components
 const SearchIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
@@ -181,7 +182,11 @@ export function Navbar() {
             className="hidden space-x-4 sm:ml-6 sm:flex sm:items-center"
             suppressHydrationWarning
           >
-            <button className="relative p-2 text-gray-400 hover:text-gray-500">
+            <ThemeToggle />
+            <button
+              className="relative p-2 text-gray-400 hover:text-gray-500"
+              aria-label="Notifications"
+            >
               <BellIcon />
               <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
             </button>
