@@ -2,7 +2,6 @@
 
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -11,23 +10,26 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/auth_input'
+import { useAuth, useRedirectIfAuthenticated } from '@/hooks/useAuth'
+import { SignupFormData } from '@/types/auth'
 
 function SignUpForm() {
-  const searchParams = useSearchParams()
-  const defaultRole = searchParams.get('role') || 'USER'
+  const { register, isLoading } = useAuth()
 
-  const [formData, setFormData] = useState({
+  // Redirect if already authenticated
+  useRedirectIfAuthenticated()
+
+  const [formData, setFormData] = useState<SignupFormData>({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: defaultRole as 'USER' | 'HR',
+    phoneNumber: '',
+    dayOfBirth: '',
   })
-  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
 
     try {
       if (formData.password !== formData.confirmPassword) {
@@ -35,12 +37,21 @@ function SignUpForm() {
         return
       }
 
-      // TODO: Implement registration logic
-      console.log('Sign up:', formData)
+      // Basic validation
+      if (
+        !formData.fullName ||
+        !formData.email ||
+        !formData.password ||
+        !formData.phoneNumber ||
+        !formData.dayOfBirth
+      ) {
+        alert('Please fill in all required fields')
+        return
+      }
+
+      await register(formData)
     } catch (error) {
       console.error('Sign up error:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -80,25 +91,6 @@ function SignUpForm() {
           </CardHeader>
           <CardContent>
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label
-                  htmlFor="role"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  I want to
-                </label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
-                >
-                  <option value="USER">Find a job</option>
-                  <option value="HR">Hire talent</option>
-                </select>
-              </div>
-
               <div>
                 <label
                   htmlFor="fullName"
@@ -178,6 +170,43 @@ function SignUpForm() {
                 />
               </div>
 
+              <div>
+                <label
+                  htmlFor="phoneNumber"
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                >
+                  Phone Number
+                </label>
+                <Input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  placeholder="Enter your phone number"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="dayOfBirth"
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                >
+                  Date of Birth
+                </label>
+                <Input
+                  id="dayOfBirth"
+                  name="dayOfBirth"
+                  type="date"
+                  required
+                  max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                  value={formData.dayOfBirth}
+                  onChange={handleInputChange}
+                />
+              </div>
+
               <div className="flex items-center">
                 <input
                   id="terms"
@@ -210,10 +239,10 @@ function SignUpForm() {
               <div>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={isLoading}
                   className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {loading ? 'Creating account...' : 'Create account'}
+                  {isLoading ? 'Creating account...' : 'Create account'}
                 </button>
               </div>
 

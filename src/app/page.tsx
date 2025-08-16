@@ -48,7 +48,7 @@ const topCompanies = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen mt-[var(--spacing-top)]">
+    <div className="mt-[var(--spacing-top)] min-h-screen">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 to-purple-700 py-20 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
