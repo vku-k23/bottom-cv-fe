@@ -20,7 +20,9 @@ export default function ClientLayout({
   return (
     <div className="flex min-h-screen flex-col">
       {!hideLayout && <Navbar />}
-      <main className="flex-1">{children}</main>
+      <main className={`flex-1 ${!hideLayout ? 'pt-16 lg:pt-[4.5rem]' : ''}`}>
+        {children}
+      </main>
       {!hideLayout && <Footer />}
       <Toaster
         position="top-right"

@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { User } from '@/types/auth'
+import Image from 'next/image'
+import Link from 'next/link'
 
 interface UserAvatarProps {
   user: User
@@ -20,59 +22,79 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, onLogout }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const initials =
-    user.profile?.firstName?.[0] + (user.profile?.lastName?.[0] || '') ||
-    user.username[0]
+  // Support backend returning either nested profile (user.profile) or flat fields directly on user
+  const flatCandidate = user as unknown as {
+    firstName?: string
+    lastName?: string
+    avatar?: string | null
+    email?: string
+  }
+  const profileLike =
+    user.profile ||
+    (flatCandidate.firstName !== undefined ||
+    flatCandidate.lastName !== undefined
+      ? flatCandidate
+      : undefined)
+  // (initialsRaw removed; we compute initial inline when rendering)
+  // initials retained via lastName/firstName fallback directly in render, previous variable removed
 
   return (
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-700 hover:ring-2 hover:ring-blue-500 focus:outline-none"
+        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 text-sm font-medium text-gray-700 hover:ring-2 hover:ring-blue-500 focus:outline-none"
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        {user.profile?.avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={user.profile.avatar}
+        {profileLike?.avatar ? (
+          <Image
+            src={profileLike.avatar}
             alt="avatar"
+            width={36}
+            height={36}
             className="h-9 w-9 rounded-full object-cover"
           />
         ) : (
-          <span>{initials.toUpperCase()}</span>
+          <span className="text-base font-semibold select-none">
+            {(
+              profileLike?.lastName?.[0] ||
+              profileLike?.firstName?.[0] ||
+              (user as unknown as { username?: string }).username?.[0] ||
+              '?'
+            ).toUpperCase()}
+          </span>
         )}
       </button>
       {open && (
         <div className="ring-opacity-5 absolute right-0 z-50 mt-2 w-56 rounded-md bg-white py-2 shadow-lg ring-1 ring-black">
           <div className="border-b px-4 py-2">
             <p className="truncate text-sm font-medium text-gray-900">
-              {user.profile
-                ? `${user.profile.firstName} ${user.profile.lastName}`
+              {profileLike?.firstName || profileLike?.lastName
+                ? `${profileLike?.firstName ?? ''} ${profileLike?.lastName ?? ''}`.trim()
                 : user.username}
             </p>
             <p className="truncate text-xs text-gray-500">
-              {user.email || user.profile?.email}
+              {user.email || profileLike?.email}
             </p>
           </div>
-          <a
+          <Link
             href="/profile"
             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
             Profile
-          </a>
-          <a
+          </Link>
+          <Link
             href="/applications"
             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
             My Applications
-          </a>
-          <a
+          </Link>
+          <Link
             href="/settings"
             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
             Settings
-          </a>
+          </Link>
           <button
             onClick={() => {
               setOpen(false)

@@ -1,5 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import createMiddleware from 'next-intl/middleware'
+import { routing } from './src/i18n/routing'
+
+// Define supported locales
+const locales = ['en', 'vi'] as const
+
+type Locale = (typeof locales)[number]
+
+function isLocale(value: string): value is Locale {
+  return (locales as readonly string[]).includes(value)
+}
+
+// next-intl routing middleware
+const handleI18nRouting = createMiddleware(routing)
 
 // Define routes that require authentication
 const protectedRoutes = [
@@ -14,7 +28,14 @@ const protectedRoutes = [
 const authRoutes = ['/auth/signin', '/auth/signup']
 
 export function middleware(request: NextRequest) {
+  // Apply locale handling first (may rewrite "/" to "/en")
+  const i18nResponse = handleI18nRouting(request)
+
   const { pathname } = request.nextUrl
+  const firstSegment = pathname.split('/')[1]
+  const pathWithoutLocale = isLocale(firstSegment)
+    ? pathname.slice(firstSegment.length + 1) || '/'
+    : pathname
 
   // Get token from cookies or headers
   const token =
@@ -23,26 +44,30 @@ export function middleware(request: NextRequest) {
 
   // Check if current route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathWithoutLocale.startsWith(route)
   )
 
   // Check if current route is an auth route
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route))
+  const isAuthRoute = authRoutes.some((route) =>
+    pathWithoutLocale.startsWith(route)
+  )
 
   // Redirect to login if accessing protected route without token
   if (isProtectedRoute && !token) {
-    const url = new URL('/auth/signin', request.url)
+    const currentLocale: Locale = isLocale(firstSegment) ? firstSegment : 'en'
+    const url = new URL(`/${currentLocale}/auth/signin`, request.url)
     url.searchParams.set('redirect', pathname)
     return NextResponse.redirect(url)
   }
 
   // Redirect to dashboard if accessing auth routes with valid token
   if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL('/', request.url))
+    const currentLocale: Locale = isLocale(firstSegment) ? firstSegment : 'en'
+    return NextResponse.redirect(new URL(`/${currentLocale}`, request.url))
   }
 
   // Add CORS headers for API routes
-  if (pathname.startsWith('/api/')) {
+  if (pathWithoutLocale.startsWith('/api/')) {
     const response = NextResponse.next()
 
     // Add CORS headers
@@ -59,19 +84,13 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  return NextResponse.next()
+  return i18nResponse
 }
 
 // Configure which routes the middleware should run on
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (public directory)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Match all paths except for typical static assets
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

@@ -1,0 +1,119 @@
+{
+  "Navbar": {
+    "home": "Trang chủ",
+    "findJob": "Tìm việc",
+    "employers": "Nhà tuyển dụng",
+    "candidates": "Ứng viên",
+    "pricingPlans": "Bảng giá",
+    "customerSupports": "Hỗ trợ khách hàng",
+    "phone": "📞 +320 495 250",
+    "english": "Tiếng Anh",
+    "vietnamese": "Tiếng Việt",
+    "signIn": "Đăng nhập",
+    "postJob": "Đăng tin tuyển dụng",
+    "myJob": "MyJob"
+  },
+  "Hero": {
+    "heading": "Tìm việc phù hợp với sở thích & kỹ năng của bạn.",
+    "subheading": "Aliquam vitae turpis in diam convallis finibus et in nisl. Nulla in scelerisque leo, eget sollicitudin velit vestibulum.",
+    "jobPlaceholder": "Tên công việc, từ khóa...",
+    "locationPlaceholder": "Vị trí của bạn",
+    "buttonFindJob": "Tìm việc",
+    "suggestions": "Gợi ý: Designer, Programming, Digital Marketing, Video, Animation."
+  },
+  "PopularVacancies": {
+    "heading": "Các vị trí phổ biến nhất +",
+    "vacancies": [
+      "Bác sĩ gây mê",
+      "Bác sĩ phẫu thuật hàm mặt",
+      "Quản lý tài chính",
+      "Bác sĩ phẫu thuật",
+      "Lập trình viên phần mềm",
+      "Chuyên gia phân tích quản lý",
+      "Bác sĩ sản phụ khoa",
+      "Bác sĩ tâm thần",
+      "Quản lý CNTT",
+      "Bác sĩ chỉnh nha",
+      "Nhà khoa học dữ liệu",
+      "Chuyên gia phân tích nghiên cứu hoạt động"
+    ],
+    "openPositions": "Vị trí tuyển dụng"
+  },
+  "HowItWorks": {
+    "heading": "Cách hoạt động của JobPortal",
+    "steps": [
+      {
+        "title": "Tạo tài khoản",
+        "desc": "Aliquam vitae turpis in diam convallis finibus et in nisl. Nulla in scelerisque leo.",
+        "highlight": false
+      },
+      {
+        "title": "Tải CV",
+        "desc": "Curabitur sit amet maximus ligula. Nam a nibh ut libero malesuada feugiat vitae eget velit.",
+        "highlight": true
+      },
+      {
+        "title": "Tìm việc phù hợp",
+        "desc": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+        "highlight": false
+      },
+      {
+        "title": "Nộp đơn",
+        "desc": "Curabitur sit amet maximus ligula. Nam a nibh ut libero malesuada feugiat vitae eget velit.",
+        "highlight": false
+      }
+    ]
+  },
+  "PopularCategories": {
+    "heading": "Danh mục phổ biến",
+    "viewAll": "Xem tất cả",
+    "categories": [
+      { "name": "Đồ họa & Thiết kế" },
+      { "name": "Mã & Lập trình" },
+      { "name": "Tiếp thị số" },
+      { "name": "Video & Hoạt hình" },
+      { "name": "Âm nhạc & Âm thanh" },
+      { "name": "Kế toán & Tài chính" },
+      { "name": "Sức khỏe & Chăm sóc" },
+      { "name": "Dữ liệu & Khoa học", "highlight": true }
+    ],
+    "openPositions": "Vị trí tuyển dụng"
+  },
+  "AboutPage": {
+    "heading": "Về Chúng Tôi",
+    "intro": "Chúng tôi xây dựng hệ điều hành cho sự nghiệp hiện đại—kết nối tài năng với công việc ý nghĩa.",
+    "mission": "Trao quyền cho chuyên gia toàn cầu khám phá, đánh giá và đảm bảo vai trò thúc đẩy sự phát triển của họ.",
+    "description": "Chúng tôi kết hợp dữ liệu, cộng đồng và công cụ thông minh để giảm ma sát trong hành trình tìm kiếm việc làm.",
+    "values": [
+      {
+        "title": "Minh bạch",
+        "desc": "Chúng tôi giao tiếp cởi mở và xây dựng niềm tin."
+      },
+      {
+        "title": "Nhanh chóng",
+        "desc": "Chúng tôi triển khai nhanh, học hỏi và lặp lại."
+      },
+      {
+        "title": "Đồng cảm",
+        "desc": "Chúng tôi thiết kế cho con người thực, không phải chỉ số."
+      },
+      {
+        "title": "Trách nhiệm",
+        "desc": "Mọi người đều chịu trách nhiệm về kết quả."
+      }
+    ],
+    "timeline": [
+      { "year": "2023", "text": "Khởi ý tưởng & nguyên mẫu" },
+      { "year": "2024", "text": "Huy động vốn mầm & 10k người dùng đầu tiên" },
+      { "year": "2025", "text": "Mở rộng APAC & tính năng AI" }
+    ],
+    "team": [
+      { "name": "Thành viên 1", "role": "Designer" },
+      { "name": "Thành viên 2", "role": "Engineer" },
+      { "name": "Thành viên 3", "role": "Designer" },
+      { "name": "Thành viên 4", "role": "Engineer" },
+      { "name": "Thành viên 5", "role": "Designer" },
+      { "name": "Thành viên 6", "role": "Engineer" }
+    ]
+  }
+}

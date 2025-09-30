@@ -179,7 +179,17 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       fetchCurrentUser: async () => {
         try {
           const { isAuthenticated, user } = get()
-          if (!isAuthenticated || user) return
+          // Fetch if:
+          // - not authenticated => skip
+          // - authenticated and no user => fetch
+          // - authenticated and user exists but missing profile or essential profile fields => fetch
+          if (!isAuthenticated) return
+          const hasCompleteProfile = !!(
+            user?.profile &&
+            user.profile.firstName &&
+            user.profile.lastName
+          )
+          if (user && hasCompleteProfile) return
           const currentUser = await authService.getCurrentUser()
           set({ user: currentUser })
         } catch (e: unknown) {

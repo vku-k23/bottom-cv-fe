@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/auth_input'
 import { toast } from 'react-hot-toast'
 import { apiClient, API_ENDPOINTS } from '@/lib/api'
 
-export default function ResetPasswordPage() {
+function ResetPasswordInner() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get('token') || ''
@@ -129,5 +129,19 @@ export default function ResetPasswordPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-sm text-gray-600">Loading...</p>
+        </div>
+      }
+    >
+      <ResetPasswordInner />
+    </Suspense>
   )
 }
