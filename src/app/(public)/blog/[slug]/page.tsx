@@ -1,12 +1,9 @@
-'use client'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 
-export default function BlogDetailPage({
-  params,
-}: {
-  params: { slug: string }
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function BlogDetailPage(props: any) {
+  const { params } = props
   const post = {
     slug: params.slug,
     title: 'How to optimize your job search in 2025',

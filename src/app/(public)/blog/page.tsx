@@ -1,5 +1,6 @@
 'use client'
 import { useState, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -20,8 +21,9 @@ const makePosts = () =>
   })
 
 export default function BlogPage() {
+  const t = useTranslations('BlogPage')
   const posts = makePosts()
-  const categories = ['All', 'Career', 'Guides', 'Product']
+  const categories = t.raw('categories') as string[]
   const [activeCat, setActiveCat] = useState('All')
   const [keyword, setKeyword] = useState('')
   const [loading] = useState(false)
@@ -44,16 +46,14 @@ export default function BlogPage() {
       {/* header */}
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-black">Blog</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Insights, guides & product updates for job seekers and employers.
-          </p>
+          <h1 className="text-3xl font-bold text-black">{t('heading')}</h1>
+          <p className="mt-2 text-sm text-gray-600">{t('intro')}</p>
         </div>
         <div className="flex gap-2">
           <input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="Search articles..."
+            placeholder={t('placeholder')}
             className="w-64 rounded-md border border-gray-300 px-3 py-2 text-sm text-black focus:border-blue-500 focus:outline-none"
           />
         </div>

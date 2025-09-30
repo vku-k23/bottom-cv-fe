@@ -104,6 +104,12 @@ body {
   background: var(--bg-elevated);
 }
 
+/* Custom utility classes for homepage */
+.bg-dotted-pattern {
+  background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
+  background-size: 16px 8px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 1ms !important;

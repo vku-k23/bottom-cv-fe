@@ -1,0 +1,120 @@
+{
+  "Navbar": {
+    "home": "Home",
+    "findJob": "Find Job",
+    "employers": "Employers",
+    "candidates": "Candidates",
+    "pricingPlans": "Pricing Plans",
+    "customerSupports": "Customer Supports",
+    "phone": "📞 +320 495 250",
+    "english": "English",
+    "vietnamese": "Vietnamese",
+    "signIn": "Sign In",
+    "postJob": "Post a Job",
+    "myJob": "MyJob"
+  },
+  "Hero": {
+    "heading": "Find a job that suits your interest & skills.",
+    "subheading": "Aliquam vitae turpis in diam convallis finibus et in nisl. Nulla in scelerisque leo, eget sollicitudin velit vestibulum.",
+    "jobPlaceholder": "Job title, keyword...",
+    "locationPlaceholder": "Your Location",
+    "buttonFindJob": "Find Job",
+    "suggestions": "Suggestions: Designer, Programming, Digital Marketing, Video, Animation."
+  },
+  "PopularVacancies": {
+    "heading": "Most Popular Vacancies +",
+    "vacancies": [
+      "Anesthesiologists",
+      "Maxillofacial Surgeons",
+      "Financial Manager",
+      "Surgeons",
+      "Software Developer",
+      "Management Analysis",
+      "Obstetricians-Gynecologists",
+      "Psychiatrists",
+      "IT Manager",
+      "Orthodontists",
+      "Data Scientist",
+      "Operations Research Analysis"
+    ],
+    "openPositions": "Open Positions"
+  },
+  "HowItWorks": {
+    "heading": "How jobpilot work",
+    "steps": [
+      {
+        "title": "Create account",
+        "desc": "Aliquam vitae turpis in diam convallis finibus et in nisl. Nulla in scelerisque leo.",
+        "highlight": false
+      },
+      {
+        "title": "Upload CV/Resume",
+        "desc": "Curabitur sit amet maximus ligula. Nam a nibh ut libero malesuada feugiat vitae eget velit.",
+        "highlight": true
+      },
+      {
+        "title": "Find suitable job",
+        "desc": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+        "highlight": false
+      },
+      {
+        "title": "Apply job",
+        "desc": "Curabitur sit amet maximus ligula. Nam a nibh ut libero malesuada feugiat vitae eget velit.",
+        "highlight": false
+      }
+    ]
+  },
+  "PopularCategories": {
+    "heading": "Popular category",
+    "viewAll": "View All",
+    "categories": [
+      { "name": "Graphics & Design" },
+      { "name": "Code & Programming" },
+      { "name": "Digital Marketing" },
+      { "name": "Video & Animation" },
+      { "name": "Music & Audio" },
+      { "name": "Account & Finance" },
+      { "name": "Health & Care" },
+      { "name": "Data & Science", "highlight": true }
+    ],
+    "openPositions": "Open position"
+  },
+  "AboutPage": {
+    "heading": "About Us",
+    "intro": "We are building the operating system for modern careers—matching talent with meaningful work.",
+    "mission": "Empower professionals globally to discover, evaluate, and secure roles that accelerate their growth.",
+    "description": "We combine data, community, and intelligent tooling to reduce friction across the job search journey.",
+    "values": [
+      {
+        "title": "Transparency",
+        "desc": "We communicate openly and build trust."
+      },
+      { "title": "Velocity", "desc": "We ship fast, learn, and iterate." },
+      { "title": "Empathy", "desc": "We design for real people, not metrics." },
+      { "title": "Ownership", "desc": "Everyone is accountable for outcomes." }
+    ],
+    "timeline": [
+      { "year": "2023", "text": "Idea conception & prototype" },
+      { "year": "2024", "text": "Seed funding & first 10k users" },
+      { "year": "2025", "text": "Expansion to APAC & AI features" }
+    ],
+    "team": [
+      { "name": "Member 1", "role": "Designer" },
+      { "name": "Member 2", "role": "Engineer" },
+      { "name": "Member 3", "role": "Designer" },
+      { "name": "Member 4", "role": "Engineer" },
+      { "name": "Member 5", "role": "Designer" },
+      { "name": "Member 6", "role": "Engineer" }
+    ],
+    "missionTitle": "Our Mission",
+    "valuesTitle": "Core Values",
+    "journeyTitle": "Our Journey",
+    "teamTitle": "Team"
+  },
+  "BlogPage": {
+    "heading": "Blog",
+    "intro": "Insights, guides & product updates for job seekers and employers.",
+    "placeholder": "Search articles...",
+    "categories": ["All", "Career", "Guides", "Product"]
+  }
+}

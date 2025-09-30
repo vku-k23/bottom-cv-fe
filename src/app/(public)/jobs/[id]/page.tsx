@@ -1,10 +1,7 @@
 import Link from 'next/link'
 
-export default function JobDetailPage({
-  params: _params,
-}: {
-  params: { id: string }
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function JobDetailPage(_props: any) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
