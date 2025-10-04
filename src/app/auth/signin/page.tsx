@@ -85,9 +85,10 @@ export default function SignInPage() {
                   required
                   value={formData.username}
                   onChange={handleInputChange}
-                  placeholder="chatgpt@mail.ln"
                 />
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username" className="text-gray-700">
+                  Username
+                </Label>
               </div>
               <div className="relative">
                 <Input
@@ -98,9 +99,10 @@ export default function SignInPage() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Enter your password"
                 />
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-gray-700">
+                  Password
+                </Label>
               </div>
 
               <div className="flex items-center justify-between">
@@ -113,7 +115,7 @@ export default function SignInPage() {
                   />
                   <label
                     htmlFor="remember-me"
-                    className="ml-2 block text-sm text-gray-900"
+                    className="ml-2 block text-sm text-gray-700"
                   >
                     Remember me
                   </label>

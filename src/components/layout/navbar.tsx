@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { UserAvatar } from '@/components/ui/UserAvatar'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 // Simple SVG icon components
 const SearchIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
@@ -115,6 +115,8 @@ const navigation = [
 export function Navbar() {
   const t = useTranslations('Navbar')
   const pathname = usePathname()
+  const router = useRouter()
+  const locale = useLocale()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { isAuthenticated, user, logout, fetchCurrentUser } = useAuthStore()
   const [mounted, setMounted] = useState(false)
@@ -123,6 +125,14 @@ export function Navbar() {
     if (isAuthenticated && !user) fetchCurrentUser()
   }, [isAuthenticated, user, fetchCurrentUser])
   useEffect(() => setMounted(true), [])
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLocale = e.target.value
+    // Get current path without locale prefix
+    const pathWithoutLocale = pathname.replace(/^\/(en|vi)/, '') || '/'
+    // Navigate to new locale
+    router.push(`/${newLocale}${pathWithoutLocale}`)
+  }
 
   return (
     <nav
@@ -168,9 +178,13 @@ export function Navbar() {
             <span>{t('phone')}</span>
             <div className="flex items-center gap-1">
               <span role="img" aria-label="flag">
-                🇮🇳
+                {locale === 'vi' ? '🇻🇳' : '🇬🇧'}
               </span>
-              <select className="bg-transparent text-[11px] outline-none">
+              <select
+                className="cursor-pointer bg-transparent text-[11px] outline-none"
+                value={locale}
+                onChange={handleLanguageChange}
+              >
                 <option value="en">{t('english')}</option>
                 <option value="vi">{t('vietnamese')}</option>
               </select>
@@ -263,25 +277,40 @@ export function Navbar() {
                 </Link>
               )
             })}
-            <div className="mt-3 flex items-center gap-3">
-              {mounted && isAuthenticated && user ? (
-                <UserAvatar user={user} onLogout={logout} />
-              ) : (
-                <>
-                  <Link
-                    href="/auth/signin"
-                    className="text-sm font-medium text-gray-600"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/post-job"
-                    className="flex-1 rounded-md bg-blue-600 px-3 py-2 text-center text-xs font-medium text-white"
-                  >
-                    Post a Job
-                  </Link>
-                </>
-              )}
+            <div className="mt-3 space-y-3">
+              <div className="flex items-center gap-2 px-2">
+                <span role="img" aria-label="flag">
+                  {locale === 'vi' ? '🇻🇳' : '🇬🇧'}
+                </span>
+                <select
+                  className="flex-1 cursor-pointer rounded-md border border-gray-300 bg-transparent px-2 py-1 text-sm outline-none"
+                  value={locale}
+                  onChange={handleLanguageChange}
+                >
+                  <option value="en">{t('english')}</option>
+                  <option value="vi">{t('vietnamese')}</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-3">
+                {mounted && isAuthenticated && user ? (
+                  <UserAvatar user={user} onLogout={logout} />
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/signin"
+                      className="text-sm font-medium text-gray-600"
+                    >
+                      {t('signIn')}
+                    </Link>
+                    <Link
+                      href="/post-job"
+                      className="flex-1 rounded-md bg-blue-600 px-3 py-2 text-center text-xs font-medium text-white"
+                    >
+                      {t('postJob')}
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
