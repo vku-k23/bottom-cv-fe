@@ -1,42 +1,66 @@
 'use client'
 import React from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslation } from '@/hooks/useTranslation'
+import { ArrowRight, User, Search, Briefcase, CheckCircle } from 'lucide-react'
 
 export function HowItWorks() {
-  const t = useTranslations('HowItWorks')
-  const steps = [
-    { title: t('steps.0.title'), desc: t('steps.0.desc'), highlight: false },
-    { title: t('steps.1.title'), desc: t('steps.1.desc'), highlight: true },
-    { title: t('steps.2.title'), desc: t('steps.2.desc'), highlight: false },
-    { title: t('steps.3.title'), desc: t('steps.3.desc'), highlight: false },
-  ]
+  const { t } = useTranslation()
+
+  const steps = t('HowItWorks.steps', { returnObjects: true }) as Array<{
+    title: string
+    desc: string
+    highlight: boolean
+  }>
 
   return (
-    <section className="bg-gray-100 py-20">
-      <div className="mx-auto max-w-6xl px-4">
-        <h2 className="mb-14 text-center text-xl font-semibold text-gray-900 md:text-2xl">
-          {t('heading')}
-        </h2>
-        <div className="relative grid gap-6 md:grid-cols-4">
-          {steps.map((s, i) => (
-            <div
-              key={i}
-              className={`relative rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm transition md:pt-8 ${
-                s.highlight ? 'ring-1 ring-blue-500' : ''
-              }`}
-            >
-              <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-blue-600">
-                {i + 1}
+    <section className="bg-gray-50 py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900">
+            {t('HowItWorks.heading')}
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+            Get started in just a few simple steps
+          </p>
+        </div>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step, index: number) => {
+            const icons = [User, Search, Briefcase, CheckCircle]
+            const Icon = icons[index] || User
+            return (
+              <div
+                key={index}
+                className={`relative ${step.highlight ? 'lg:scale-110' : ''}`}
+              >
+                <div
+                  className={`text-center ${step.highlight ? 'rounded-2xl bg-blue-600 p-6 text-white shadow-lg' : 'rounded-xl bg-white p-6 shadow-sm'}`}
+                >
+                  <div
+                    className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${step.highlight ? 'bg-white/20' : 'bg-blue-100'}`}
+                  >
+                    <Icon
+                      className={`h-8 w-8 ${step.highlight ? 'text-white' : 'text-blue-600'}`}
+                    />
+                  </div>
+                  <h3
+                    className={`mb-2 text-lg font-semibold ${step.highlight ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    {step.title}
+                  </h3>
+                  <p
+                    className={`text-sm ${step.highlight ? 'text-blue-100' : 'text-gray-600'}`}
+                  >
+                    {step.desc}
+                  </p>
+                </div>
+                {index < 3 && (
+                  <div className="absolute top-1/2 -right-4 hidden -translate-y-1/2 transform lg:block">
+                    <ArrowRight className="h-6 w-6 text-gray-300" />
+                  </div>
+                )}
               </div>
-              <h3 className="text-sm font-semibold text-gray-900">{s.title}</h3>
-              <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
-                {s.desc}
-              </p>
-            </div>
-          ))}
-          <div className="pointer-events-none absolute top-14 left-0 hidden w-full md:block">
-            <div className="bg-dotted-pattern h-0.5 w-full" />
-          </div>
+            )
+          })}
         </div>
       </div>
     </section>

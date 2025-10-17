@@ -633,3 +633,6 @@ export type ApplicationStatusType = ApplicationStatus
 export type ExperienceLevelType = ExperienceLevel
 export type EducationLevelType = EducationLevel
 export type SkillLevelType = SkillLevel
+
+// Export profile types
+export type { ProfileResponse, ProfileRequest } from './profile'

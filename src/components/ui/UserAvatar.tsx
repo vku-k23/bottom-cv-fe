@@ -27,7 +27,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, onLogout }) => {
     firstName?: string
     lastName?: string
     avatar?: string | null
-    email?: string
+    username?: string
   }
   const profileLike =
     user.profile ||
@@ -67,30 +67,33 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, onLogout }) => {
       </button>
       {open && (
         <div className="ring-opacity-5 absolute right-0 z-50 mt-2 w-56 rounded-md bg-white py-2 shadow-lg ring-1 ring-black">
-          <div className="border-b px-4 py-2">
+          <div className="border-b border-gray-200 px-4 py-2">
             <p className="truncate text-sm font-medium text-gray-900">
               {profileLike?.firstName || profileLike?.lastName
                 ? `${profileLike?.firstName ?? ''} ${profileLike?.lastName ?? ''}`.trim()
                 : user.username}
             </p>
             <p className="truncate text-xs text-gray-500">
-              {user.email || profileLike?.email}
+              {user.username || profileLike?.firstName || profileLike?.lastName}
             </p>
           </div>
           <Link
             href="/profile"
+            onClick={() => setOpen(false)}
             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
             Profile
           </Link>
           <Link
             href="/applications"
+            onClick={() => setOpen(false)}
             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
             My Applications
           </Link>
           <Link
             href="/settings"
+            onClick={() => setOpen(false)}
             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
             Settings

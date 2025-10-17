@@ -26,6 +26,7 @@ export const useAuth = (): UseAuthResult => {
     logout,
     clearError,
     initializeAuth,
+    fetchCurrentUser,
   } = useAuthStore()
 
   const router = useRouter()
@@ -33,7 +34,11 @@ export const useAuth = (): UseAuthResult => {
   // Initialize auth on mount
   useEffect(() => {
     initializeAuth()
-  }, [initializeAuth])
+    // Fetch current user if authenticated
+    if (isAuthenticated && !user) {
+      fetchCurrentUser()
+    }
+  }, [initializeAuth, fetchCurrentUser, isAuthenticated, user])
 
   // Show error toast when error occurs
   useEffect(() => {
@@ -73,7 +78,7 @@ export const useAuth = (): UseAuthResult => {
   const handleLogout = () => {
     logout()
     toast.success('Logged out successfully')
-    router.push('/') // Redirect to home after logout
+    // Note: redirect is handled in authStore.logout()
   }
 
   return {

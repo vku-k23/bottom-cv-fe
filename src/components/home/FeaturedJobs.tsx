@@ -1,4 +1,8 @@
+'use client'
 import React from 'react'
+import Link from 'next/link'
+import { useTranslation } from '@/hooks/useTranslation'
+import { ArrowRight, MapPin, Clock, DollarSign, Bookmark } from 'lucide-react'
 
 interface JobItem {
   id: number
@@ -6,6 +10,8 @@ interface JobItem {
   company: string
   location: string
   type: string
+  salary: string
+  timeLeft: string
   isFeatured?: boolean
 }
 
@@ -16,6 +22,8 @@ const jobs: JobItem[] = [
     company: 'Uplab',
     location: 'Australia',
     type: 'Contract Base',
+    salary: '$80K-$120K',
+    timeLeft: '4 Days Remaining',
     isFeatured: true,
   },
   {
@@ -24,6 +32,8 @@ const jobs: JobItem[] = [
     company: 'Google',
     location: 'USA',
     type: 'Full Time',
+    salary: '$100K-$150K',
+    timeLeft: '2 Days Remaining',
   },
   {
     id: 3,
@@ -31,6 +41,8 @@ const jobs: JobItem[] = [
     company: 'Canva',
     location: 'Canada',
     type: 'Full Time',
+    salary: '$60K-$80K',
+    timeLeft: '1 Week Remaining',
   },
   {
     id: 4,
@@ -38,6 +50,8 @@ const jobs: JobItem[] = [
     company: 'Muzo',
     location: 'United States',
     type: 'Full Time',
+    salary: '$90K-$130K',
+    timeLeft: '3 Days Remaining',
   },
   {
     id: 5,
@@ -45,6 +59,8 @@ const jobs: JobItem[] = [
     company: 'Meta',
     location: 'Germany',
     type: 'Internship',
+    salary: '$40K-$60K',
+    timeLeft: '5 Days Remaining',
   },
   {
     id: 6,
@@ -52,51 +68,82 @@ const jobs: JobItem[] = [
     company: 'Figma',
     location: 'France',
     type: 'Full Time',
+    salary: '$85K-$125K',
+    timeLeft: '1 Week Remaining',
   },
 ]
 
 export function FeaturedJobs() {
+  const { t } = useTranslation()
+
   return (
-    <section className="py-16">
+    <section className="bg-white py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900 md:text-2xl">
-            Featured job
+          <h2 className="text-3xl font-bold text-gray-900">
+            {t('FeaturedJobs.heading')}
           </h2>
-          <button className="rounded-md border border-gray-200 bg-white px-4 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">
-            View All
-          </button>
+          <Link
+            href="/jobs"
+            className="flex items-center gap-2 font-semibold text-blue-600 hover:text-blue-700"
+          >
+            View All <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
-        <div className="space-y-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {jobs.map((job) => (
             <div
               key={job.id}
-              className={`flex flex-col justify-between gap-3 rounded-lg border border-gray-200 bg-white p-4 text-sm shadow-sm transition hover:border-blue-500 md:flex-row md:items-center ${
-                job.isFeatured ? 'ring-1 ring-blue-500' : ''
+              className={`group relative rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-blue-300 hover:shadow-lg ${
+                job.isFeatured ? 'ring-2 ring-blue-500' : ''
               }`}
             >
-              <div className="flex flex-1 items-start gap-4">
-                <div className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-indigo-600 font-semibold text-white md:flex">
-                  {job.company.charAt(0)}
+              {job.isFeatured && (
+                <div className="absolute -top-2 left-6 rounded-full bg-blue-600 px-3 py-1 text-xs font-medium text-white">
+                  Featured
                 </div>
-                <div>
-                  <p className="font-medium text-gray-900">{job.title}</p>
-                  <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-gray-500">
-                    <span>{job.company}</span>
-                    <span className="h-1 w-1 rounded-full bg-gray-300" />
-                    <span>{job.location}</span>
-                    <span className="h-1 w-1 rounded-full bg-gray-300" />
-                    <span>$80K-$120K</span>
-                    <span className="h-1 w-1 rounded-full bg-gray-300" />
-                    <span>4 Days Remaining</span>
+              )}
+
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 font-semibold text-white">
+                      {job.company.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 transition-colors group-hover:text-blue-600">
+                        {job.title}
+                      </h3>
+                      <p className="text-sm text-gray-600">{job.company}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <MapPin className="h-4 w-4" />
+                      <span>{job.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <DollarSign className="h-4 w-4" />
+                      <span>{job.salary}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Clock className="h-4 w-4" />
+                      <span>{job.timeLeft}</span>
+                    </div>
                   </div>
                 </div>
+
+                <button className="ml-4 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+                  <Bookmark className="h-5 w-5" />
+                </button>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="rounded-md bg-blue-50 px-2 py-1 text-[10px] font-medium text-blue-600">
+
+              <div className="mt-6 flex items-center justify-between">
+                <span className="rounded-lg bg-blue-50 px-3 py-1 text-sm font-medium text-blue-600">
                   {job.type}
                 </span>
-                <button className="rounded-md bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700">
+                <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700">
                   Apply Now
                 </button>
               </div>

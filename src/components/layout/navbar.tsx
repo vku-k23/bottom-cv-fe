@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { UserAvatar } from '@/components/ui/UserAvatar'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslation } from '@/hooks/useTranslation'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 // Simple SVG icon components
 const SearchIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
@@ -113,10 +113,8 @@ const navigation = [
 ]
 
 export function Navbar() {
-  const t = useTranslations('Navbar')
+  const { t } = useTranslation()
   const pathname = usePathname()
-  const router = useRouter()
-  const locale = useLocale()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { isAuthenticated, user, logout, fetchCurrentUser } = useAuthStore()
   const [mounted, setMounted] = useState(false)
@@ -126,69 +124,49 @@ export function Navbar() {
   }, [isAuthenticated, user, fetchCurrentUser])
   useEffect(() => setMounted(true), [])
 
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLocale = e.target.value
-    // Get current path without locale prefix
-    const pathWithoutLocale = pathname.replace(/^\/(en|vi)/, '') || '/'
-    // Navigate to new locale
-    router.push(`/${newLocale}${pathWithoutLocale}`)
-  }
-
   return (
     <nav
       className="fixed z-100 w-full bg-white shadow-sm"
       suppressHydrationWarning
     >
       {/* Top mini bar */}
-      <div className="hidden border-b bg-gray-50 text-[11px] text-gray-600 lg:block">
-        <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-6">
+      <div className="hidden border-b border-gray-200 bg-gray-50 text-[11px] text-gray-600 lg:block">
+        <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <ul className="flex items-center gap-4 font-medium">
             <li>
               <Link href="/" className="hover:text-blue-600">
-                {t('home')}
+                {t('Navbar.home')}
               </Link>
             </li>
             <li>
               <Link href="/jobs" className="hover:text-blue-600">
-                {t('findJob')}
+                {t('Navbar.findJob')}
               </Link>
             </li>
             <li>
               <Link href="/employers" className="hover:text-blue-600">
-                {t('employers')}
+                {t('Navbar.employers')}
               </Link>
             </li>
             <li>
               <Link href="/candidates" className="hover:text-blue-600">
-                {t('candidates')}
+                {t('Navbar.candidates')}
               </Link>
             </li>
             <li>
               <Link href="/pricing" className="hover:text-blue-600">
-                {t('pricingPlans')}
+                {t('Navbar.pricingPlans')}
               </Link>
             </li>
             <li>
               <Link href="/support" className="hover:text-blue-600">
-                {t('customerSupports')}
+                {t('Navbar.customerSupports')}
               </Link>
             </li>
           </ul>
           <div className="flex items-center gap-4">
-            <span>{t('phone')}</span>
-            <div className="flex items-center gap-1">
-              <span role="img" aria-label="flag">
-                {locale === 'vi' ? '🇻🇳' : '🇬🇧'}
-              </span>
-              <select
-                className="cursor-pointer bg-transparent text-[11px] outline-none"
-                value={locale}
-                onChange={handleLanguageChange}
-              >
-                <option value="en">{t('english')}</option>
-                <option value="vi">{t('vietnamese')}</option>
-              </select>
-            </div>
+            <span>{t('Navbar.phone')}</span>
+            <LanguageSwitcher />
           </div>
         </div>
       </div>
@@ -223,7 +201,6 @@ export function Navbar() {
             className="hidden items-center gap-4 md:flex"
             suppressHydrationWarning
           >
-            <ThemeToggle />
             {mounted ? (
               isAuthenticated && user ? (
                 <UserAvatar user={user} onLogout={logout} />
@@ -233,13 +210,13 @@ export function Navbar() {
                     href="/auth/signin"
                     className="font-medium text-gray-600 hover:text-blue-600"
                   >
-                    {t('signIn')}
+                    {t('Navbar.signIn')}
                   </Link>
                   <Link
                     href="/post-job"
                     className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700"
                   >
-                    {t('postJob')}
+                    {t('Navbar.postJob')}
                   </Link>
                 </div>
               )
@@ -258,7 +235,7 @@ export function Navbar() {
         </div>
       </div>
       {mobileMenuOpen && (
-        <div className="border-t bg-white md:hidden">
+        <div className="border-t border-gray-200 bg-white md:hidden">
           <div className="space-y-1 px-4 py-3">
             {navigation.map((item) => {
               const Icon = item.icon
@@ -279,17 +256,7 @@ export function Navbar() {
             })}
             <div className="mt-3 space-y-3">
               <div className="flex items-center gap-2 px-2">
-                <span role="img" aria-label="flag">
-                  {locale === 'vi' ? '🇻🇳' : '🇬🇧'}
-                </span>
-                <select
-                  className="flex-1 cursor-pointer rounded-md border border-gray-300 bg-transparent px-2 py-1 text-sm outline-none"
-                  value={locale}
-                  onChange={handleLanguageChange}
-                >
-                  <option value="en">{t('english')}</option>
-                  <option value="vi">{t('vietnamese')}</option>
-                </select>
+                <LanguageSwitcher />
               </div>
               <div className="flex items-center gap-3">
                 {mounted && isAuthenticated && user ? (
@@ -300,13 +267,13 @@ export function Navbar() {
                       href="/auth/signin"
                       className="text-sm font-medium text-gray-600"
                     >
-                      {t('signIn')}
+                      {t('Navbar.signIn')}
                     </Link>
                     <Link
                       href="/post-job"
                       className="flex-1 rounded-md bg-blue-600 px-3 py-2 text-center text-xs font-medium text-white"
                     >
-                      {t('postJob')}
+                      {t('Navbar.postJob')}
                     </Link>
                   </>
                 )}

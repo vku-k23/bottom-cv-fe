@@ -1,10 +1,12 @@
 'use client'
 import React from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export function PopularCategories() {
-  const t = useTranslations('PopularCategories')
-  const categories = t.raw('categories') as {
+  const { t } = useTranslation()
+  const categories = t('PopularCategories.categories', {
+    returnObjects: true,
+  }) as {
     name: string
     highlight?: boolean
   }[]
@@ -14,10 +16,10 @@ export function PopularCategories() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900 md:text-2xl">
-            {t('heading')}
+            {t('PopularCategories.heading')}
           </h2>
           <button className="rounded-md border border-gray-200 bg-white px-4 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">
-            {t('viewAll')}
+            {t('PopularCategories.viewAll')}
           </button>
         </div>
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8">
@@ -33,7 +35,7 @@ export function PopularCategories() {
               </div>
               <p className="text-[11px] font-medium text-gray-800">{c.name}</p>
               <p className="mt-1 text-[10px] text-gray-400">
-                307 {t('openPositions')}
+                307 {t('PopularCategories.openPositions')}
               </p>
             </div>
           ))}
