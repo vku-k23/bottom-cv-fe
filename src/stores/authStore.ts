@@ -129,6 +129,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           isAuthenticated: false,
           error: null,
         })
+        if (typeof window !== 'undefined') {
+          window.location.href = '/home'
+        }
       },
 
       refreshAuthToken: async () => {
@@ -174,6 +177,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
           // Setup automatic token refresh
           authService.setupTokenRefresh()
+        } else {
+          // If not authenticated, make sure to set the state
+          set({
+            isAuthenticated: false,
+            token: null,
+            refreshToken: null,
+          })
         }
       },
       fetchCurrentUser: async () => {

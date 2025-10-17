@@ -19,10 +19,10 @@ export class AuthService {
         credentials
       )
 
-      // Store tokens
       if (response.accessToken) {
         apiClient.setToken(response.accessToken)
         if (typeof window !== 'undefined') {
+          localStorage.setItem('access_token', response.accessToken)
           localStorage.setItem('refresh_token', response.refreshToken)
           localStorage.setItem(
             'token_expires_in',
@@ -73,7 +73,6 @@ export class AuthService {
         { refreshToken } as RefreshTokenRequest
       )
 
-      // Update stored tokens
       apiClient.setToken(response.accessToken)
       if (typeof window !== 'undefined') {
         localStorage.setItem('refresh_token', response.refreshToken)
@@ -82,7 +81,7 @@ export class AuthService {
       return response
     } catch (error) {
       console.error('Token refresh error:', error)
-      this.logout() // Clear invalid tokens
+      this.logout()
       throw error
     }
   }
@@ -99,23 +98,15 @@ export class AuthService {
     }
   }
 
-  /**
-   * Get current user profile (if needed)
-   */
   async getCurrentUser(): Promise<User> {
     try {
-      // Adjusted path to match new API_BASE_URL that already includes /api/v1
-      // Ensure backend exposes this endpoint accordingly
-      return await apiClient.get<User>(API_ENDPOINTS.user.profile)
+      return await apiClient.get<User>(API_ENDPOINTS.auth.me)
     } catch (error) {
       console.error('Get current user error:', error)
       throw error
     }
   }
 
-  /**
-   * Check if user is authenticated
-   */
   isAuthenticated(): boolean {
     if (typeof window === 'undefined') return false
 
@@ -124,34 +115,26 @@ export class AuthService {
 
     if (!token || !expiresIn) return false
 
-    // You might want to add token expiration check here
     return true
   }
 
-  /**
-   * Get stored access token
-   */
   getAccessToken(): string | null {
     if (typeof window === 'undefined') return null
     return localStorage.getItem('access_token')
   }
 
-  /**
-   * Set up automatic token refresh
-   */
   setupTokenRefresh(): void {
     if (typeof window === 'undefined') return
 
     const expiresIn = localStorage.getItem('token_expires_in')
     if (!expiresIn) return
 
-    // Refresh token 5 minutes before expiration
     const refreshTime = (parseInt(expiresIn) - 300) * 1000
 
     setTimeout(async () => {
       try {
         await this.refreshToken()
-        this.setupTokenRefresh() // Setup next refresh
+        this.setupTokenRefresh()
       } catch (error) {
         console.error('Auto token refresh failed:', error)
       }
@@ -159,5 +142,4 @@ export class AuthService {
   }
 }
 
-// Create singleton instance
 export const authService = new AuthService()

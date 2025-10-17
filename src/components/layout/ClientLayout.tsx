@@ -12,18 +12,26 @@ export default function ClientLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const hideLayout = pathname.startsWith('/auth')
+  const isAuthPage = pathname.startsWith('/auth')
 
   // Initialize authentication on app start
   useInitializeAuth()
 
   return (
     <div className="flex min-h-screen flex-col">
-      {!hideLayout && <Navbar />}
-      <main className={`flex-1 ${!hideLayout ? 'pt-16 lg:pt-[4.5rem]' : ''}`}>
-        {children}
+      <Navbar />
+      <main
+        className={`flex-1 pt-16 lg:pt-24 ${isAuthPage ? 'bg-gray-50' : ''}`}
+      >
+        {isAuthPage ? (
+          children
+        ) : (
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {children}
+          </div>
+        )}
       </main>
-      {!hideLayout && <Footer />}
+      {!isAuthPage && <Footer />}
       <Toaster
         position="top-right"
         toastOptions={{

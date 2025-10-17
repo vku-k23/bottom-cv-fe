@@ -33,10 +33,10 @@ export interface RefreshTokenResponse {
 export interface User {
   id: number
   username: string
-  email?: string
   userCode: string
   roles: Role[]
   profile?: Profile
+  status: string
   createdAt: string
   updatedAt: string
 }
