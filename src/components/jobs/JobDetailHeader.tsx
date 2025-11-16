@@ -137,3 +137,4 @@ export function JobDetailHeader({
     </div>
   )
 }
+

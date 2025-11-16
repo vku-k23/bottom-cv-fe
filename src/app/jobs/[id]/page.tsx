@@ -11,3 +11,4 @@ export default function JobDetail({
   const { id } = use(params)
   return <JobDetailPage jobId={id} />
 }
+

@@ -148,3 +148,4 @@ export function CompanyInfoCard({ info }: CompanyInfoCardProps) {
     </div>
   )
 }
+
