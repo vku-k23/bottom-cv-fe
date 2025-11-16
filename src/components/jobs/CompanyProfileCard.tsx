@@ -94,3 +94,4 @@ export function CompanyProfileCard({ company }: CompanyProfileCardProps) {
     </div>
   )
 }
+

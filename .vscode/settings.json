@@ -1,0 +1,22 @@
+{
+  "i18n-ally.localesPaths": [
+    "src/config/language",
+    "public/tinymce/plugins/help/js/i18n"
+  ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "editor.tabSize": 2,
+  "files.insertFinalNewline": true,
+  "i18n-ally.sourceLanguage": "ja",
+  "stylelint.validate": ["css", "scss"],
+  "scss.lint.unknownAtRules": "ignore",
+  "css.validate": false,
+  "scss.validate": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "i18n-ally.keystyle": "nested",
+  "explorer.compactFolders": false
+}
