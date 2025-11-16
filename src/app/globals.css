@@ -1,5 +1,6 @@
 /* Enhanced theming & accessibility */
 @import 'tailwindcss';
+@plugin "daisyui";
 
 @custom-variant dark (&:is(.dark *));
 

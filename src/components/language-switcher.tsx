@@ -8,11 +8,12 @@ import {
   SelectValue,
 } from '@/components/ui'
 import { useTranslation } from '@/hooks/useTranslation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export function LanguageSwitcher() {
-  const { changeLanguage, getCurrentLanguage } = useTranslation()
-  const [currentLang, setCurrentLang] = useState(getCurrentLanguage())
+  const { changeLanguage, language, isReady } = useTranslation()
+  const [mounted, setMounted] = useState(false)
+  const [currentLang, setCurrentLang] = useState('en') // Default to 'en' for SSR
 
   const languages = [
     {
@@ -27,6 +28,14 @@ export function LanguageSwitcher() {
     },
   ]
 
+  // Sync with i18n language after mount
+  useEffect(() => {
+    setMounted(true)
+    if (isReady && language) {
+      setCurrentLang(language)
+    }
+  }, [isReady, language])
+
   const handleLanguageChange = (lng: string) => {
     changeLanguage(lng)
     setCurrentLang(lng)
@@ -35,13 +44,24 @@ export function LanguageSwitcher() {
   const currentLanguage =
     languages.find((lang) => lang.code === currentLang) || languages[0]
 
+  // Show default during SSR to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <Select value="en" disabled>
+        <SelectTrigger className="w-[140px] min-w-0 border-none shadow-none">
+          <SelectValue suppressHydrationWarning>🇺🇸 English</SelectValue>
+        </SelectTrigger>
+      </Select>
+    )
+  }
+
   return (
     <Select
       value={currentLang}
       onValueChange={(value) => handleLanguageChange(value)}
     >
       <SelectTrigger className="w-[140px] min-w-0 border-none shadow-none">
-        <SelectValue>
+        <SelectValue suppressHydrationWarning>
           {currentLanguage.flag} {currentLanguage.name}
         </SelectValue>
       </SelectTrigger>

@@ -22,6 +22,9 @@ i18n
     resources,
     fallbackLng: 'en',
     debug: process.env.NODE_ENV === 'development',
+    react: {
+      useSuspense: false, // Disable suspense to avoid hydration issues
+    },
 
     interpolation: {
       escapeValue: false, // React already does escaping
@@ -30,6 +33,7 @@ i18n
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
     },
   })
 

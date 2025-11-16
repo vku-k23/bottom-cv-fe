@@ -13,9 +13,41 @@ export default function ClientLayout({
 }) {
   const pathname = usePathname()
   const isAuthPage = pathname.startsWith('/auth')
+  const isAdminPage = pathname.startsWith('/admin')
 
   // Initialize authentication on app start
   useInitializeAuth()
+
+  // Admin pages have their own layout - don't wrap with Navbar/Footer
+  if (isAdminPage) {
+    return (
+      <>
+        {children}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+            success: {
+              duration: 3000,
+              style: {
+                background: '#10b981',
+              },
+            },
+            error: {
+              duration: 5000,
+              style: {
+                background: '#ef4444',
+              },
+            },
+          }}
+        />
+      </>
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
