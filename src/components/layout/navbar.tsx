@@ -134,38 +134,62 @@ export function Navbar() {
         <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <ul className="flex items-center gap-4 font-medium">
             <li>
-              <Link href="/" className="hover:text-blue-600">
-                {t('Navbar.home')}
+              <Link
+                href="/"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.home') : 'Home'}
               </Link>
             </li>
             <li>
-              <Link href="/jobs" className="hover:text-blue-600">
-                {t('Navbar.findJob')}
+              <Link
+                href="/jobs"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.findJob') : 'Find Job'}
               </Link>
             </li>
             <li>
-              <Link href="/employers" className="hover:text-blue-600">
-                {t('Navbar.employers')}
+              <Link
+                href="/employers"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.employers') : 'Employers'}
               </Link>
             </li>
             <li>
-              <Link href="/candidates" className="hover:text-blue-600">
-                {t('Navbar.candidates')}
+              <Link
+                href="/candidates"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.candidates') : 'Candidates'}
               </Link>
             </li>
             <li>
-              <Link href="/pricing" className="hover:text-blue-600">
-                {t('Navbar.pricingPlans')}
+              <Link
+                href="/pricing"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.pricingPlans') : 'Pricing Plans'}
               </Link>
             </li>
             <li>
-              <Link href="/support" className="hover:text-blue-600">
-                {t('Navbar.customerSupports')}
+              <Link
+                href="/support"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.customerSupports') : 'Customer Supports'}
               </Link>
             </li>
           </ul>
-          <div className="flex items-center gap-4">
-            <span>{t('Navbar.phone')}</span>
+          <div className="flex items-center gap-4" suppressHydrationWarning>
+            <span>{mounted ? t('Navbar.phone') : '📞 +320 495 250'}</span>
             <LanguageSwitcher />
           </div>
         </div>
@@ -174,8 +198,12 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              {t('myJob')}
+            <Link
+              href="/"
+              className="text-2xl font-bold text-blue-600"
+              suppressHydrationWarning
+            >
+              {mounted ? t('Navbar.myJob') : 'MyJob'}
             </Link>
             <div className="hidden items-center gap-6 md:flex">
               {navigation.map((item) => {
@@ -209,14 +237,16 @@ export function Navbar() {
                   <Link
                     href="/auth/signin"
                     className="font-medium text-gray-600 hover:text-blue-600"
+                    suppressHydrationWarning
                   >
-                    {t('Navbar.signIn')}
+                    {mounted ? t('Navbar.signIn') : 'Sign In'}
                   </Link>
                   <Link
                     href="/post-job"
                     className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700"
+                    suppressHydrationWarning
                   >
-                    {t('Navbar.postJob')}
+                    {mounted ? t('Navbar.postJob') : 'Post a Job'}
                   </Link>
                 </div>
               )
@@ -266,14 +296,16 @@ export function Navbar() {
                     <Link
                       href="/auth/signin"
                       className="text-sm font-medium text-gray-600"
+                      suppressHydrationWarning
                     >
-                      {t('Navbar.signIn')}
+                      {mounted ? t('Navbar.signIn') : 'Sign In'}
                     </Link>
                     <Link
                       href="/post-job"
                       className="flex-1 rounded-md bg-blue-600 px-3 py-2 text-center text-xs font-medium text-white"
+                      suppressHydrationWarning
                     >
-                      {t('Navbar.postJob')}
+                      {mounted ? t('Navbar.postJob') : 'Post a Job'}
                     </Link>
                   </>
                 )}

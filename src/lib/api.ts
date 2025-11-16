@@ -81,24 +81,11 @@ export class ApiClient {
 
       // Handle different response types
       if (!response.ok) {
-        if (response.status === 401) {
-          // Token expired or invalid
-          this.setToken(null)
-          throw new Error('Authentication failed')
-        }
-
-        if (response.status === 403) {
-          // Access forbidden - redirect to 403 page
-          if (typeof window !== 'undefined') {
-            window.location.href = '/403'
-            return Promise.reject(new Error('Access forbidden'))
-          }
-          throw new Error('Access forbidden')
-        }
-
+        // Try to extract error message from response first
         let errorMessage = `HTTP Error: ${response.status}`
+        let errorData: unknown = null
         try {
-          const errorData: unknown = await response.json()
+          errorData = await response.json()
           if (typeof errorData === 'object' && errorData !== null) {
             const ed = errorData as Record<string, unknown>
             const candidates = [
@@ -115,6 +102,42 @@ export class ApiClient {
           }
         } catch {
           // ignore json parse error
+        }
+
+        // Check if this is an authentication-related error (401, 403, or 404 with user not found)
+        const isAuthError =
+          response.status === 401 ||
+          response.status === 403 ||
+          (response.status === 404 &&
+            typeof errorData === 'object' &&
+            errorData !== null &&
+            (errorData as Record<string, unknown>).errorMessage &&
+            typeof (errorData as Record<string, unknown>).errorMessage ===
+              'string' &&
+            ((errorData as Record<string, unknown>).errorMessage as string)
+              .toLowerCase()
+              .includes('username'))
+
+        if (isAuthError) {
+          // Authentication failed - clear token and use backend error message
+          this.setToken(null)
+          // If we got a specific error message from backend, use it; otherwise use generic
+          if (errorMessage === `HTTP Error: ${response.status}`) {
+            if (response.status === 403) {
+              errorMessage = 'Access forbidden'
+            } else {
+              errorMessage =
+                'Authentication failed. Please check your username and password.'
+            }
+          }
+
+          // For 403, redirect to 403 page
+          if (response.status === 403 && typeof window !== 'undefined') {
+            window.location.href = '/403'
+            return Promise.reject(new Error(errorMessage))
+          }
+
+          throw new Error(errorMessage)
         }
 
         const error = new Error(errorMessage)

@@ -35,6 +35,7 @@ export {
   SelectTrigger,
   SelectValue,
 } from './select'
+export { Switch } from './switch'
 export { Progress } from './progress'
 
 // Layout Components
