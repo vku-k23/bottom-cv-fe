@@ -5,4 +5,3 @@ export { DashboardLayout } from './DashboardLayout'
 export { DashboardSidebar } from './DashboardSidebar'
 export { ProfileSection } from './ProfileSection'
 export type { ApplicationData } from './ApplicationsTableRow'
-

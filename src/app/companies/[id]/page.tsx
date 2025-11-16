@@ -11,4 +11,3 @@ export default function CompanyDetail({
   const { id } = use(params)
   return <CompanyDetailPage companyId={id} />
 }
-

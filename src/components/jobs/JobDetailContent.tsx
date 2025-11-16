@@ -78,4 +78,3 @@ export function JobDetailContent({ content, onShare }: JobDetailContentProps) {
     </div>
   )
 }
-
