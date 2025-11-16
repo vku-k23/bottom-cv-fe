@@ -36,7 +36,9 @@ export function AdminHeader({ title, breadcrumbs }: AdminHeaderProps) {
     if (breadcrumbs) return breadcrumbs
 
     const paths = pathname.split('/').filter(Boolean)
-    const crumbs: Array<{ label: string; href?: string }> = [{ label: 'Dashboard', href: '/admin' }]
+    const crumbs: Array<{ label: string; href?: string }> = [
+      { label: 'Dashboard', href: '/admin' },
+    ]
 
     if (paths.length > 1) {
       const pageName = paths[1]
