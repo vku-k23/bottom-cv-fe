@@ -41,4 +41,3 @@ export function RelatedJobsSection({ jobs }: RelatedJobsSectionProps) {
     </div>
   )
 }
-
