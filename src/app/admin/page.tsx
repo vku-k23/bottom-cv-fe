@@ -29,9 +29,11 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import Image from 'next/image'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function AdminDashboard() {
   const router = useRouter()
+  const { t } = useTranslation()
 
   // Fetch real data from backend
   const { data: stats, isLoading: statsLoading } = useQuery({
@@ -82,7 +84,7 @@ export default function AdminDashboard() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-gray-600">Loading dashboard...</p>
+          <p className="mt-2 text-gray-600">{t('Admin.dashboard.loading')}</p>
         </div>
       </div>
     )
@@ -92,53 +94,53 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.dashboard.title')}</h1>
         <p className="mt-1 text-gray-600">
-          Welcome back! Here&apos;s what&apos;s happening with your platform.
+          {t('Admin.dashboard.welcome')}
         </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <AdminStatsCard
-          title="Total Users"
+          title={t('Admin.dashboard.totalUsers')}
           value={stats?.totalUsers.toLocaleString() || '0'}
           icon={Users}
           color="blue"
-          description={`${stats?.newUsersThisMonth || 0} new this month`}
+          description={`${stats?.newUsersThisMonth || 0} ${t('Admin.dashboard.newThisMonth')}`}
           trend={{
             value: stats?.userGrowthRate || 0,
-            label: 'from last month',
+            label: t('Admin.dashboard.fromLastMonth'),
             positive: (stats?.userGrowthRate || 0) >= 0,
           }}
         />
         <AdminStatsCard
-          title="Companies"
+          title={t('Admin.dashboard.companies')}
           value={stats?.totalCompanies.toLocaleString() || '0'}
           icon={Building}
           color="green"
-          description={`${stats?.totalEmployers || 0} employers`}
+          description={`${stats?.totalEmployers || 0} ${t('Admin.dashboard.employers')}`}
         />
         <AdminStatsCard
-          title="Active Jobs"
+          title={t('Admin.dashboard.activeJobs')}
           value={stats?.activeJobs.toLocaleString() || '0'}
           icon={Briefcase}
           color="purple"
-          description={`${stats?.pendingJobs || 0} pending approval`}
+          description={`${stats?.pendingJobs || 0} ${t('Admin.dashboard.pendingApproval')}`}
           trend={{
             value: stats?.jobGrowthRate || 0,
-            label: 'from last month',
+            label: t('Admin.dashboard.fromLastMonth'),
             positive: (stats?.jobGrowthRate || 0) >= 0,
           }}
         />
         <AdminStatsCard
-          title="Applications"
+          title={t('Admin.dashboard.applications')}
           value={stats?.totalApplications.toLocaleString() || '0'}
           icon={FileText}
           color="yellow"
           trend={{
             value: stats?.applicationGrowthRate || 0,
-            label: 'from last month',
+            label: t('Admin.dashboard.fromLastMonth'),
             positive: (stats?.applicationGrowthRate || 0) >= 0,
           }}
         />
@@ -149,7 +151,7 @@ export default function AdminDashboard() {
         {/* User Growth Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>User Growth (Last 30 Days)</CardTitle>
+            <CardTitle>{t('Admin.dashboard.userGrowth')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -172,7 +174,7 @@ export default function AdminDashboard() {
         {/* Job Trend Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Job Postings Trend (Last 30 Days)</CardTitle>
+            <CardTitle>{t('Admin.dashboard.jobPostingsTrend')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -197,9 +199,9 @@ export default function AdminDashboard() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Recent Activities</CardTitle>
+            <CardTitle>{t('Admin.dashboard.recentActivities')}</CardTitle>
             <Button variant="ghost" size="sm">
-              View All
+              {t('Admin.dashboard.viewAll')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -207,7 +209,7 @@ export default function AdminDashboard() {
         <CardContent>
           {activitiesLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">Loading activities...</p>
+              <p className="text-sm text-gray-500">{t('Admin.dashboard.loadingActivities')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -266,13 +268,13 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent Companies</CardTitle>
+              <CardTitle>{t('Admin.dashboard.recentCompanies')}</CardTitle>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push('/admin/companies')}
               >
-                View All
+                {t('Admin.dashboard.viewAll')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -320,14 +322,14 @@ export default function AdminDashboard() {
                       {company.verified === true ||
                       (typeof company.verified === 'number' &&
                         company.verified === 1)
-                        ? 'Verified'
-                        : 'Pending'}
+                        ? t('Admin.dashboard.verified')
+                        : t('Admin.dashboard.pending')}
                     </Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">No companies yet</p>
+              <p className="text-sm text-gray-500">{t('Admin.dashboard.noCompaniesYet')}</p>
             )}
           </CardContent>
         </Card>
@@ -336,13 +338,13 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent Jobs</CardTitle>
+              <CardTitle>{t('Admin.dashboard.recentJobs')}</CardTitle>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push('/admin/jobs')}
               >
-                View All
+                {t('Admin.dashboard.viewAll')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -419,7 +421,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">No jobs yet</p>
+              <p className="text-sm text-gray-500">{t('Admin.dashboard.noJobsYet')}</p>
             )}
           </CardContent>
         </Card>
@@ -428,7 +430,7 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle>{t('Admin.dashboard.quickActions')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
@@ -438,7 +440,7 @@ export default function AdminDashboard() {
               onClick={() => router.push('/admin/users')}
             >
               <Users className="mb-2 h-6 w-6" />
-              <span>Manage Users</span>
+              <span>{t('Admin.dashboard.manageUsers')}</span>
             </Button>
             <Button
               variant="outline"
@@ -446,7 +448,7 @@ export default function AdminDashboard() {
               onClick={() => router.push('/admin/moderation')}
             >
               <Briefcase className="mb-2 h-6 w-6" />
-              <span>Job Moderation</span>
+              <span>{t('Admin.dashboard.jobModerationAction')}</span>
             </Button>
             <Button
               variant="outline"
@@ -454,7 +456,7 @@ export default function AdminDashboard() {
               onClick={() => router.push('/admin/companies')}
             >
               <Building className="mb-2 h-6 w-6" />
-              <span>Companies</span>
+              <span>{t('Admin.dashboard.companies')}</span>
             </Button>
             <Button
               variant="outline"
@@ -462,7 +464,7 @@ export default function AdminDashboard() {
               onClick={() => router.push('/admin/reports')}
             >
               <AlertCircle className="mb-2 h-6 w-6" />
-              <span>Reports</span>
+              <span>{t('Admin.sidebar.reports')}</span>
             </Button>
           </div>
         </CardContent>

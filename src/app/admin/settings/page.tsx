@@ -14,9 +14,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import toast from 'react-hot-toast'
 import { Save, RotateCcw } from 'lucide-react'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function SettingsPage() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   // Fetch system config
   const { data: config, isLoading } = useQuery({
@@ -59,11 +61,11 @@ export default function SettingsPage() {
     mutationFn: (data: SystemConfigRequest) =>
       systemConfigService.updateSystemConfig(data),
     onSuccess: () => {
-      toast.success('Settings updated successfully')
+      toast.success(t('Admin.settings.settingsSaved'))
       queryClient.invalidateQueries({ queryKey: ['system-config'] })
     },
     onError: () => {
-      toast.error('Failed to update settings')
+      toast.error(t('Admin.settings.settingsError'))
     },
   })
 
@@ -94,7 +96,7 @@ export default function SettingsPage() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-gray-600">Loading settings...</p>
+          <p className="mt-2 text-gray-600">{t('Admin.settings.loadingSettings')}</p>
         </div>
       </div>
     )
@@ -104,9 +106,9 @@ export default function SettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.settings.title')}</h1>
         <p className="mt-1 text-gray-600">
-          Configure system-wide settings and preferences
+          {t('Admin.settings.description')}
         </p>
       </div>
 
@@ -114,12 +116,12 @@ export default function SettingsPage() {
         {/* General Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>General Settings</CardTitle>
+            <CardTitle>{t('Admin.settings.general')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="siteName">Site Name *</Label>
+                <Label htmlFor="siteName">{t('Admin.settings.siteName')} *</Label>
                 <Input
                   id="siteName"
                   value={formData.siteName}
@@ -130,7 +132,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="contactEmail">Contact Email</Label>
+                <Label htmlFor="contactEmail">{t('Admin.settings.contactEmail')}</Label>
                 <Input
                   id="contactEmail"
                   type="email"
@@ -143,7 +145,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="siteDescription">Site Description</Label>
+              <Label htmlFor="siteDescription">{t('Admin.settings.siteDescription')}</Label>
               <Textarea
                 id="siteDescription"
                 value={formData.siteDescription}
@@ -156,7 +158,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="contactPhone">Contact Phone</Label>
+                <Label htmlFor="contactPhone">{t('Admin.settings.contactPhone')}</Label>
                 <Input
                   id="contactPhone"
                   value={formData.contactPhone}
@@ -166,7 +168,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="logoUrl">Logo URL</Label>
+                <Label htmlFor="logoUrl">{t('Admin.settings.logoUrl')}</Label>
                 <Input
                   id="logoUrl"
                   value={formData.logoUrl}
@@ -182,12 +184,12 @@ export default function SettingsPage() {
         {/* Security Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Security Settings</CardTitle>
+            <CardTitle>{t('Admin.settings.security')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="passwordMinLength">Min Password Length</Label>
+                <Label htmlFor="passwordMinLength">{t('Admin.settings.passwordMinLength')}</Label>
                 <Input
                   id="passwordMinLength"
                   type="number"
@@ -204,7 +206,7 @@ export default function SettingsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="sessionTimeout">
-                  Session Timeout (minutes)
+                  {t('Admin.settings.sessionTimeout')}
                 </Label>
                 <Input
                   id="sessionTimeout"
@@ -221,7 +223,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="maxLoginAttempts">Max Login Attempts</Label>
+                <Label htmlFor="maxLoginAttempts">{t('Admin.settings.maxLoginAttempts')}</Label>
                 <Input
                   id="maxLoginAttempts"
                   type="number"
@@ -243,14 +245,14 @@ export default function SettingsPage() {
         {/* Maintenance Mode */}
         <Card>
           <CardHeader>
-            <CardTitle>Maintenance Mode</CardTitle>
+            <CardTitle>{t('Admin.settings.maintenanceMode')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Enable Maintenance Mode</Label>
+                <Label>{t('Admin.settings.enableMaintenanceMode')}</Label>
                 <p className="text-sm text-gray-500">
-                  Users will see a maintenance page
+                  {t('Admin.settings.maintenanceDescription')}
                 </p>
               </div>
               <Switch
@@ -263,7 +265,7 @@ export default function SettingsPage() {
 
             {formData.maintenanceMode && (
               <div className="space-y-2">
-                <Label htmlFor="maintenanceMessage">Maintenance Message</Label>
+                <Label htmlFor="maintenanceMessage">{t('Admin.settings.maintenanceMessage')}</Label>
                 <Textarea
                   id="maintenanceMessage"
                   value={formData.maintenanceMessage}
@@ -274,7 +276,7 @@ export default function SettingsPage() {
                     })
                   }
                   rows={3}
-                  placeholder="We're currently performing maintenance. Please check back soon."
+                  placeholder={t('Admin.settings.maintenancePlaceholder')}
                 />
               </div>
             )}
@@ -285,11 +287,11 @@ export default function SettingsPage() {
         <div className="flex justify-end space-x-4">
           <Button type="button" variant="outline" onClick={handleReset}>
             <RotateCcw className="mr-2 h-4 w-4" />
-            Reset
+            {t('Admin.settings.reset')}
           </Button>
           <Button type="submit" disabled={updateMutation.isPending}>
             <Save className="mr-2 h-4 w-4" />
-            {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+            {updateMutation.isPending ? t('Admin.settings.saving') : t('Admin.settings.saveSettings')}
           </Button>
         </div>
       </form>

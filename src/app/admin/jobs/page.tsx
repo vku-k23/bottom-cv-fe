@@ -12,10 +12,12 @@ import { DataTable, Column } from '@/components/admin/shared/DataTable'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { ConfirmDialog } from '@/components/admin/shared/ConfirmDialog'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function JobsPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
   const [search, setSearch] = useState('')
@@ -44,17 +46,27 @@ export default function JobsPage() {
   const totalPages = data?.totalPages || 0
   const totalElements = data?.totalElements || 0
 
+  // Helper function to translate status
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'ACTIVE': return t('Admin.jobs.active')
+      case 'PENDING': return t('Admin.jobs.pending')
+      case 'INACTIVE': return t('Admin.jobs.inactive')
+      default: return status
+    }
+  }
+
   // Mutations
   const deleteMutation = useMutation({
     mutationFn: (id: number) => jobService.deleteJob(id),
     onSuccess: () => {
-      toast.success('Job deleted successfully')
+      toast.success(t('Admin.jobs.jobDeletedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-jobs'] })
       setDeleteDialogOpen(false)
       setSelectedJob(null)
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete job')
+      toast.error(error.message || t('Admin.jobs.jobDeletedError'))
     },
   })
 
@@ -72,40 +84,40 @@ export default function JobsPage() {
   const filters: Record<string, FilterConfig> = {
     search: {
       type: 'search',
-      placeholder: 'Search jobs...',
+      placeholder: t('Admin.jobs.searchPlaceholder'),
       value: search,
       onChange: setSearch,
     },
     jobType: {
       type: 'select',
-      placeholder: 'All Types',
+      placeholder: t('Admin.jobs.allTypes'),
       value: jobType,
       onChange: setJobType,
       options: [
-        { label: 'All Types', value: '' },
-        { label: 'Full Time', value: 'FULL_TIME' },
-        { label: 'Part Time', value: 'PART_TIME' },
-        { label: 'Contract', value: 'CONTRACT' },
-        { label: 'Internship', value: 'INTERNSHIP' },
-        { label: 'Remote', value: 'REMOTE' },
+        { label: t('Admin.jobs.allTypes'), value: '' },
+        { label: t('Admin.jobs.fullTime'), value: 'FULL_TIME' },
+        { label: t('Admin.jobs.partTime'), value: 'PART_TIME' },
+        { label: t('Admin.jobs.contract'), value: 'CONTRACT' },
+        { label: t('Admin.jobs.internship'), value: 'INTERNSHIP' },
+        { label: t('Admin.jobs.remote'), value: 'REMOTE' },
       ],
     },
     location: {
       type: 'search',
-      placeholder: 'Location...',
+      placeholder: t('Admin.jobs.locationPlaceholder'),
       value: location,
       onChange: setLocation,
     },
     status: {
       type: 'select',
-      placeholder: 'All Status',
+      placeholder: t('Admin.jobs.allStatus'),
       value: status,
       onChange: setStatus,
       options: [
-        { label: 'All Status', value: '' },
-        { label: 'Active', value: 'ACTIVE' },
-        { label: 'Pending', value: 'PENDING' },
-        { label: 'Inactive', value: 'INACTIVE' },
+        { label: t('Admin.jobs.allStatus'), value: '' },
+        { label: t('Admin.jobs.active'), value: 'ACTIVE' },
+        { label: t('Admin.jobs.pending'), value: 'PENDING' },
+        { label: t('Admin.jobs.inactive'), value: 'INACTIVE' },
       ],
     },
   }
@@ -134,7 +146,7 @@ export default function JobsPage() {
   const columns: Column<Job>[] = [
     {
       key: 'title',
-      header: 'Job Title',
+      header: t('Admin.jobs.jobTitle'),
       render: (job: Job) => (
         <div>
           <p className="font-medium text-gray-900">{job.title}</p>
@@ -146,7 +158,7 @@ export default function JobsPage() {
     },
     {
       key: 'type',
-      header: 'Type',
+      header: t('Admin.jobs.type'),
       render: (job: Job) => {
         const jobTypeStr =
           typeof job.jobType === 'string'
@@ -164,14 +176,14 @@ export default function JobsPage() {
     },
     {
       key: 'location',
-      header: 'Location',
+      header: t('Admin.jobs.location'),
       render: (job: Job) => (
         <span className="text-sm text-gray-600">{job.location || 'N/A'}</span>
       ),
     },
     {
       key: 'salary',
-      header: 'Salary',
+      header: t('Admin.jobs.salary'),
       render: (job: Job) => (
         <span className="text-sm font-medium text-gray-900">
           {job.salary ? `$${job.salary.toLocaleString()}` : 'N/A'}
@@ -180,7 +192,7 @@ export default function JobsPage() {
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('Admin.jobs.status'),
       render: (job: Job) => {
         const statusStr =
           typeof job.status === 'string'
@@ -189,12 +201,12 @@ export default function JobsPage() {
                 ?.displayName ||
               (job.status as { displayName?: string; name?: string })?.name ||
               'N/A'
-        return <Badge variant={getStatusColor(statusStr)}>{statusStr}</Badge>
+        return <Badge variant={getStatusColor(statusStr)}>{getStatusLabel(statusStr)}</Badge>
       },
     },
     {
       key: 'applications',
-      header: 'Applications',
+      header: t('Admin.jobs.applications'),
       render: (job: Job) => (
         <span className="text-sm text-gray-600">
           {job.applicationCount || 0}
@@ -203,21 +215,21 @@ export default function JobsPage() {
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('Admin.jobs.actions'),
       render: (job: Job) => (
         <div className="flex space-x-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => router.push(`/admin/jobs/${job.id}`)}
-            title="View"
+            title={t('Admin.common.view')}
           >
             <Eye className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            title="Edit"
+            title={t('Admin.jobs.edit')}
             onClick={() => router.push(`/admin/jobs/${job.id}/edit`)}
           >
             <Edit className="h-4 w-4" />
@@ -225,7 +237,7 @@ export default function JobsPage() {
           <Button
             variant="ghost"
             size="sm"
-            title="Delete"
+            title={t('Admin.jobs.delete')}
             onClick={() => handleDelete(job)}
             disabled={deleteMutation.isPending}
           >
@@ -240,12 +252,12 @@ export default function JobsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Job Management</h1>
-          <p className="mt-1 text-gray-600">Manage and moderate job postings</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('Admin.jobs.title')}</h1>
+          <p className="mt-1 text-gray-600">{t('Admin.jobs.description')}</p>
         </div>
         <Button onClick={() => router.push('/admin/jobs/new')}>
           <Plus className="mr-2 h-4 w-4" />
-          Add Job
+          {t('Admin.jobs.addJob')}
         </Button>
       </div>
 
@@ -254,30 +266,30 @@ export default function JobsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Jobs ({totalElements})</CardTitle>
+            <CardTitle>{t('Admin.sidebar.jobs')} ({totalElements})</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">Loading jobs...</p>
+              <p className="text-sm text-gray-500">{t('Admin.jobs.loadingJobs')}</p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">Error loading jobs</p>
+              <p className="text-sm text-red-500">{t('Admin.jobs.errorLoadingJobs')}</p>
             </div>
           ) : jobs.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">No jobs found</p>
+              <p className="text-sm text-gray-500">{t('Admin.jobs.noJobsFound')}</p>
             </div>
           ) : (
             <>
               <DataTable columns={columns} data={jobs} />
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
-                  Showing {page * pageSize + 1} to{' '}
-                  {Math.min((page + 1) * pageSize, totalElements)} of{' '}
-                  {totalElements} jobs
+                  {t('Admin.common.showing')} {page * pageSize + 1} {t('Admin.common.to')}{' '}
+                  {Math.min((page + 1) * pageSize, totalElements)} {t('Admin.common.of')}{' '}
+                  {totalElements} {t('Admin.sidebar.jobs').toLowerCase()}
                 </p>
                 <div className="flex space-x-2">
                   <Button
@@ -286,7 +298,7 @@ export default function JobsPage() {
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
                     disabled={page === 0}
                   >
-                    Previous
+                    {t('Admin.common.previous')}
                   </Button>
                   <Button
                     variant="outline"
@@ -296,7 +308,7 @@ export default function JobsPage() {
                     }
                     disabled={page >= totalPages - 1}
                   >
-                    Next
+                    {t('Admin.common.next')}
                   </Button>
                 </div>
               </div>
@@ -309,10 +321,10 @@ export default function JobsPage() {
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Job"
-        description={`Are you sure you want to delete "${selectedJob?.title}"? This action cannot be undone.`}
+        title={t('Admin.jobs.deleteJob')}
+        description={t('Admin.jobs.deleteJobConfirm')}
         onConfirm={confirmDelete}
-        confirmText="Delete"
+        confirmText={t('Admin.jobs.delete')}
         variant="destructive"
       />
     </div>

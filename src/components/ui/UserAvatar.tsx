@@ -77,6 +77,15 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, onLogout }) => {
               {user.username || profileLike?.firstName || profileLike?.lastName}
             </p>
           </div>
+          {user.roles?.some((role) => role.name === 'ADMIN') && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Dashboard
+            </Link>
+          )}
           <Link
             href="/profile"
             onClick={() => setOpen(false)}

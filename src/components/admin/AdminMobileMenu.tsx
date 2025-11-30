@@ -17,27 +17,29 @@ import {
   FolderTree,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface NavItem {
-  title: string
+  titleKey: string
   href: string
   icon: React.ComponentType<{ className?: string }>
 }
 
 const navItems: NavItem[] = [
-  { title: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { title: 'Users', href: '/admin/users', icon: Users },
-  { title: 'Job Moderation', href: '/admin/moderation', icon: Briefcase },
-  { title: 'Companies', href: '/admin/companies', icon: Building },
-  { title: 'Reports', href: '/admin/reports', icon: Flag },
-  { title: 'Categories', href: '/admin/categories', icon: FolderTree },
-  { title: 'Payments', href: '/admin/payments', icon: CreditCard },
-  { title: 'Settings', href: '/admin/settings', icon: Settings },
+  { titleKey: 'Admin.sidebar.dashboard', href: '/admin', icon: LayoutDashboard },
+  { titleKey: 'Admin.sidebar.users', href: '/admin/users', icon: Users },
+  { titleKey: 'Admin.sidebar.jobModeration', href: '/admin/moderation', icon: Briefcase },
+  { titleKey: 'Admin.sidebar.companies', href: '/admin/companies', icon: Building },
+  { titleKey: 'Admin.sidebar.reports', href: '/admin/reports', icon: Flag },
+  { titleKey: 'Admin.sidebar.categories', href: '/admin/categories', icon: FolderTree },
+  { titleKey: 'Admin.sidebar.payments', href: '/admin/payments', icon: CreditCard },
+  { titleKey: 'Admin.sidebar.settings', href: '/admin/settings', icon: Settings },
 ]
 
 export function AdminMobileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const { t } = useTranslation()
 
   return (
     <>
@@ -98,7 +100,7 @@ export function AdminMobileMenu() {
                       )}
                     >
                       <Icon className="h-5 w-5" />
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </Link>
                   )
                 })}

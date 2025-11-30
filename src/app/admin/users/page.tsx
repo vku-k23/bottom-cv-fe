@@ -16,10 +16,12 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Edit, Shield, Ban, Check } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function UsersManagementPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [filters, setFilters] = useState<UserFilterParams>({
     page: 0,
     size: 10,
@@ -48,11 +50,11 @@ export default function UsersManagementPage() {
   const activateMutation = useMutation({
     mutationFn: (userId: number) => userManagementService.activateUser(userId),
     onSuccess: () => {
-      toast.success('User activated successfully')
+      toast.success(t('Admin.users.userActivatedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
     },
     onError: () => {
-      toast.error('Failed to activate user')
+      toast.error(t('Admin.users.userActivatedError'))
     },
   })
 
@@ -62,39 +64,58 @@ export default function UsersManagementPage() {
         status: status as 'ACTIVE' | 'PENDING' | 'BANNED',
       }),
     onSuccess: () => {
-      toast.success('User status updated successfully')
+      toast.success(t('Admin.users.userStatusUpdatedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
     },
     onError: () => {
-      toast.error('Failed to update user status')
+      toast.error(t('Admin.users.userStatusUpdatedError'))
     },
   })
 
   const resetPasswordMutation = useMutation({
     mutationFn: (userId: number) => userManagementService.resetPassword(userId),
     onSuccess: () => {
-      toast.success(
-        'Password reset successfully. New password sent to user via email.'
-      )
+      toast.success(t('Admin.users.passwordResetSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
     },
     onError: () => {
-      toast.error('Failed to reset password')
+      toast.error(t('Admin.users.passwordResetError'))
     },
   })
+
+  // Helper function to translate status
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'ACTIVE': return t('Admin.users.active')
+      case 'PENDING': return t('Admin.users.pending')
+      case 'BANNED': return t('Admin.users.banned')
+      case 'INACTIVE': return t('Admin.users.inactive')
+      default: return status
+    }
+  }
+
+  // Helper function to translate role
+  const getRoleLabel = (roleName: string) => {
+    switch (roleName) {
+      case 'ADMIN': return t('Admin.users.admin')
+      case 'EMPLOYER': return t('Admin.users.employer')
+      case 'CANDIDATE': return t('Admin.users.candidate')
+      default: return roleName
+    }
+  }
 
   // Table columns
   const columns: Column<User>[] = [
     {
       key: 'userCode',
-      header: 'User Code',
+      header: t('Admin.users.userCode'),
       render: (user) => (
         <span className="font-mono text-xs">{user.userCode}</span>
       ),
     },
     {
       key: 'username',
-      header: 'Username',
+      header: t('Admin.users.username'),
       render: (user) => (
         <div>
           <p className="font-medium">{user.username}</p>
@@ -104,7 +125,7 @@ export default function UsersManagementPage() {
     },
     {
       key: 'profile',
-      header: 'Name',
+      header: t('Admin.users.name'),
       render: (user) => (
         <span>
           {user.profile?.firstName} {user.profile?.lastName}
@@ -113,7 +134,7 @@ export default function UsersManagementPage() {
     },
     {
       key: 'roles',
-      header: 'Roles',
+      header: t('Admin.users.roles'),
       render: (user) => (
         <div className="flex flex-wrap gap-1">
           {user.roles.map((role) => (
@@ -127,7 +148,7 @@ export default function UsersManagementPage() {
                     : 'outline'
               }
             >
-              {role.name}
+              {getRoleLabel(role.name)}
             </Badge>
           ))}
         </div>
@@ -135,7 +156,7 @@ export default function UsersManagementPage() {
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('Admin.users.status'),
       render: (user) => (
         <Badge
           variant={
@@ -146,20 +167,20 @@ export default function UsersManagementPage() {
                 : 'destructive'
           }
         >
-          {user.status}
+          {getStatusLabel(user.status)}
         </Badge>
       ),
     },
     {
       key: 'createdAt',
-      header: 'Created At',
+      header: t('Admin.users.createdAt'),
       render: (user) => (
         <span className="text-sm text-gray-500">{user.createdAt}</span>
       ),
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('Admin.users.actions'),
       render: (user) => (
         <div className="flex items-center space-x-2">
           <Button variant="ghost" size="sm" onClick={() => handleEdit(user.id)}>
@@ -202,8 +223,8 @@ export default function UsersManagementPage() {
   const handleActivate = (userId: number) => {
     setConfirmDialog({
       open: true,
-      title: 'Activate User',
-      description: 'Are you sure you want to activate this user?',
+      title: t('Admin.users.activateUser'),
+      description: t('Admin.users.activateUserConfirm'),
       onConfirm: async () => {
         await activateMutation.mutateAsync(userId)
       },
@@ -213,9 +234,8 @@ export default function UsersManagementPage() {
   const handleBan = (userId: number) => {
     setConfirmDialog({
       open: true,
-      title: 'Ban User',
-      description:
-        'Are you sure you want to ban this user? They will no longer be able to access the system.',
+      title: t('Admin.users.banUser'),
+      description: t('Admin.users.banUserConfirm'),
       variant: 'destructive',
       onConfirm: async () => {
         await updateStatusMutation.mutateAsync({ userId, status: 'BANNED' })
@@ -226,9 +246,8 @@ export default function UsersManagementPage() {
   const handleResetPassword = (userId: number) => {
     setConfirmDialog({
       open: true,
-      title: 'Reset Password',
-      description:
-        'A new password will be generated and sent to the user via email.',
+      title: t('Admin.users.resetPassword'),
+      description: t('Admin.users.resetPasswordConfirm'),
       onConfirm: async () => {
         await resetPasswordMutation.mutateAsync(userId)
       },
@@ -239,9 +258,9 @@ export default function UsersManagementPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.users.title')}</h1>
         <p className="mt-1 text-gray-600">
-          Manage all users, roles, and permissions
+          {t('Admin.users.description')}
         </p>
       </div>
 
@@ -250,20 +269,20 @@ export default function UsersManagementPage() {
         filters={{
           search: {
             type: 'search',
-            placeholder: 'Search by username, email, or name...',
+            placeholder: t('Admin.users.searchPlaceholder'),
             value: filters.search,
             onChange: (value) =>
               setFilters({ ...filters, search: value, page: 0 }),
           },
           role: {
             type: 'select',
-            placeholder: 'All Roles',
+            placeholder: t('Admin.users.allRoles'),
             value: filters.role,
             options: [
-              { label: 'All Roles', value: '' },
-              { label: 'Admin', value: 'ADMIN' },
-              { label: 'Employer', value: 'EMPLOYER' },
-              { label: 'Candidate', value: 'CANDIDATE' },
+              { label: t('Admin.users.allRoles'), value: '' },
+              { label: t('Admin.users.admin'), value: 'ADMIN' },
+              { label: t('Admin.users.employer'), value: 'EMPLOYER' },
+              { label: t('Admin.users.candidate'), value: 'CANDIDATE' },
             ],
             onChange: (value) => {
               setFilters({
@@ -277,13 +296,13 @@ export default function UsersManagementPage() {
           },
           status: {
             type: 'select',
-            placeholder: 'All Status',
+            placeholder: t('Admin.users.allStatus'),
             value: filters.status,
             options: [
-              { label: 'All Status', value: '' },
-              { label: 'Active', value: 'ACTIVE' },
-              { label: 'Pending', value: 'PENDING' },
-              { label: 'Banned', value: 'BANNED' },
+              { label: t('Admin.users.allStatus'), value: '' },
+              { label: t('Admin.users.active'), value: 'ACTIVE' },
+              { label: t('Admin.users.pending'), value: 'PENDING' },
+              { label: t('Admin.users.banned'), value: 'BANNED' },
             ],
             onChange: (value) => {
               setFilters({
@@ -317,7 +336,7 @@ export default function UsersManagementPage() {
               }
             : undefined
         }
-        emptyMessage="No users found"
+        emptyMessage={t('Admin.users.noUsersFound')}
       />
 
       {/* Bulk Actions */}
@@ -325,12 +344,12 @@ export default function UsersManagementPage() {
         selectedCount={selectedUsers.length}
         actions={[
           {
-            label: 'Activate Selected',
+            label: t('Admin.users.activateSelected'),
             onClick: () => console.log('Bulk activate', selectedUsers),
             icon: <Check className="mr-1 h-4 w-4" />,
           },
           {
-            label: 'Ban Selected',
+            label: t('Admin.users.banSelected'),
             onClick: () => console.log('Bulk ban', selectedUsers),
             variant: 'destructive',
             icon: <Ban className="mr-1 h-4 w-4" />,

@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { usePathname } from 'next/navigation'
 import { AdminMobileMenu } from './AdminMobileMenu'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 interface AdminHeaderProps {
   title?: string
@@ -108,6 +109,11 @@ export function AdminHeader({ title, breadcrumbs }: AdminHeaderProps) {
           >
             <Search className="h-5 w-5 text-gray-600" />
           </button>
+
+          {/* Language Switcher */}
+          <div className="hidden md:block">
+            <LanguageSwitcher />
+          </div>
 
           {/* Notifications */}
           <button
