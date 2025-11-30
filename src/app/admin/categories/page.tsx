@@ -10,10 +10,12 @@ import { DataTable, Column } from '@/components/admin/shared/DataTable'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { ConfirmDialog } from '@/components/admin/shared/ConfirmDialog'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function CategoriesPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -35,13 +37,13 @@ export default function CategoriesPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: number) => categoryService.deleteCategory(id),
     onSuccess: () => {
-      toast.success('Category deleted successfully')
+      toast.success(t('Admin.categories.categoryDeletedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-categories'] })
       setDeleteDialogOpen(false)
       setSelectedCategory(null)
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete category')
+      toast.error(error.message || t('Admin.categories.categoryDeletedError'))
     },
   })
 
@@ -63,7 +65,7 @@ export default function CategoriesPage() {
   const columns: Column<Category>[] = [
     {
       key: 'name',
-      header: 'Name',
+      header: t('Admin.categories.name'),
       render: (category: Category) => (
         <div>
           <p className="font-medium text-gray-900">{category.name}</p>
@@ -73,16 +75,16 @@ export default function CategoriesPage() {
     },
     {
       key: 'description',
-      header: 'Description',
+      header: t('Admin.categories.descriptionLabel'),
       render: (category: Category) => (
         <p className="max-w-md truncate text-sm text-gray-600">
-          {category.description || 'No description'}
+          {category.description || t('Admin.categories.noDescription')}
         </p>
       ),
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('Admin.categories.actions'),
       render: (category: Category) => (
         <div className="flex space-x-2">
           <Button
@@ -116,43 +118,43 @@ export default function CategoriesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Category Management
+            {t('Admin.categories.title')}
           </h1>
-          <p className="mt-1 text-gray-600">Manage job categories</p>
+          <p className="mt-1 text-gray-600">{t('Admin.categories.description')}</p>
         </div>
         <Button onClick={() => router.push('/admin/categories/new')}>
           <Plus className="mr-2 h-4 w-4" />
-          Add Category
+          {t('Admin.categories.addCategory')}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Categories ({totalElements})</CardTitle>
+            <CardTitle>{t('Admin.categories.categories')} ({totalElements})</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">Loading categories...</p>
+              <p className="text-sm text-gray-500">{t('Admin.categories.loadingCategories')}</p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">Error loading categories</p>
+              <p className="text-sm text-red-500">{t('Admin.categories.errorLoadingCategories')}</p>
             </div>
           ) : categories.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">No categories found</p>
+              <p className="text-sm text-gray-500">{t('Admin.categories.noCategoriesFound')}</p>
             </div>
           ) : (
             <>
               <DataTable columns={columns} data={categories} />
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
-                  Showing {page * pageSize + 1} to{' '}
-                  {Math.min((page + 1) * pageSize, totalElements)} of{' '}
-                  {totalElements} categories
+                  {t('Admin.common.showing')} {page * pageSize + 1} {t('Admin.common.to')}{' '}
+                  {Math.min((page + 1) * pageSize, totalElements)} {t('Admin.common.of')}{' '}
+                  {totalElements} {t('Admin.common.results')}
                 </p>
                 <div className="flex space-x-2">
                   <Button
@@ -161,7 +163,7 @@ export default function CategoriesPage() {
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
                     disabled={page === 0}
                   >
-                    Previous
+                    {t('Admin.common.previous')}
                   </Button>
                   <Button
                     variant="outline"
@@ -171,7 +173,7 @@ export default function CategoriesPage() {
                     }
                     disabled={page >= totalPages - 1}
                   >
-                    Next
+                    {t('Admin.common.next')}
                   </Button>
                 </div>
               </div>
@@ -183,10 +185,10 @@ export default function CategoriesPage() {
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Category"
-        description={`Are you sure you want to delete "${selectedCategory?.name}"? This action cannot be undone.`}
+        title={t('Admin.categories.deleteCategory')}
+        description={t('Admin.categories.deleteCategoryConfirm').replace('{name}', selectedCategory?.name || '')}
         onConfirm={confirmDelete}
-        confirmText="Delete"
+        confirmText={t('Admin.common.delete')}
         variant="destructive"
       />
     </div>

@@ -14,10 +14,12 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { ConfirmDialog } from '@/components/admin/shared/ConfirmDialog'
 import Image from 'next/image'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function CompaniesPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
   const [search, setSearch] = useState('')
@@ -53,13 +55,13 @@ export default function CompaniesPage() {
         notes: 'Verified by admin',
       }),
     onSuccess: () => {
-      toast.success('Company verified successfully')
+      toast.success(t('Admin.companies.companyVerifiedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
       setVerifyDialogOpen(false)
       setSelectedCompany(null)
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to verify company')
+      toast.error(error.message || t('Admin.companies.companyVerifiedError'))
     },
   })
 
@@ -67,26 +69,26 @@ export default function CompaniesPage() {
     mutationFn: ({ id, notes }: { id: number; notes: string }) =>
       companyVerificationService.rejectVerification(id, { notes }),
     onSuccess: () => {
-      toast.success('Company verification rejected')
+      toast.success(t('Admin.companies.companyRejectedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
       setRejectDialogOpen(false)
       setSelectedCompany(null)
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to reject verification')
+      toast.error(error.message || t('Admin.companies.companyRejectedError'))
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => companyService.deleteCompany(id),
     onSuccess: () => {
-      toast.success('Company deleted successfully')
+      toast.success(t('Admin.companies.companyDeletedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
       setDeleteDialogOpen(false)
       setSelectedCompany(null)
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete company')
+      toast.error(error.message || t('Admin.companies.companyDeletedError'))
     },
   })
 
@@ -113,7 +115,7 @@ export default function CompaniesPage() {
 
   const confirmReject = () => {
     if (selectedCompany) {
-      const notes = prompt('Please provide a reason for rejection:')
+      const notes = prompt(t('Admin.companies.provideRejectionReason'))
       if (notes) {
         rejectMutation.mutate({ id: selectedCompany.id, notes })
       }
@@ -129,37 +131,37 @@ export default function CompaniesPage() {
   const filters: Record<string, FilterConfig> = {
     search: {
       type: 'search',
-      placeholder: 'Search companies...',
+      placeholder: t('Admin.companies.searchPlaceholder'),
       value: search,
       onChange: setSearch,
     },
     industry: {
       type: 'select',
-      placeholder: 'All Industries',
+      placeholder: t('Admin.companies.allIndustries'),
       value: industry,
       onChange: setIndustry,
       options: [
-        { label: 'All Industries', value: '' },
-        { label: 'Technology', value: 'Technology' },
-        { label: 'Finance', value: 'Finance' },
-        { label: 'Healthcare', value: 'Healthcare' },
-        { label: 'Education', value: 'Education' },
-        { label: 'Retail', value: 'Retail' },
-        { label: 'Manufacturing', value: 'Manufacturing' },
+        { label: t('Admin.companies.allIndustries'), value: '' },
+        { label: t('Admin.companies.technology'), value: 'Technology' },
+        { label: t('Admin.companies.finance'), value: 'Finance' },
+        { label: t('Admin.companies.healthcare'), value: 'Healthcare' },
+        { label: t('Admin.companies.education'), value: 'Education' },
+        { label: t('Admin.companies.retail'), value: 'Retail' },
+        { label: t('Admin.companies.manufacturing'), value: 'Manufacturing' },
       ],
     },
     verified: {
       type: 'select',
-      placeholder: 'All Status',
+      placeholder: t('Admin.companies.allStatus'),
       value: verified === undefined ? '' : verified.toString(),
       onChange: (value) => {
         if (value === '') setVerified(undefined)
         else setVerified(value === 'true')
       },
       options: [
-        { label: 'All Status', value: '' },
-        { label: 'Verified', value: 'true' },
-        { label: 'Not Verified', value: 'false' },
+        { label: t('Admin.companies.allStatus'), value: '' },
+        { label: t('Admin.companies.verified'), value: 'true' },
+        { label: t('Admin.companies.notVerified'), value: 'false' },
       ],
     },
   }
@@ -174,7 +176,7 @@ export default function CompaniesPage() {
   const columns: Column<Company>[] = [
     {
       key: 'company',
-      header: 'Company',
+      header: t('Admin.companies.companyName'),
       render: (company: Company) => (
         <div className="flex items-center space-x-3">
           {company.logo ? (
@@ -199,7 +201,7 @@ export default function CompaniesPage() {
     },
     {
       key: 'contact',
-      header: 'Contact',
+      header: t('Admin.companies.contact'),
       render: (company: Company) => (
         <div className="text-sm">
           <p className="text-gray-900">{company.email || 'N/A'}</p>
@@ -209,14 +211,14 @@ export default function CompaniesPage() {
     },
     {
       key: 'size',
-      header: 'Size',
+      header: t('Admin.companies.size'),
       render: (company: Company) => (
         <span className="text-sm text-gray-600">{company.companySize}</span>
       ),
     },
     {
       key: 'jobs',
-      header: 'Jobs',
+      header: t('Admin.companies.jobs'),
       render: (company: Company) => (
         <span className="text-sm font-medium text-gray-900">
           {company.jobCount || company.jobs?.length || 0}
@@ -225,21 +227,21 @@ export default function CompaniesPage() {
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('Admin.companies.status'),
       render: (company: Company) => {
         const isVerified =
           company.verified === true ||
           (typeof company.verified === 'number' && company.verified === 1)
         return (
           <Badge variant={isVerified ? 'default' : 'secondary'}>
-            {isVerified ? 'Verified' : 'Pending'}
+            {isVerified ? t('Admin.companies.verified') : t('Admin.companies.pending')}
           </Badge>
         )
       },
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('Admin.companies.actions'),
       render: (company: Company) => (
         <div className="flex space-x-2">
           <Button
@@ -301,15 +303,15 @@ export default function CompaniesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Company Management
+            {t('Admin.companies.title')}
           </h1>
           <p className="mt-1 text-gray-600">
-            Manage and verify company profiles
+            {t('Admin.companies.description')}
           </p>
         </div>
         <Button onClick={() => router.push('/admin/companies/new')}>
           <Plus className="mr-2 h-4 w-4" />
-          Add Company
+          {t('Admin.companies.addCompany')}
         </Button>
       </div>
 
@@ -318,30 +320,30 @@ export default function CompaniesPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Companies ({totalElements})</CardTitle>
+            <CardTitle>{t('Admin.sidebar.companies')} ({totalElements})</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">Loading companies...</p>
+              <p className="text-sm text-gray-500">{t('Admin.companies.loadingCompanies')}</p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">Error loading companies</p>
+              <p className="text-sm text-red-500">{t('Admin.companies.errorLoadingCompanies')}</p>
             </div>
           ) : companies.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">No companies found</p>
+              <p className="text-sm text-gray-500">{t('Admin.companies.noCompaniesFound')}</p>
             </div>
           ) : (
             <>
               <DataTable columns={columns} data={companies} />
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
-                  Showing {page * pageSize + 1} to{' '}
-                  {Math.min((page + 1) * pageSize, totalElements)} of{' '}
-                  {totalElements} companies
+                  {t('Admin.common.showing')} {page * pageSize + 1} {t('Admin.common.to')}{' '}
+                  {Math.min((page + 1) * pageSize, totalElements)} {t('Admin.common.of')}{' '}
+                  {totalElements} {t('Admin.sidebar.companies').toLowerCase()}
                 </p>
                 <div className="flex space-x-2">
                   <Button
@@ -350,7 +352,7 @@ export default function CompaniesPage() {
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
                     disabled={page === 0}
                   >
-                    Previous
+                    {t('Admin.common.previous')}
                   </Button>
                   <Button
                     variant="outline"
@@ -360,7 +362,7 @@ export default function CompaniesPage() {
                     }
                     disabled={page >= totalPages - 1}
                   >
-                    Next
+                    {t('Admin.common.next')}
                   </Button>
                 </div>
               </div>
@@ -373,10 +375,10 @@ export default function CompaniesPage() {
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Company"
-        description={`Are you sure you want to delete "${selectedCompany?.name}"? This action cannot be undone.`}
+        title={t('Admin.companies.deleteCompany')}
+        description={t('Admin.companies.deleteCompanyConfirm')}
         onConfirm={confirmDelete}
-        confirmText="Delete"
+        confirmText={t('Admin.companies.delete')}
         variant="destructive"
       />
 
@@ -384,10 +386,10 @@ export default function CompaniesPage() {
       <ConfirmDialog
         open={verifyDialogOpen}
         onOpenChange={setVerifyDialogOpen}
-        title="Verify Company"
-        description={`Are you sure you want to verify "${selectedCompany?.name}"?`}
+        title={t('Admin.companies.verifyCompany')}
+        description={t('Admin.companies.verifyCompanyConfirm')}
         onConfirm={confirmVerify}
-        confirmText="Verify"
+        confirmText={t('Admin.companies.verify')}
         variant="default"
       />
 
@@ -395,10 +397,10 @@ export default function CompaniesPage() {
       <ConfirmDialog
         open={rejectDialogOpen}
         onOpenChange={setRejectDialogOpen}
-        title="Reject Verification"
-        description={`Are you sure you want to reject verification for "${selectedCompany?.name}"?`}
+        title={t('Admin.companies.rejectVerification')}
+        description={t('Admin.companies.rejectVerificationConfirm')}
         onConfirm={confirmReject}
-        confirmText="Reject"
+        confirmText={t('Admin.jobs.reject')}
         variant="destructive"
       />
     </div>

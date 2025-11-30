@@ -129,7 +129,9 @@ export class AuthService {
     const expiresIn = localStorage.getItem('token_expires_in')
     if (!expiresIn) return
 
-    const refreshTime = (parseInt(expiresIn) - 300) * 1000
+    // expiresIn is already in milliseconds from backend
+    // Refresh 5 minutes (300000ms) before expiration
+    const refreshTime = Math.max(parseInt(expiresIn) - 300000, 60000) // minimum 1 minute
 
     setTimeout(async () => {
       try {

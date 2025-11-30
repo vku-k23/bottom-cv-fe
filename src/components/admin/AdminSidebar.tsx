@@ -14,9 +14,10 @@ import {
   FolderTree,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface NavItem {
-  title: string
+  titleKey: string
   href: string
   icon: React.ComponentType<{ className?: string }>
   badge?: number
@@ -24,47 +25,47 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
+    titleKey: 'Admin.sidebar.dashboard',
     href: '/admin',
     icon: LayoutDashboard,
   },
   {
-    title: 'Users',
+    titleKey: 'Admin.sidebar.users',
     href: '/admin/users',
     icon: Users,
   },
   {
-    title: 'Jobs',
+    titleKey: 'Admin.sidebar.jobs',
     href: '/admin/jobs',
     icon: Briefcase,
   },
   {
-    title: 'Job Moderation',
+    titleKey: 'Admin.sidebar.jobModeration',
     href: '/admin/moderation',
     icon: Briefcase,
   },
   {
-    title: 'Companies',
+    titleKey: 'Admin.sidebar.companies',
     href: '/admin/companies',
     icon: Building,
   },
   {
-    title: 'Reports',
+    titleKey: 'Admin.sidebar.reports',
     href: '/admin/reports',
     icon: Flag,
   },
   {
-    title: 'Categories',
+    titleKey: 'Admin.sidebar.categories',
     href: '/admin/categories',
     icon: FolderTree,
   },
   {
-    title: 'Payments',
+    titleKey: 'Admin.sidebar.payments',
     href: '/admin/payments',
     icon: CreditCard,
   },
   {
-    title: 'Settings',
+    titleKey: 'Admin.sidebar.settings',
     href: '/admin/settings',
     icon: Settings,
   },
@@ -72,6 +73,7 @@ const navItems: NavItem[] = [
 
 export function AdminSidebar() {
   const pathname = usePathname()
+  const { t } = useTranslation()
 
   return (
     <div className="flex h-full w-64 flex-col border-r bg-gray-50">
@@ -105,7 +107,7 @@ export function AdminSidebar() {
               )}
             >
               <Icon className="h-5 w-5" />
-              <span>{item.title}</span>
+              <span>{t(item.titleKey)}</span>
               {item.badge !== undefined && item.badge > 0 && (
                 <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">
                   {item.badge}
@@ -120,11 +122,11 @@ export function AdminSidebar() {
       <div className="border-t p-4">
         <div className="rounded-lg bg-blue-50 p-3">
           <p className="text-xs font-medium tracking-wide text-blue-900 uppercase">
-            System Status
+            {t('Admin.sidebar.systemStatus')}
           </p>
           <div className="mt-2 flex items-center space-x-2">
             <div className="h-2 w-2 rounded-full bg-green-500"></div>
-            <p className="text-sm text-blue-700">All systems operational</p>
+            <p className="text-sm text-blue-700">{t('Admin.sidebar.allSystemsOperational')}</p>
           </div>
         </div>
       </div>

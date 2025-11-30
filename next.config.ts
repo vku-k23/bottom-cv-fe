@@ -29,6 +29,14 @@ const nextConfig: NextConfig = {
         hostname: 'i.pravatar.cc',
       },
       {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.techinnovations.com',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
         port: '9000',

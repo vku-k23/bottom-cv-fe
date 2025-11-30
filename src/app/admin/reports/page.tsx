@@ -10,10 +10,12 @@ import { useState } from 'react'
 import { FilterBar, FilterConfig } from '@/components/admin/shared/FilterBar'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function ReportsPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
   const [resolved, setResolved] = useState<boolean | undefined>(undefined)
@@ -31,11 +33,11 @@ export default function ReportsPage() {
   const resolveMutation = useMutation({
     mutationFn: (id: number) => reportService.resolveReport(id),
     onSuccess: () => {
-      toast.success('Report resolved successfully')
+      toast.success(t('Admin.reports.resolveSuccess'))
       queryClient.invalidateQueries({ queryKey: ['admin-reports'] })
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to resolve report')
+      toast.error(error.message || t('Admin.reports.resolveError'))
     },
   })
 
@@ -46,7 +48,7 @@ export default function ReportsPage() {
   const filters: Record<string, FilterConfig> = {
     resolved: {
       type: 'select',
-      placeholder: 'All Status',
+      placeholder: t('Admin.reports.allStatus'),
       value: resolved === undefined ? '' : resolved.toString(),
       onChange: (value) => {
         if (value === '') setResolved(undefined)
@@ -54,9 +56,9 @@ export default function ReportsPage() {
         setPage(0)
       },
       options: [
-        { label: 'All Status', value: '' },
-        { label: 'Unresolved', value: 'false' },
-        { label: 'Resolved', value: 'true' },
+        { label: t('Admin.reports.allStatus'), value: '' },
+        { label: t('Admin.reports.unresolved'), value: 'false' },
+        { label: t('Admin.reports.resolved'), value: 'true' },
       ],
     },
   }
@@ -76,9 +78,9 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Report Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.reports.title')}</h1>
         <p className="mt-1 text-gray-600">
-          Review and resolve user-submitted reports
+          {t('Admin.reports.description')}
         </p>
       </div>
 
@@ -92,7 +94,7 @@ export default function ReportsPage() {
               <p className="text-3xl font-bold text-red-600">
                 {unresolvedCount}
               </p>
-              <p className="text-sm text-gray-600">Unresolved Reports</p>
+              <p className="text-sm text-gray-600">{t('Admin.reports.unresolvedReports')}</p>
             </div>
           </CardContent>
         </Card>
@@ -102,7 +104,7 @@ export default function ReportsPage() {
               <p className="text-3xl font-bold text-green-600">
                 {resolvedCount}
               </p>
-              <p className="text-sm text-gray-600">Resolved Reports</p>
+              <p className="text-sm text-gray-600">{t('Admin.reports.resolvedReports')}</p>
             </div>
           </CardContent>
         </Card>
@@ -110,7 +112,7 @@ export default function ReportsPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold">{totalElements}</p>
-              <p className="text-sm text-gray-600">Total Reports</p>
+              <p className="text-sm text-gray-600">{t('Admin.reports.totalReports')}</p>
             </div>
           </CardContent>
         </Card>
@@ -125,15 +127,15 @@ export default function ReportsPage() {
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">Loading reports...</p>
+              <p className="text-sm text-gray-500">{t('Admin.reports.loadingReports')}</p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">Error loading reports</p>
+              <p className="text-sm text-red-500">{t('Admin.reports.errorLoadingReports')}</p>
             </div>
           ) : reports.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">No reports found</p>
+              <p className="text-sm text-gray-500">{t('Admin.reports.noReportsFound')}</p>
             </div>
           ) : (
             <>
@@ -151,7 +153,7 @@ export default function ReportsPage() {
                               {report.resourceType} #{report.resourceId}
                             </CardTitle>
                             <div className="mt-1 flex items-center space-x-2 text-sm text-gray-500">
-                              <span>Reporter ID: {report.reporterId}</span>
+                              <span>{t('Admin.reports.reporterId')}: {report.reporterId}</span>
                               {report.createdAt && (
                                 <>
                                   <span>•</span>
@@ -172,14 +174,14 @@ export default function ReportsPage() {
                               report.resolved ? 'default' : 'destructive'
                             }
                           >
-                            {report.resolved ? 'Resolved' : 'Unresolved'}
+                            {report.resolved ? t('Admin.reports.resolved') : t('Admin.reports.unresolved')}
                           </Badge>
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <p className="mb-2 text-sm font-medium text-gray-900">
-                        Reason:
+                        {t('Admin.reports.reason')}:
                       </p>
                       <p className="mb-4 text-sm text-gray-700">
                         {report.reason}
@@ -187,7 +189,7 @@ export default function ReportsPage() {
                       {report.description && (
                         <>
                           <p className="mb-2 text-sm font-medium text-gray-900">
-                            Description:
+                            {t('Admin.reports.description')}:
                           </p>
                           <p className="mb-4 text-sm text-gray-700">
                             {report.description}
@@ -209,7 +211,7 @@ export default function ReportsPage() {
                           }}
                         >
                           <Eye className="mr-1 h-4 w-4" />
-                          View Resource
+                          {t('Admin.reports.viewResource')}
                         </Button>
                         {!report.resolved && (
                           <Button
@@ -218,7 +220,7 @@ export default function ReportsPage() {
                             disabled={resolveMutation.isPending}
                           >
                             <Check className="mr-1 h-4 w-4" />
-                            Resolve
+                            {t('Admin.reports.resolve')}
                           </Button>
                         )}
                       </div>
@@ -239,7 +241,7 @@ export default function ReportsPage() {
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
                     disabled={page === 0}
                   >
-                    Previous
+                    {t('Admin.common.previous')}
                   </Button>
                   <Button
                     variant="outline"
@@ -249,7 +251,7 @@ export default function ReportsPage() {
                     }
                     disabled={page >= totalPages - 1}
                   >
-                    Next
+                    {t('Admin.common.next')}
                   </Button>
                 </div>
               </div>

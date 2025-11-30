@@ -14,9 +14,11 @@ import { Button } from '@/components/ui/button'
 import { Check, X, Eye, Flag } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Card, CardContent } from '@/components/ui/card'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function JobModerationPage() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [page, setPage] = useState(0)
   const [selectedJobs, setSelectedJobs] = useState<string[]>([])
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -42,11 +44,11 @@ export default function JobModerationPage() {
   const approveMutation = useMutation({
     mutationFn: (jobId: number) => moderationService.approveJob(jobId),
     onSuccess: () => {
-      toast.success('Job approved successfully')
+      toast.success(t('Admin.moderation.jobApprovedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['moderation-queue'] })
     },
     onError: () => {
-      toast.error('Failed to approve job')
+      toast.error(t('Admin.moderation.jobApprovedError'))
     },
   })
 
@@ -54,11 +56,11 @@ export default function JobModerationPage() {
     mutationFn: ({ jobId, reason }: { jobId: number; reason: string }) =>
       moderationService.rejectJob(jobId, { reason }),
     onSuccess: () => {
-      toast.success('Job rejected successfully')
+      toast.success(t('Admin.moderation.jobRejectedSuccess'))
       queryClient.invalidateQueries({ queryKey: ['moderation-queue'] })
     },
     onError: () => {
-      toast.error('Failed to reject job')
+      toast.error(t('Admin.moderation.jobRejectedError'))
     },
   })
 
@@ -66,12 +68,12 @@ export default function JobModerationPage() {
     mutationFn: (jobIds: number[]) =>
       moderationService.bulkApproveJobs({ jobIds }),
     onSuccess: () => {
-      toast.success('Jobs approved successfully')
+      toast.success(t('Admin.moderation.jobApprovedSuccess'))
       setSelectedJobs([])
       queryClient.invalidateQueries({ queryKey: ['moderation-queue'] })
     },
     onError: () => {
-      toast.error('Failed to approve jobs')
+      toast.error(t('Admin.moderation.jobApprovedError'))
     },
   })
 
@@ -79,8 +81,8 @@ export default function JobModerationPage() {
   const handleApprove = (jobId: number) => {
     setConfirmDialog({
       open: true,
-      title: 'Approve Job',
-      description: 'This job will be published and visible to all users.',
+      title: t('Admin.moderation.approveJob'),
+      description: t('Admin.moderation.approveJobConfirm'),
       variant: 'default',
       onConfirm: async () => {
         await approveMutation.mutateAsync(jobId)
@@ -91,11 +93,11 @@ export default function JobModerationPage() {
   const handleReject = (jobId: number) => {
     setConfirmDialog({
       open: true,
-      title: 'Reject Job',
-      description: 'This job will be rejected. Please provide a reason.',
+      title: t('Admin.moderation.rejectJob'),
+      description: t('Admin.moderation.rejectJobConfirm'),
       variant: 'destructive',
       onConfirm: async () => {
-        const reason = prompt('Rejection reason:')
+        const reason = prompt(t('Admin.moderation.rejectionReason'))
         if (reason) {
           await rejectMutation.mutateAsync({ jobId, reason })
         }
@@ -107,12 +109,12 @@ export default function JobModerationPage() {
     mutationFn: ({ jobIds, reason }: { jobIds: number[]; reason: string }) =>
       moderationService.bulkRejectJobs({ jobIds, reason }),
     onSuccess: () => {
-      toast.success('Jobs rejected successfully')
+      toast.success(t('Admin.moderation.jobRejectedSuccess'))
       setSelectedJobs([])
       queryClient.invalidateQueries({ queryKey: ['moderation-queue'] })
     },
     onError: () => {
-      toast.error('Failed to reject jobs')
+      toast.error(t('Admin.moderation.jobRejectedError'))
     },
   })
 
@@ -123,14 +125,14 @@ export default function JobModerationPage() {
 
   const handleBulkReject = async () => {
     const jobIds = selectedJobs.map((id) => parseInt(id))
-    const reason = prompt('Please provide a reason for rejection:')
+    const reason = prompt(t('Admin.moderation.rejectionReason'))
     if (reason && reason.trim()) {
       await bulkRejectMutation.mutateAsync({ jobIds, reason: reason.trim() })
     } else if (reason === null) {
       // User cancelled
       return
     } else {
-      toast.error('Please provide a reason for rejection')
+      toast.error(t('Admin.moderation.provideRejectionReason'))
     }
   }
 
@@ -138,7 +140,7 @@ export default function JobModerationPage() {
   const columns: Column<ModerationQueueItem>[] = [
     {
       key: 'title',
-      header: 'Job Title',
+      header: t('Admin.moderation.jobTitle'),
       render: (item) => (
         <div>
           <p className="font-medium">{item.title}</p>
@@ -148,16 +150,16 @@ export default function JobModerationPage() {
     },
     {
       key: 'companyName',
-      header: 'Company',
+      header: t('Admin.moderation.company'),
     },
     {
       key: 'jobType',
-      header: 'Type',
+      header: t('Admin.moderation.type'),
       render: (item) => <Badge variant="outline">{item.jobType}</Badge>,
     },
     {
       key: 'salary',
-      header: 'Salary',
+      header: t('Admin.moderation.salary'),
       render: (item) => (
         <span className="font-medium">
           ${item.salary?.toLocaleString() || 'N/A'}
@@ -166,7 +168,7 @@ export default function JobModerationPage() {
     },
     {
       key: 'reportCount',
-      header: 'Reports',
+      header: t('Admin.moderation.reports'),
       render: (item) =>
         item.reportCount > 0 ? (
           <div className="flex items-center space-x-1 text-red-600">
@@ -179,14 +181,14 @@ export default function JobModerationPage() {
     },
     {
       key: 'submittedAt',
-      header: 'Submitted',
+      header: t('Admin.moderation.submitted'),
       render: (item) => (
         <span className="text-sm text-gray-500">{item.submittedAt}</span>
       ),
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('Admin.moderation.actions'),
       render: (item) => (
         <div className="flex items-center space-x-2">
           <Button
@@ -219,8 +221,8 @@ export default function JobModerationPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Job Moderation</h1>
-        <p className="mt-1 text-gray-600">Review and approve job postings</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.moderation.title')}</h1>
+        <p className="mt-1 text-gray-600">{t('Admin.moderation.description')}</p>
       </div>
 
       {/* Stats */}
@@ -229,7 +231,7 @@ export default function JobModerationPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold">{data?.totalElements || 0}</p>
-              <p className="text-sm text-gray-600">Pending Jobs</p>
+              <p className="text-sm text-gray-600">{t('Admin.moderation.pendingJobs')}</p>
             </div>
           </CardContent>
         </Card>
@@ -240,7 +242,7 @@ export default function JobModerationPage() {
                 {/* Approved count would come from API */}
                 N/A
               </p>
-              <p className="text-sm text-gray-600">Approved Today</p>
+              <p className="text-sm text-gray-600">{t('Admin.moderation.approvedToday')}</p>
             </div>
           </CardContent>
         </Card>
@@ -251,7 +253,7 @@ export default function JobModerationPage() {
                 {/* Rejected count would come from API */}
                 N/A
               </p>
-              <p className="text-sm text-gray-600">Rejected Today</p>
+              <p className="text-sm text-gray-600">{t('Admin.moderation.rejectedToday')}</p>
             </div>
           </CardContent>
         </Card>
@@ -275,7 +277,7 @@ export default function JobModerationPage() {
               }
             : undefined
         }
-        emptyMessage="No pending jobs for moderation"
+        emptyMessage={t('Admin.moderation.noJobsPending')}
       />
 
       {/* Bulk Actions */}
@@ -283,12 +285,12 @@ export default function JobModerationPage() {
         selectedCount={selectedJobs.length}
         actions={[
           {
-            label: 'Approve Selected',
+            label: t('Admin.moderation.approveSelected'),
             onClick: handleBulkApprove,
             icon: <Check className="mr-1 h-4 w-4" />,
           },
           {
-            label: 'Reject Selected',
+            label: t('Admin.moderation.rejectSelected'),
             onClick: handleBulkReject,
             variant: 'destructive',
             icon: <X className="mr-1 h-4 w-4" />,
