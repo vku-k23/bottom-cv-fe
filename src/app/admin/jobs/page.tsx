@@ -49,10 +49,14 @@ export default function JobsPage() {
   // Helper function to translate status
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return t('Admin.jobs.active')
-      case 'PENDING': return t('Admin.jobs.pending')
-      case 'INACTIVE': return t('Admin.jobs.inactive')
-      default: return status
+      case 'ACTIVE':
+        return t('Admin.jobs.active')
+      case 'PENDING':
+        return t('Admin.jobs.pending')
+      case 'INACTIVE':
+        return t('Admin.jobs.inactive')
+      default:
+        return status
     }
   }
 
@@ -201,7 +205,11 @@ export default function JobsPage() {
                 ?.displayName ||
               (job.status as { displayName?: string; name?: string })?.name ||
               'N/A'
-        return <Badge variant={getStatusColor(statusStr)}>{getStatusLabel(statusStr)}</Badge>
+        return (
+          <Badge variant={getStatusColor(statusStr)}>
+            {getStatusLabel(statusStr)}
+          </Badge>
+        )
       },
     },
     {
@@ -252,7 +260,9 @@ export default function JobsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('Admin.jobs.title')}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t('Admin.jobs.title')}
+          </h1>
           <p className="mt-1 text-gray-600">{t('Admin.jobs.description')}</p>
         </div>
         <Button onClick={() => router.push('/admin/jobs/new')}>
@@ -266,30 +276,40 @@ export default function JobsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>{t('Admin.sidebar.jobs')} ({totalElements})</CardTitle>
+            <CardTitle>
+              {t('Admin.sidebar.jobs')} ({totalElements})
+            </CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.jobs.loadingJobs')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.jobs.loadingJobs')}
+              </p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">{t('Admin.jobs.errorLoadingJobs')}</p>
+              <p className="text-sm text-red-500">
+                {t('Admin.jobs.errorLoadingJobs')}
+              </p>
             </div>
           ) : jobs.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.jobs.noJobsFound')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.jobs.noJobsFound')}
+              </p>
             </div>
           ) : (
             <>
               <DataTable columns={columns} data={jobs} />
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
-                  {t('Admin.common.showing')} {page * pageSize + 1} {t('Admin.common.to')}{' '}
-                  {Math.min((page + 1) * pageSize, totalElements)} {t('Admin.common.of')}{' '}
-                  {totalElements} {t('Admin.sidebar.jobs').toLowerCase()}
+                  {t('Admin.common.showing')} {page * pageSize + 1}{' '}
+                  {t('Admin.common.to')}{' '}
+                  {Math.min((page + 1) * pageSize, totalElements)}{' '}
+                  {t('Admin.common.of')} {totalElements}{' '}
+                  {t('Admin.sidebar.jobs').toLowerCase()}
                 </p>
                 <div className="flex space-x-2">
                   <Button

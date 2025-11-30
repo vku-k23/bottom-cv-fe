@@ -221,8 +221,12 @@ export default function JobModerationPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.moderation.title')}</h1>
-        <p className="mt-1 text-gray-600">{t('Admin.moderation.description')}</p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {t('Admin.moderation.title')}
+        </h1>
+        <p className="mt-1 text-gray-600">
+          {t('Admin.moderation.description')}
+        </p>
       </div>
 
       {/* Stats */}
@@ -231,7 +235,9 @@ export default function JobModerationPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold">{data?.totalElements || 0}</p>
-              <p className="text-sm text-gray-600">{t('Admin.moderation.pendingJobs')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.moderation.pendingJobs')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -242,7 +248,9 @@ export default function JobModerationPage() {
                 {/* Approved count would come from API */}
                 N/A
               </p>
-              <p className="text-sm text-gray-600">{t('Admin.moderation.approvedToday')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.moderation.approvedToday')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -253,7 +261,9 @@ export default function JobModerationPage() {
                 {/* Rejected count would come from API */}
                 N/A
               </p>
-              <p className="text-sm text-gray-600">{t('Admin.moderation.rejectedToday')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.moderation.rejectedToday')}
+              </p>
             </div>
           </CardContent>
         </Card>

@@ -78,10 +78,10 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.reports.title')}</h1>
-        <p className="mt-1 text-gray-600">
-          {t('Admin.reports.description')}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {t('Admin.reports.title')}
+        </h1>
+        <p className="mt-1 text-gray-600">{t('Admin.reports.description')}</p>
       </div>
 
       <FilterBar filters={filters} onReset={handleReset} />
@@ -94,7 +94,9 @@ export default function ReportsPage() {
               <p className="text-3xl font-bold text-red-600">
                 {unresolvedCount}
               </p>
-              <p className="text-sm text-gray-600">{t('Admin.reports.unresolvedReports')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.reports.unresolvedReports')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -104,7 +106,9 @@ export default function ReportsPage() {
               <p className="text-3xl font-bold text-green-600">
                 {resolvedCount}
               </p>
-              <p className="text-sm text-gray-600">{t('Admin.reports.resolvedReports')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.reports.resolvedReports')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -112,7 +116,9 @@ export default function ReportsPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold">{totalElements}</p>
-              <p className="text-sm text-gray-600">{t('Admin.reports.totalReports')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.reports.totalReports')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -127,15 +133,21 @@ export default function ReportsPage() {
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.reports.loadingReports')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.reports.loadingReports')}
+              </p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">{t('Admin.reports.errorLoadingReports')}</p>
+              <p className="text-sm text-red-500">
+                {t('Admin.reports.errorLoadingReports')}
+              </p>
             </div>
           ) : reports.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.reports.noReportsFound')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.reports.noReportsFound')}
+              </p>
             </div>
           ) : (
             <>
@@ -153,7 +165,10 @@ export default function ReportsPage() {
                               {report.resourceType} #{report.resourceId}
                             </CardTitle>
                             <div className="mt-1 flex items-center space-x-2 text-sm text-gray-500">
-                              <span>{t('Admin.reports.reporterId')}: {report.reporterId}</span>
+                              <span>
+                                {t('Admin.reports.reporterId')}:{' '}
+                                {report.reporterId}
+                              </span>
                               {report.createdAt && (
                                 <>
                                   <span>•</span>
@@ -174,7 +189,9 @@ export default function ReportsPage() {
                               report.resolved ? 'default' : 'destructive'
                             }
                           >
-                            {report.resolved ? t('Admin.reports.resolved') : t('Admin.reports.unresolved')}
+                            {report.resolved
+                              ? t('Admin.reports.resolved')
+                              : t('Admin.reports.unresolved')}
                           </Badge>
                         </div>
                       </div>

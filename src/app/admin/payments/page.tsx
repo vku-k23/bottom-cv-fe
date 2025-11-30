@@ -61,7 +61,9 @@ export default function PaymentsPage() {
           <p className="font-medium text-gray-900">
             {payment.transactionId || `#${payment.id}`}
           </p>
-          <p className="text-sm text-gray-500">{t('Admin.payments.userId')}: {payment.userId}</p>
+          <p className="text-sm text-gray-500">
+            {t('Admin.payments.userId')}: {payment.userId}
+          </p>
         </div>
       ),
     },
@@ -140,10 +142,10 @@ export default function PaymentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.payments.title')}</h1>
-        <p className="mt-1 text-gray-600">
-          {t('Admin.payments.description')}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {t('Admin.payments.title')}
+        </h1>
+        <p className="mt-1 text-gray-600">{t('Admin.payments.description')}</p>
       </div>
 
       {/* Stats */}
@@ -154,7 +156,9 @@ export default function PaymentsPage() {
               <p className="text-3xl font-bold text-green-600">
                 {formatAmount(totalRevenue)}
               </p>
-              <p className="text-sm text-gray-600">{t('Admin.payments.totalRevenue')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.payments.totalRevenue')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -164,7 +168,9 @@ export default function PaymentsPage() {
               <p className="text-3xl font-bold text-blue-600">
                 {completedPayments}
               </p>
-              <p className="text-sm text-gray-600">{t('Admin.payments.completedPayments')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.payments.completedPayments')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -174,7 +180,9 @@ export default function PaymentsPage() {
               <p className="text-3xl font-bold text-yellow-600">
                 {pendingPayments}
               </p>
-              <p className="text-sm text-gray-600">{t('Admin.payments.pendingPayments')}</p>
+              <p className="text-sm text-gray-600">
+                {t('Admin.payments.pendingPayments')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -183,30 +191,40 @@ export default function PaymentsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>{t('Admin.payments.paymentTransactions')} ({totalElements})</CardTitle>
+            <CardTitle>
+              {t('Admin.payments.paymentTransactions')} ({totalElements})
+            </CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.payments.loadingPayments')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.payments.loadingPayments')}
+              </p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">{t('Admin.payments.errorLoadingPayments')}</p>
+              <p className="text-sm text-red-500">
+                {t('Admin.payments.errorLoadingPayments')}
+              </p>
             </div>
           ) : payments.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.payments.noPaymentsFound')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.payments.noPaymentsFound')}
+              </p>
             </div>
           ) : (
             <>
               <DataTable columns={columns} data={payments} />
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
-                  {t('Admin.common.showing')} {page * pageSize + 1} {t('Admin.common.to')}{' '}
-                  {Math.min((page + 1) * pageSize, totalElements)} {t('Admin.common.of')}{' '}
-                  {totalElements} {t('Admin.common.results')}
+                  {t('Admin.common.showing')} {page * pageSize + 1}{' '}
+                  {t('Admin.common.to')}{' '}
+                  {Math.min((page + 1) * pageSize, totalElements)}{' '}
+                  {t('Admin.common.of')} {totalElements}{' '}
+                  {t('Admin.common.results')}
                 </p>
                 <div className="flex space-x-2">
                   <Button

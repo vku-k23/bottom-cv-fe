@@ -234,7 +234,9 @@ export default function CompaniesPage() {
           (typeof company.verified === 'number' && company.verified === 1)
         return (
           <Badge variant={isVerified ? 'default' : 'secondary'}>
-            {isVerified ? t('Admin.companies.verified') : t('Admin.companies.pending')}
+            {isVerified
+              ? t('Admin.companies.verified')
+              : t('Admin.companies.pending')}
           </Badge>
         )
       },
@@ -320,30 +322,40 @@ export default function CompaniesPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>{t('Admin.sidebar.companies')} ({totalElements})</CardTitle>
+            <CardTitle>
+              {t('Admin.sidebar.companies')} ({totalElements})
+            </CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.companies.loadingCompanies')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.companies.loadingCompanies')}
+              </p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">{t('Admin.companies.errorLoadingCompanies')}</p>
+              <p className="text-sm text-red-500">
+                {t('Admin.companies.errorLoadingCompanies')}
+              </p>
             </div>
           ) : companies.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.companies.noCompaniesFound')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.companies.noCompaniesFound')}
+              </p>
             </div>
           ) : (
             <>
               <DataTable columns={columns} data={companies} />
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
-                  {t('Admin.common.showing')} {page * pageSize + 1} {t('Admin.common.to')}{' '}
-                  {Math.min((page + 1) * pageSize, totalElements)} {t('Admin.common.of')}{' '}
-                  {totalElements} {t('Admin.sidebar.companies').toLowerCase()}
+                  {t('Admin.common.showing')} {page * pageSize + 1}{' '}
+                  {t('Admin.common.to')}{' '}
+                  {Math.min((page + 1) * pageSize, totalElements)}{' '}
+                  {t('Admin.common.of')} {totalElements}{' '}
+                  {t('Admin.sidebar.companies').toLowerCase()}
                 </p>
                 <div className="flex space-x-2">
                   <Button

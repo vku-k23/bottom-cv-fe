@@ -86,21 +86,30 @@ export default function UsersManagementPage() {
   // Helper function to translate status
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return t('Admin.users.active')
-      case 'PENDING': return t('Admin.users.pending')
-      case 'BANNED': return t('Admin.users.banned')
-      case 'INACTIVE': return t('Admin.users.inactive')
-      default: return status
+      case 'ACTIVE':
+        return t('Admin.users.active')
+      case 'PENDING':
+        return t('Admin.users.pending')
+      case 'BANNED':
+        return t('Admin.users.banned')
+      case 'INACTIVE':
+        return t('Admin.users.inactive')
+      default:
+        return status
     }
   }
 
   // Helper function to translate role
   const getRoleLabel = (roleName: string) => {
     switch (roleName) {
-      case 'ADMIN': return t('Admin.users.admin')
-      case 'EMPLOYER': return t('Admin.users.employer')
-      case 'CANDIDATE': return t('Admin.users.candidate')
-      default: return roleName
+      case 'ADMIN':
+        return t('Admin.users.admin')
+      case 'EMPLOYER':
+        return t('Admin.users.employer')
+      case 'CANDIDATE':
+        return t('Admin.users.candidate')
+      default:
+        return roleName
     }
   }
 
@@ -258,10 +267,10 @@ export default function UsersManagementPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.users.title')}</h1>
-        <p className="mt-1 text-gray-600">
-          {t('Admin.users.description')}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {t('Admin.users.title')}
+        </h1>
+        <p className="mt-1 text-gray-600">{t('Admin.users.description')}</p>
       </div>
 
       {/* Filters */}

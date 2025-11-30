@@ -94,10 +94,10 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.dashboard.title')}</h1>
-        <p className="mt-1 text-gray-600">
-          {t('Admin.dashboard.welcome')}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {t('Admin.dashboard.title')}
+        </h1>
+        <p className="mt-1 text-gray-600">{t('Admin.dashboard.welcome')}</p>
       </div>
 
       {/* Stats Cards */}
@@ -209,7 +209,9 @@ export default function AdminDashboard() {
         <CardContent>
           {activitiesLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.dashboard.loadingActivities')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.dashboard.loadingActivities')}
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -329,7 +331,9 @@ export default function AdminDashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">{t('Admin.dashboard.noCompaniesYet')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.dashboard.noCompaniesYet')}
+              </p>
             )}
           </CardContent>
         </Card>
@@ -421,7 +425,9 @@ export default function AdminDashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">{t('Admin.dashboard.noJobsYet')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.dashboard.noJobsYet')}
+              </p>
             )}
           </CardContent>
         </Card>
