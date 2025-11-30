@@ -120,7 +120,9 @@ export default function CategoriesPage() {
           <h1 className="text-3xl font-bold text-gray-900">
             {t('Admin.categories.title')}
           </h1>
-          <p className="mt-1 text-gray-600">{t('Admin.categories.description')}</p>
+          <p className="mt-1 text-gray-600">
+            {t('Admin.categories.description')}
+          </p>
         </div>
         <Button onClick={() => router.push('/admin/categories/new')}>
           <Plus className="mr-2 h-4 w-4" />
@@ -131,30 +133,40 @@ export default function CategoriesPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>{t('Admin.categories.categories')} ({totalElements})</CardTitle>
+            <CardTitle>
+              {t('Admin.categories.categories')} ({totalElements})
+            </CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.categories.loadingCategories')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.categories.loadingCategories')}
+              </p>
             </div>
           ) : error ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-red-500">{t('Admin.categories.errorLoadingCategories')}</p>
+              <p className="text-sm text-red-500">
+                {t('Admin.categories.errorLoadingCategories')}
+              </p>
             </div>
           ) : categories.length === 0 ? (
             <div className="flex h-32 items-center justify-center">
-              <p className="text-sm text-gray-500">{t('Admin.categories.noCategoriesFound')}</p>
+              <p className="text-sm text-gray-500">
+                {t('Admin.categories.noCategoriesFound')}
+              </p>
             </div>
           ) : (
             <>
               <DataTable columns={columns} data={categories} />
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
-                  {t('Admin.common.showing')} {page * pageSize + 1} {t('Admin.common.to')}{' '}
-                  {Math.min((page + 1) * pageSize, totalElements)} {t('Admin.common.of')}{' '}
-                  {totalElements} {t('Admin.common.results')}
+                  {t('Admin.common.showing')} {page * pageSize + 1}{' '}
+                  {t('Admin.common.to')}{' '}
+                  {Math.min((page + 1) * pageSize, totalElements)}{' '}
+                  {t('Admin.common.of')} {totalElements}{' '}
+                  {t('Admin.common.results')}
                 </p>
                 <div className="flex space-x-2">
                   <Button
@@ -186,7 +198,10 @@ export default function CategoriesPage() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         title={t('Admin.categories.deleteCategory')}
-        description={t('Admin.categories.deleteCategoryConfirm').replace('{name}', selectedCategory?.name || '')}
+        description={t('Admin.categories.deleteCategoryConfirm').replace(
+          '{name}',
+          selectedCategory?.name || ''
+        )}
         onConfirm={confirmDelete}
         confirmText={t('Admin.common.delete')}
         variant="destructive"

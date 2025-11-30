@@ -96,7 +96,9 @@ export default function SettingsPage() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-gray-600">{t('Admin.settings.loadingSettings')}</p>
+          <p className="mt-2 text-gray-600">
+            {t('Admin.settings.loadingSettings')}
+          </p>
         </div>
       </div>
     )
@@ -106,10 +108,10 @@ export default function SettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('Admin.settings.title')}</h1>
-        <p className="mt-1 text-gray-600">
-          {t('Admin.settings.description')}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {t('Admin.settings.title')}
+        </h1>
+        <p className="mt-1 text-gray-600">{t('Admin.settings.description')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -121,7 +123,9 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="siteName">{t('Admin.settings.siteName')} *</Label>
+                <Label htmlFor="siteName">
+                  {t('Admin.settings.siteName')} *
+                </Label>
                 <Input
                   id="siteName"
                   value={formData.siteName}
@@ -132,7 +136,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="contactEmail">{t('Admin.settings.contactEmail')}</Label>
+                <Label htmlFor="contactEmail">
+                  {t('Admin.settings.contactEmail')}
+                </Label>
                 <Input
                   id="contactEmail"
                   type="email"
@@ -145,7 +151,9 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="siteDescription">{t('Admin.settings.siteDescription')}</Label>
+              <Label htmlFor="siteDescription">
+                {t('Admin.settings.siteDescription')}
+              </Label>
               <Textarea
                 id="siteDescription"
                 value={formData.siteDescription}
@@ -158,7 +166,9 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="contactPhone">{t('Admin.settings.contactPhone')}</Label>
+                <Label htmlFor="contactPhone">
+                  {t('Admin.settings.contactPhone')}
+                </Label>
                 <Input
                   id="contactPhone"
                   value={formData.contactPhone}
@@ -189,7 +199,9 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="passwordMinLength">{t('Admin.settings.passwordMinLength')}</Label>
+                <Label htmlFor="passwordMinLength">
+                  {t('Admin.settings.passwordMinLength')}
+                </Label>
                 <Input
                   id="passwordMinLength"
                   type="number"
@@ -223,7 +235,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="maxLoginAttempts">{t('Admin.settings.maxLoginAttempts')}</Label>
+                <Label htmlFor="maxLoginAttempts">
+                  {t('Admin.settings.maxLoginAttempts')}
+                </Label>
                 <Input
                   id="maxLoginAttempts"
                   type="number"
@@ -265,7 +279,9 @@ export default function SettingsPage() {
 
             {formData.maintenanceMode && (
               <div className="space-y-2">
-                <Label htmlFor="maintenanceMessage">{t('Admin.settings.maintenanceMessage')}</Label>
+                <Label htmlFor="maintenanceMessage">
+                  {t('Admin.settings.maintenanceMessage')}
+                </Label>
                 <Textarea
                   id="maintenanceMessage"
                   value={formData.maintenanceMessage}
@@ -291,7 +307,9 @@ export default function SettingsPage() {
           </Button>
           <Button type="submit" disabled={updateMutation.isPending}>
             <Save className="mr-2 h-4 w-4" />
-            {updateMutation.isPending ? t('Admin.settings.saving') : t('Admin.settings.saveSettings')}
+            {updateMutation.isPending
+              ? t('Admin.settings.saving')
+              : t('Admin.settings.saveSettings')}
           </Button>
         </div>
       </form>

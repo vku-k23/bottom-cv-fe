@@ -26,14 +26,38 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { titleKey: 'Admin.sidebar.dashboard', href: '/admin', icon: LayoutDashboard },
+  {
+    titleKey: 'Admin.sidebar.dashboard',
+    href: '/admin',
+    icon: LayoutDashboard,
+  },
   { titleKey: 'Admin.sidebar.users', href: '/admin/users', icon: Users },
-  { titleKey: 'Admin.sidebar.jobModeration', href: '/admin/moderation', icon: Briefcase },
-  { titleKey: 'Admin.sidebar.companies', href: '/admin/companies', icon: Building },
+  {
+    titleKey: 'Admin.sidebar.jobModeration',
+    href: '/admin/moderation',
+    icon: Briefcase,
+  },
+  {
+    titleKey: 'Admin.sidebar.companies',
+    href: '/admin/companies',
+    icon: Building,
+  },
   { titleKey: 'Admin.sidebar.reports', href: '/admin/reports', icon: Flag },
-  { titleKey: 'Admin.sidebar.categories', href: '/admin/categories', icon: FolderTree },
-  { titleKey: 'Admin.sidebar.payments', href: '/admin/payments', icon: CreditCard },
-  { titleKey: 'Admin.sidebar.settings', href: '/admin/settings', icon: Settings },
+  {
+    titleKey: 'Admin.sidebar.categories',
+    href: '/admin/categories',
+    icon: FolderTree,
+  },
+  {
+    titleKey: 'Admin.sidebar.payments',
+    href: '/admin/payments',
+    icon: CreditCard,
+  },
+  {
+    titleKey: 'Admin.sidebar.settings',
+    href: '/admin/settings',
+    icon: Settings,
+  },
 ]
 
 export function AdminMobileMenu() {
