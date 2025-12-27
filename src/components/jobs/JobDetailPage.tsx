@@ -121,6 +121,8 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
           src={job?.header.companyBanner || ''}
           alt="Company banner"
           className="h-full w-full object-cover"
+          width={1920}
+          height={1080}
         />
       </div>
 
