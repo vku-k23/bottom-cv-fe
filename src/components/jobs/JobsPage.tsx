@@ -1,136 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from '@/hooks/useTranslation'
 import { Breadcrumb } from './Breadcrumb'
 import { JobSearchSection, SearchFilters } from './JobSearchSection'
 import { FilterBar } from './FilterBar'
 import { JobCard, JobCardProps } from './JobCard'
 import { Pagination } from './Pagination'
-
-// Mock data - Replace with real API calls
-const MOCK_JOBS: JobCardProps[] = [
-  {
-    id: '1',
-    title: 'Marketing Officer',
-    company: 'Reddit',
-    companyLogo: undefined,
-    location: 'United Kingdom of Great Britain',
-    jobType: 'Full Time',
-    salary: '$30K-$35K',
-    featured: true,
-  },
-  {
-    id: '2',
-    title: 'UI/UX Designer',
-    company: 'Figma',
-    companyLogo: undefined,
-    location: 'Canada',
-    jobType: 'Full Time',
-    salary: '$50K-$70K',
-    featured: true,
-  },
-  {
-    id: '3',
-    title: 'Product Designer',
-    company: 'Microsoft',
-    companyLogo: undefined,
-    location: 'Australia',
-    jobType: 'Full Time',
-    salary: '$40K-$50K',
-    featured: false,
-  },
-  {
-    id: '4',
-    title: 'Front End Developer',
-    company: 'Instagram',
-    companyLogo: undefined,
-    location: 'Australia',
-    jobType: 'Contract Base',
-    salary: '$50K-$80K',
-    featured: true,
-  },
-  {
-    id: '5',
-    title: 'Junior Graphic Designer',
-    company: 'Dribbble',
-    companyLogo: undefined,
-    location: 'United States',
-    jobType: 'Temporary',
-    salary: '$35K-$40K',
-    featured: false,
-  },
-  {
-    id: '6',
-    title: 'Technical Support Specialist',
-    company: 'Upwork',
-    companyLogo: undefined,
-    location: 'France',
-    jobType: 'Full Time',
-    salary: '$35K-$40K',
-    featured: false,
-  },
-  {
-    id: '7',
-    title: 'Software Engineer',
-    company: 'Facebook',
-    companyLogo: undefined,
-    location: 'United Kingdom of Great Britain',
-    jobType: 'Part Time',
-    salary: '$15K-$20K',
-    featured: false,
-  },
-  {
-    id: '8',
-    title: 'Senior UX Designer',
-    company: 'Twitter',
-    companyLogo: undefined,
-    location: 'Canada',
-    jobType: 'Internship',
-    salary: '$50K-$60K',
-    featured: false,
-  },
-  {
-    id: '9',
-    title: 'Networking Engineer',
-    company: 'Slack',
-    companyLogo: undefined,
-    location: 'Germany',
-    jobType: 'Remote',
-    salary: '$50K-$90K',
-    featured: false,
-  },
-  {
-    id: '10',
-    title: 'Visual Designer',
-    company: 'Freepik',
-    companyLogo: undefined,
-    location: 'China',
-    jobType: 'Full Time',
-    salary: '$10K-$15K',
-    featured: true,
-  },
-  {
-    id: '11',
-    title: 'Interaction Designer',
-    company: 'Youtube',
-    companyLogo: undefined,
-    location: 'Germany',
-    jobType: 'Full Time',
-    salary: '$20K-$25K',
-    featured: false,
-  },
-  {
-    id: '12',
-    title: 'Senior UX Designer',
-    company: 'Dribbble',
-    companyLogo: undefined,
-    location: 'California',
-    jobType: 'Full-Time',
-    salary: '$50k-80k/month',
-    featured: true,
-  },
-]
+import { apiClient, API_ENDPOINTS, JobResponse, ListResponse } from '@/lib/api'
 
 export function JobsPage() {
   const { t } = useTranslation()
@@ -138,19 +15,54 @@ export function JobsPage() {
   const [sortBy, setSortBy] = useState('latest')
   const [perPage, setPerPage] = useState(12)
   const [viewType, setViewType] = useState<'grid' | 'list'>('grid')
-  const [activeFilters, setActiveFilters] = useState<string[]>([
-    'Design',
-    'New York',
-  ])
+  const [activeFilters, setActiveFilters] = useState<string[]>([])
 
-  const totalPages = Math.ceil(MOCK_JOBS.length / perPage)
-  const startIndex = (currentPage - 1) * perPage
-  const endIndex = startIndex + perPage
-  const currentJobs = MOCK_JOBS.slice(startIndex, endIndex)
+  // API State
+  const [jobs, setJobs] = useState<JobCardProps[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalElements, setTotalElements] = useState(0)
+
+  // Fetch jobs
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const response = await apiClient.get<ListResponse<JobResponse>>(
+          `${API_ENDPOINTS.jobs.list}?page=${currentPage - 1}&size=${perPage}`
+        )
+
+        // Map backend response to JobCardProps
+        const mappedJobs: JobCardProps[] = (response.data || []).map((job) => ({
+          id: job.id.toString(),
+          title: job.title,
+          company: job.company.name,
+          companyLogo: job.company.logo,
+          location: job.location, // or job.company.addresses? using simplified location for now
+          jobType: job.jobType.replace('_', ' '), // e.g. FULL_TIME -> FULL TIME
+          salary: job.salary ? `$${job.salary}` : 'Negotiable',
+          featured: false, // Backend doesn't support featured jobs yet
+        }))
+
+        setJobs(mappedJobs)
+        setTotalPages(response.totalPages)
+        setTotalElements(response.totalElements)
+      } catch (err) {
+        console.error('Failed to fetch jobs:', err)
+        setError('Failed to load jobs. Please try again later.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchJobs()
+  }, [currentPage, perPage, sortBy])
 
   const handleSearch = (filters: SearchFilters) => {
     console.log('Search filters:', filters)
-    // TODO: Implement search functionality
+    // TODO: Connect search filters to API params
   }
 
   const handleRemoveFilter = (filter: string) => {
@@ -196,22 +108,44 @@ export function JobsPage() {
           <p className="text-sm text-gray-600">
             {t('Jobs.showingResults') || 'Showing'}{' '}
             <span className="font-medium text-gray-900">
-              {startIndex + 1}-{Math.min(endIndex, MOCK_JOBS.length)}
+              {jobs.length > 0 ? (currentPage - 1) * perPage + 1 : 0}-
+              {Math.min(currentPage * perPage, totalElements)}
             </span>{' '}
             {t('Jobs.of') || 'of'}{' '}
             <span className="font-medium text-gray-900">
-              {MOCK_JOBS.length}
+              {totalElements}
             </span>{' '}
             {t('Jobs.jobs') || 'jobs'}
           </p>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex h-64 items-center justify-center">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="rounded-md bg-red-50 p-4 text-center text-red-600">
+            {error}
+          </div>
+        )}
+
         {/* Job Cards Grid */}
-        <div className="grid grid-cols-1 gap-6 pb-8 md:grid-cols-2 lg:grid-cols-3">
-          {currentJobs.map((job) => (
-            <JobCard key={job.id} {...job} onSave={handleSaveJob} />
-          ))}
-        </div>
+        {!isLoading && !error && (
+          <div className="grid grid-cols-1 gap-6 pb-8 md:grid-cols-2 lg:grid-cols-3">
+            {jobs.map((job) => (
+              <JobCard key={job.id} {...job} onSave={handleSaveJob} />
+            ))}
+            {jobs.length === 0 && (
+              <div className="col-span-full py-12 text-center text-gray-500">
+                No jobs found. Try adjusting your search filters.
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (

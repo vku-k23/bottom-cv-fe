@@ -28,56 +28,49 @@ export function JobCard({
   onSave,
 }: JobCardProps) {
   const cardClasses = featured
-    ? 'bg-gradient-to-r from-yellow-50 to-white border-yellow-100 hover:shadow-xl'
-    : 'bg-white border-gray-100 hover:shadow-lg'
+    ? 'bg-gradient-to-r from-[#fff6e6] to-white border-border-light'
+    : 'bg-white border-border-light'
 
   return (
     <div
-      className={`group relative rounded-xl border p-8 transition-all duration-300 ${cardClasses}`}
+      className={`group relative rounded-xl border p-6 transition-all duration-300 ${cardClasses}`}
     >
-      {/* Bookmark Button */}
-      <button
-        onClick={() => onSave?.(id)}
-        className="absolute top-6 right-6 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-blue-600"
-        aria-label="Save job"
-      >
-        <Bookmark className="h-5 w-5" />
-      </button>
-
       {/* Company Info */}
-      <div className="mb-6 flex items-start gap-4">
+      <div className="mb-4 flex items-start gap-4">
         {/* Company Logo */}
-        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 p-3">
+        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center">
           {companyLogo ? (
             <Image
               src={companyLogo}
               alt={company}
-              width={56}
-              height={56}
+              width={24}
+              height={24}
               className="h-full w-full object-contain"
             />
           ) : (
-            <span className="text-lg font-semibold text-gray-600">
-              {company.charAt(0)}
-            </span>
+            <div className="flex h-full w-full items-center justify-center rounded bg-gray-100">
+              <span className="text-xs font-semibold text-gray-600">
+                {company.charAt(0)}
+              </span>
+            </div>
           )}
         </div>
 
         {/* Company Name & Location */}
         <div className="min-w-0 flex-1">
           <div className="mb-1.5 flex items-center gap-2">
-            <h3 className="truncate text-base font-medium text-gray-900">
+            <h3 className="text-base font-medium text-text-dark">
               {company}
             </h3>
             {featured && (
-              <span className="inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-xs font-normal text-red-500">
+              <span className="inline-flex items-center text-sm font-normal text-red-accent">
                 Featured
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-sm text-gray-500">
-            <MapPin className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{location}</span>
+          <div className="flex items-center gap-1.5">
+            <MapPin className="h-4.5 w-4.5 flex-shrink-0 text-text-gray" />
+            <span className="text-sm font-normal text-text-muted">{location}</span>
           </div>
         </div>
       </div>
@@ -85,19 +78,15 @@ export function JobCard({
       {/* Job Title */}
       <Link
         href={`/jobs/${id}`}
-        className={`mb-3 line-clamp-2 block text-xl font-medium transition-colors ${
-          featured
-            ? 'text-gray-900 hover:text-blue-600'
-            : 'text-gray-900 hover:text-blue-600'
-        }`}
+        className="mb-2 block text-xl font-medium text-[#191f33] transition-colors hover:text-blue-primary"
       >
         {title}
       </Link>
 
       {/* Job Info */}
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 text-sm font-normal text-text-light-gray">
         <span>{jobType}</span>
-        <div className="h-1 w-1 rounded-full bg-gray-400" />
+        <div className="h-1 w-1 rounded-full bg-text-light-gray" />
         <span>{salary}</span>
       </div>
     </div>

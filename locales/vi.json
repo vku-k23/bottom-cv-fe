@@ -82,14 +82,31 @@
     "heading": "Danh mục phổ biến",
     "viewAll": "Xem tất cả",
     "categories": [
-      { "name": "Đồ họa & Thiết kế" },
-      { "name": "Mã & Lập trình" },
-      { "name": "Tiếp thị số" },
-      { "name": "Video & Hoạt hình" },
-      { "name": "Âm nhạc & Âm thanh" },
-      { "name": "Kế toán & Tài chính" },
-      { "name": "Sức khỏe & Chăm sóc" },
-      { "name": "Dữ liệu & Khoa học", "highlight": true }
+      {
+        "name": "Đồ họa & Thiết kế"
+      },
+      {
+        "name": "Mã & Lập trình"
+      },
+      {
+        "name": "Tiếp thị số"
+      },
+      {
+        "name": "Video & Hoạt hình"
+      },
+      {
+        "name": "Âm nhạc & Âm thanh"
+      },
+      {
+        "name": "Kế toán & Tài chính"
+      },
+      {
+        "name": "Sức khỏe & Chăm sóc"
+      },
+      {
+        "name": "Dữ liệu & Khoa học",
+        "highlight": true
+      }
     ],
     "openPositions": "Vị trí tuyển dụng"
   },
@@ -117,17 +134,44 @@
       }
     ],
     "timeline": [
-      { "year": "2023", "text": "Khởi ý tưởng & nguyên mẫu" },
-      { "year": "2024", "text": "Huy động vốn mầm & 10k người dùng đầu tiên" },
-      { "year": "2025", "text": "Mở rộng APAC & tính năng AI" }
+      {
+        "year": "2023",
+        "text": "Khởi ý tưởng & nguyên mẫu"
+      },
+      {
+        "year": "2024",
+        "text": "Huy động vốn mầm & 10k người dùng đầu tiên"
+      },
+      {
+        "year": "2025",
+        "text": "Mở rộng APAC & tính năng AI"
+      }
     ],
     "team": [
-      { "name": "Thành viên 1", "role": "Designer" },
-      { "name": "Thành viên 2", "role": "Engineer" },
-      { "name": "Thành viên 3", "role": "Designer" },
-      { "name": "Thành viên 4", "role": "Engineer" },
-      { "name": "Thành viên 5", "role": "Designer" },
-      { "name": "Thành viên 6", "role": "Engineer" }
+      {
+        "name": "Thành viên 1",
+        "role": "Designer"
+      },
+      {
+        "name": "Thành viên 2",
+        "role": "Engineer"
+      },
+      {
+        "name": "Thành viên 3",
+        "role": "Designer"
+      },
+      {
+        "name": "Thành viên 4",
+        "role": "Engineer"
+      },
+      {
+        "name": "Thành viên 5",
+        "role": "Designer"
+      },
+      {
+        "name": "Thành viên 6",
+        "role": "Engineer"
+      }
     ]
   },
   "Profile": {
@@ -215,7 +259,13 @@
     "signUp": "Đăng ký",
     "signInWithFacebook": "Đăng nhập với Facebook",
     "signInWithGoogle": "Đăng nhập với Google",
-    "or": "hoặc"
+    "or": "hoặc",
+    "verifyEmailTitle": "Xác minh email của bạn",
+    "verifyingEmail": "Đang xác minh email...",
+    "verificationSuccess": "Xác minh email thành công!",
+    "verificationFailed": "Xác minh thất bại",
+    "backToLogin": "Quay lại Đăng nhập",
+    "invalidToken": "Mã xác minh không hợp lệ hoặc đã hết hạn"
   },
   "FeaturedJobs": {
     "heading": "Các việc làm phổ biến"

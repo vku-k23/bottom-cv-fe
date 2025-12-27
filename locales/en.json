@@ -82,14 +82,31 @@
     "heading": "Popular category",
     "viewAll": "View All",
     "categories": [
-      { "name": "Graphics & Design" },
-      { "name": "Code & Programming" },
-      { "name": "Digital Marketing" },
-      { "name": "Video & Animation" },
-      { "name": "Music & Audio" },
-      { "name": "Account & Finance" },
-      { "name": "Health & Care" },
-      { "name": "Data & Science", "highlight": true }
+      {
+        "name": "Graphics & Design"
+      },
+      {
+        "name": "Code & Programming"
+      },
+      {
+        "name": "Digital Marketing"
+      },
+      {
+        "name": "Video & Animation"
+      },
+      {
+        "name": "Music & Audio"
+      },
+      {
+        "name": "Account & Finance"
+      },
+      {
+        "name": "Health & Care"
+      },
+      {
+        "name": "Data & Science",
+        "highlight": true
+      }
     ],
     "openPositions": "Open position"
   },
@@ -103,22 +120,58 @@
         "title": "Transparency",
         "desc": "We communicate openly and build trust."
       },
-      { "title": "Velocity", "desc": "We ship fast, learn, and iterate." },
-      { "title": "Empathy", "desc": "We design for real people, not metrics." },
-      { "title": "Ownership", "desc": "Everyone is accountable for outcomes." }
+      {
+        "title": "Velocity",
+        "desc": "We ship fast, learn, and iterate."
+      },
+      {
+        "title": "Empathy",
+        "desc": "We design for real people, not metrics."
+      },
+      {
+        "title": "Ownership",
+        "desc": "Everyone is accountable for outcomes."
+      }
     ],
     "timeline": [
-      { "year": "2023", "text": "Idea conception & prototype" },
-      { "year": "2024", "text": "Seed funding & first 10k users" },
-      { "year": "2025", "text": "Expansion to APAC & AI features" }
+      {
+        "year": "2023",
+        "text": "Idea conception & prototype"
+      },
+      {
+        "year": "2024",
+        "text": "Seed funding & first 10k users"
+      },
+      {
+        "year": "2025",
+        "text": "Expansion to APAC & AI features"
+      }
     ],
     "team": [
-      { "name": "Member 1", "role": "Designer" },
-      { "name": "Member 2", "role": "Engineer" },
-      { "name": "Member 3", "role": "Designer" },
-      { "name": "Member 4", "role": "Engineer" },
-      { "name": "Member 5", "role": "Designer" },
-      { "name": "Member 6", "role": "Engineer" }
+      {
+        "name": "Member 1",
+        "role": "Designer"
+      },
+      {
+        "name": "Member 2",
+        "role": "Engineer"
+      },
+      {
+        "name": "Member 3",
+        "role": "Designer"
+      },
+      {
+        "name": "Member 4",
+        "role": "Engineer"
+      },
+      {
+        "name": "Member 5",
+        "role": "Designer"
+      },
+      {
+        "name": "Member 6",
+        "role": "Engineer"
+      }
     ],
     "missionTitle": "Our Mission",
     "valuesTitle": "Core Values",
@@ -129,7 +182,12 @@
     "heading": "Blog",
     "intro": "Insights, guides & product updates for job seekers and employers.",
     "placeholder": "Search articles...",
-    "categories": ["All", "Career", "Guides", "Product"]
+    "categories": [
+      "All",
+      "Career",
+      "Guides",
+      "Product"
+    ]
   },
   "Profile": {
     "title": "My Profile",
@@ -216,7 +274,13 @@
     "signUp": "Sign up",
     "signInWithFacebook": "Sign in with Facebook",
     "signInWithGoogle": "Sign in with Google",
-    "or": "or"
+    "or": "or",
+    "verifyEmailTitle": "Verify your email",
+    "verifyingEmail": "Verifying your email...",
+    "verificationSuccess": "Email verified successfully!",
+    "verificationFailed": "Verification failed",
+    "backToLogin": "Back to Login",
+    "invalidToken": "Invalid or expired token"
   },
   "FeaturedJobs": {
     "heading": "Featured Jobs"
