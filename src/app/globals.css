@@ -13,6 +13,21 @@
   --radius-xl: 20px;
   --duration-fast: 120ms;
   --duration-base: 200ms;
+  
+  /* Job detail page design tokens */
+  --color-blue-primary: #0a65cc;
+  --color-text-dark: #18191c;
+  --color-text-gray: #5e6670;
+  --color-text-light-gray: #767f8c;
+  --color-text-muted: #939aad;
+  --color-border-gray: #e4e5e8;
+  --color-border-light: #edeff5;
+  --color-bg-blue-light: #e7f0fa;
+  --color-red-accent: #ff4f4f;
+  --color-facebook: #0066ff;
+  --color-bg-facebook: #1877f2;
+  --color-twitter: #1da1f2;
+  --color-pinterest: #ca2127;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -45,6 +60,22 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+@theme inline {
+  --color-blue-primary: var(--color-blue-primary);
+  --color-text-dark: var(--color-text-dark);
+  --color-text-gray: var(--color-text-gray);
+  --color-text-light-gray: var(--color-text-light-gray);
+  --color-text-muted: var(--color-text-muted);
+  --color-border-gray: var(--color-border-gray);
+  --color-border-light: var(--color-border-light);
+  --color-bg-blue-light: var(--color-bg-blue-light);
+  --color-red-accent: var(--color-red-accent);
+  --color-facebook: var(--color-facebook);
+  --color-bg-facebook: var(--color-bg-facebook);
+  --color-twitter: var(--color-twitter);
+  --color-pinterest: var(--color-pinterest);
 }
 
 :root {

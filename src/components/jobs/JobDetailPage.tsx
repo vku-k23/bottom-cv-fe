@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from '@/hooks/useTranslation'
-import { Breadcrumb } from './Breadcrumb'
+import { apiClient, API_ENDPOINTS, JobResponse } from '@/lib/api'
 import { JobDetailHeader, JobHeaderInfo } from './JobDetailHeader'
-import { JobOverviewCard, JobOverview } from './JobOverviewCard'
 import { CompanyProfileCard, CompanyProfile } from './CompanyProfileCard'
 import { JobDetailContent, JobContent } from './JobDetailContent'
 import { RelatedJobsSection } from './RelatedJobsSection'
@@ -12,7 +11,6 @@ import { JobCardProps } from './JobCard'
 
 export interface JobDetailData {
   header: JobHeaderInfo
-  overview: JobOverview
   company: CompanyProfile
   content: JobContent
   relatedJobs: JobCardProps[]
@@ -22,107 +20,82 @@ interface JobDetailPageProps {
   jobId: string
 }
 
-// Mock data - Replace with API call
-const MOCK_JOB: JobDetailData = {
-  header: {
-    id: '1',
-    title: 'Senior UX Designer',
-    companyName: 'Instagram',
-    featured: true,
-    jobType: 'Full Time',
-    website: 'https://instagram.com',
-    phone: '(406) 555-0120',
-    email: 'career@instagram.com',
-    expirationDate: 'June 30, 2021',
-  },
-  overview: {
-    datePosted: '14 June, 2021',
-    expirationDate: '14 July, 2021',
-    education: 'Graduation',
-    salary: '$50k-80k/month',
-    location: 'New York, USA',
-    jobType: 'Full Time',
-    experience: '10-15 Years',
-  },
-  company: {
-    name: 'Instagram',
-    description: 'Social networking service',
-    foundedIn: 'March 21, 2006',
-    organizationType: 'Private Company',
-    companySize: '120-300 Employers',
-    phone: '(406) 555-0120',
-    email: 'twitter@gmail.com',
-    website: 'https://twitter.com',
-  },
-  content: {
-    description: [
-      'Integer aliquet pretium consequat. Donec et sapien id leo accumsan pellentesque eget maximus tellus. Duis et est ac leo rhoncus tincidunt vitae vehicula augue. Donec in suscipit diam. Pellentesque quis justo sit amet arcu commodo sollicitudin. Integer finibus blandit condimentum. Vivamus sit amet ligula ullamcorper, pulvinar ante id, tristique erat. Quisque sit amet aliquam urna. Maecenas blandit felis id massa sodales finibus. Integer bibendum eu nulla eu sollicitudin. Sed lobortis diam tincidunt accumsan faucibus. Quisque blandit augue quis turpis auctor, dapibus euismod ante ultricies. Ut non felis lacinia turpis feugiat euismod at id magna. Sed ut orci arcu. Suspendisse sollicitudin faucibus aliquet.',
-      'Nam dapibus consectetur erat in euismod. Cras urna augue, mollis venenatis augue sed, porttitor aliquet nibh. Sed tristique dictum elementum. Nulla imperdiet sit amet quam eget lobortis. Etiam in neque sit amet orci interdum tincidunt.',
-    ],
-    responsibilities: [
-      'Quisque semper gravida est et consectetur.',
-      'Curabitur blandit lorem velit, vitae pretium leo placerat eget.',
-      'Morbi mattis in ipsum ac tempus.',
-      'Curabitur eu vehicula libero. Vestibulum sed purus ullamcorper, lobortis lectus nec.',
-      'vulputate turpis. Quisque ante odio, iaculis a porttitor sit amet.',
-      'lobortis vel lectus. Nulla at risus ut diam.',
-      'commodo feugiat. Nullam laoreet, diam placerat dapibus tincidunt.',
-      'odio metus posuere lorem, id condimentum erat velit nec neque.',
-      'dui sodales ut. Curabitur tempus augue.',
-    ],
-  },
-  relatedJobs: [
-    {
-      id: '2',
-      title: 'Visual Designer',
-      company: 'Freepik',
-      location: 'China',
-      jobType: 'Full Time',
-      salary: '$10K-$15K',
-      featured: true,
-    },
-    {
-      id: '3',
-      title: 'Front End Developer',
-      company: 'Instagram',
-      location: 'Australia',
-      jobType: 'Contract Base',
-      salary: '$50K-$80K',
-      featured: true,
-    },
-    {
-      id: '4',
-      title: 'Technical Support Specialist',
-      company: 'Upwork',
-      location: 'France',
-      jobType: 'Full Time',
-      salary: '$35K-$40K',
-      featured: false,
-    },
-    {
-      id: '5',
-      title: 'Interaction Designer',
-      company: 'Youtube',
-      location: 'Germany',
-      jobType: 'Full Time',
-      salary: '$20K-$25K',
-      featured: false,
-    },
-  ],
-}
-
 export function JobDetailPage({ jobId }: JobDetailPageProps) {
   const { t } = useTranslation()
-  const [job] = useState<JobDetailData>(MOCK_JOB) // TODO: Fetch from API using jobId
+  const [job, setJob] = useState<JobDetailData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleApply = () => {
-    console.log('Apply to job:', jobId)
-    // TODO: Implement apply logic
-  }
+  useEffect(() => {
+    const fetchJob = async () => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const response = await apiClient.get<JobResponse>(
+          API_ENDPOINTS.jobs.get(Number(jobId))
+        )
 
-  const handleSave = () => {
-    console.log('Save job:', jobId)
-    // TODO: Implement save logic
+        // Helper to format date
+        const formatDate = (dateString?: string) => {
+          if (!dateString) return 'N/A'
+          return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        }
+
+        const mappedJob: JobDetailData = {
+          header: {
+            id: response.id.toString(),
+            title: response.title,
+            companyName: response.company.name,
+            industry: response.company.industry || 'Information Technology (IT)',
+            companyLogo: response.company.logo || '',
+            companyBanner: response.company.cover || '',
+          },
+          company: {
+            name: response.company.name,
+            logo: response.company.logo || '',
+            description: response.jobDescription || '',
+            foundedIn: response.company.foundedYear?.toString() || 'N/A',
+            organizationType: response.company.industry || 'Private Company',
+            companySize: response.company.companySize || 'N/A',
+            teamSize: response.company.companySize || '120-300 Candidates',
+            industryTypes: response.company.industry || 'Technology',
+            phone: response.company.phone || 'N/A',
+            email: response.company.email || 'N/A',
+            website: response.company.website || 'N/A',
+            socialLinks: response.company.socialMediaLinks || {},
+          },
+          content: {
+            description: response.jobDescription || '',
+            benefits: response.jobBenefit || '',
+            vision: response.company.introduce || '',
+          },
+          relatedJobs: [],
+        }
+
+        setJob(mappedJob)
+      } catch (err) {
+        console.error('Failed to fetch job details:', err)
+        setError('Failed to load job details. Please try again later.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (jobId) {
+      fetchJob()
+    }
+  }, [jobId])
+
+  const handleViewOpenPosition = () => {
+    // Scroll to open positions section
+    const openPositionsSection = document.getElementById('open-positions')
+    if (openPositionsSection) {
+      openPositionsSection.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   const handleShare = (platform: string) => {
@@ -130,42 +103,62 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
     // TODO: Implement share logic
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <Breadcrumb
-          title={t('JobDetail.jobDetails') || 'Job Details'}
-          items={[
-            { label: t('Navbar.home') || 'Home', href: '/' },
-            { label: t('Jobs.findJob') || 'Find Job', href: '/jobs' },
-            { label: 'Graphics & Design', href: '/jobs?category=design' },
-            { label: t('JobDetail.jobDetails') || 'Job Details' },
-          ]}
-        />
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+      </div>
+    )
+  }
 
-        {/* Job Header */}
-        <JobDetailHeader
-          job={job.header}
-          onApply={handleApply}
-          onSave={handleSave}
+  if (error || !job) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {error || 'Job not found'}
+          </h2>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Banner Section */}
+      <div className="relative h-80 w-full overflow-hidden rounded-b-lg border border-border-gray">
+        <img
+          src={job.header.companyBanner}
+          alt="Company banner"
+          className="h-full w-full object-cover"
         />
+      </div>
+
+      <div className="mx-auto max-w-7xl px-6 lg:px-20">
+        {/* Company Info Card - Overlaps banner */}
+        <div className="-mt-20 relative z-10 mb-9">
+          <JobDetailHeader
+            job={job.header}
+            onViewOpenPosition={handleViewOpenPosition}
+          />
+        </div>
 
         {/* Main Content */}
-        <div className="grid gap-6 pb-12 lg:grid-cols-[1fr_536px]">
-          {/* Left Column: Description & Responsibilities */}
+        <div className="grid gap-6 pb-12 lg:grid-cols-[1fr_538px]">
+          {/* Left Column: Description, Benefits, Vision */}
           <JobDetailContent content={job.content} onShare={handleShare} />
 
-          {/* Right Column: Sidebar */}
-          <div className="space-y-6">
-            <JobOverviewCard overview={job.overview} />
+          {/* Right Column: Company Profile Sidebar */}
+          <div>
             <CompanyProfileCard company={job.company} />
           </div>
         </div>
       </div>
 
-      {/* Related Jobs Section */}
-      <RelatedJobsSection jobs={job.relatedJobs} />
+      {/* Open Position Section */}
+      <div id="open-positions" className="border-t border-border-gray pt-12">
+        <RelatedJobsSection jobs={job.relatedJobs} />
+      </div>
     </div>
   )
 }

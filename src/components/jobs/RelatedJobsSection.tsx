@@ -1,7 +1,5 @@
 'use client'
 
-import { ArrowRight } from 'lucide-react'
-import { useTranslation } from '@/hooks/useTranslation'
 import { JobCard, JobCardProps } from './JobCard'
 
 interface RelatedJobsSectionProps {
@@ -9,34 +7,70 @@ interface RelatedJobsSectionProps {
 }
 
 export function RelatedJobsSection({ jobs }: RelatedJobsSectionProps) {
-  const { t } = useTranslation()
+  // Mock data for demonstration (will be replaced with real API data)
+  const mockJobs: JobCardProps[] = [
+    {
+      id: '1',
+      title: 'Visual Designer',
+      company: 'Freepik',
+      companyLogo: '/images/company-logos/freepik-logo.svg',
+      location: 'China',
+      jobType: 'Full Time',
+      salary: '$10K-$15K',
+      featured: true,
+    },
+    {
+      id: '2',
+      title: 'Front End Developer',
+      company: 'Instagram',
+      companyLogo: '/images/company-logos/instagram-logo.svg',
+      location: 'Australia',
+      jobType: 'Contract Base',
+      salary: '$50K-$80K',
+    },
+    {
+      id: '3',
+      title: 'Techical Support Specialist',
+      company: 'Upwork',
+      companyLogo: '/images/company-logos/upwork-logo.svg',
+      location: 'France',
+      jobType: 'Full Time',
+      salary: '$35K-$40K',
+    },
+    {
+      id: '4',
+      title: 'Software Engineer',
+      company: 'Facebook',
+      companyLogo: '/images/company-logos/facebook-logo.svg',
+      location: 'United Kingdom of Great Britain',
+      jobType: 'Part Time',
+      salary: '$15K-$20K',
+    },
+    {
+      id: '5',
+      title: 'Product Designer',
+      company: 'Microsoft',
+      companyLogo: '/images/company-logos/microsoft-logo.svg',
+      location: 'Australia',
+      jobType: 'Full Time',
+      salary: '$40K-$50K',
+    },
+  ]
+
+  const displayJobs = jobs.length > 0 ? jobs : mockJobs
 
   return (
-    <div className="border-t border-gray-100 bg-white py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="mb-12 flex items-center justify-between">
-          <h2 className="text-4xl font-medium text-gray-900">
-            {t('JobDetail.relatedJobs') || 'Related Jobs'}
-          </h2>
-          <button className="flex items-center gap-4 text-gray-400 hover:text-gray-600">
-            <ArrowRight className="h-6 w-6" />
-          </button>
-        </div>
+    <div className="mx-auto max-w-7xl px-6 pb-24 lg:px-20">
+      {/* Section Title */}
+      <h2 className="mb-12 text-4xl font-medium leading-[48px] text-text-dark">
+        Open Position ({displayJobs.length.toString().padStart(2, '0')})
+      </h2>
 
-        {/* Jobs Grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="space-y-6">
-            {jobs.slice(0, 2).map((job) => (
-              <JobCard key={job.id} {...job} />
-            ))}
-          </div>
-          <div className="space-y-6">
-            {jobs.slice(2, 4).map((job) => (
-              <JobCard key={job.id} {...job} />
-            ))}
-          </div>
-        </div>
+      {/* Jobs Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {displayJobs.map((job) => (
+          <JobCard key={job.id} {...job} />
+        ))}
       </div>
     </div>
   )

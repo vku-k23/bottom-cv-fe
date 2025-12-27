@@ -16,17 +16,78 @@ export const API_ENDPOINTS = {
     verifyEmail: '/auth/verify-email',
     me: '/auth/me', // New get me endpoint
   },
-  user: {
-    profile: '/front/profile', // adjusted to match prior usage (/api/front/profile) with new base /api/v1
-  },
-  cv: {
-    list: '/front/cvs',
-    create: '/front/cvs',
-    get: (id: number) => `/front/cvs/${id}`,
-    update: (id: number) => `/front/cvs/${id}`,
-    delete: (id: number) => `/front/cvs/${id}`,
+  jobs: {
+    list: '/front/jobs',
+    get: (id: number) => `/front/jobs/${id}`,
+    recommended: '/front/jobs/recommended/result',
+    requestRecommendation: '/front/jobs/recommended/request',
   },
 } as const
+
+// --- Interfaces ---
+
+export interface ListResponse<T> {
+  data: T[]
+  pageNo: number
+  pageSize: number
+  totalElements: number
+  totalPages: number
+  isLast: boolean
+}
+
+export interface CompanyResponse {
+  id: number
+  name: string
+  slug: string
+  introduce?: string
+  socialMediaLinks?: Record<string, string>
+  addresses?: Record<string, string>
+  phone?: string
+  email?: string
+  website?: string
+  logo?: string
+  cover?: string
+  industry?: string
+  companySize?: string
+  foundedYear?: number
+  verified?: boolean
+}
+
+export interface CategoryResponse {
+  id: number
+  name: string
+  slug: string
+}
+
+export interface JobResponse {
+  id: number
+  title: string
+  jobDescription: string
+  jobRequirement?: string
+  jobBenefit?: string
+  jobType: string // 'FULL_TIME', 'PART_TIME', etc.
+  location: string
+  salary?: number
+  expiryDate?: string
+  status: string
+  company: CompanyResponse
+  categories?: CategoryResponse[]
+  createdAt: string
+}
+
+export interface JobSearchRequest {
+  keyword?: string
+  location?: string
+  jobType?: string
+  minSalary?: number
+  maxSalary?: number
+  categoryId?: number
+  status?: string
+  sortBy?: string
+  sortDirection?: string
+  page?: number
+  size?: number
+}
 
 // HTTP client configuration
 export class ApiClient {
@@ -113,7 +174,7 @@ export class ApiClient {
             errorData !== null &&
             (errorData as Record<string, unknown>).errorMessage &&
             typeof (errorData as Record<string, unknown>).errorMessage ===
-              'string' &&
+            'string' &&
             ((errorData as Record<string, unknown>).errorMessage as string)
               .toLowerCase()
               .includes('username'))
