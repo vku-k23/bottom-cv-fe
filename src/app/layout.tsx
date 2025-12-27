@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import ClientLayout from '@/components/layout/ClientLayout'
-import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
+import { QueryProvider } from '@/components/providers/QueryProvider'
+import { I18nProvider } from '@/components/providers/I18nProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -52,13 +52,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <body className={inter.className}>
-        <ClientLayout>{children}</ClientLayout>
+        <QueryProvider>
+          <I18nProvider>
+            <ClientLayout>{children}</ClientLayout>
+          </I18nProvider>
+        </QueryProvider>
       </body>
     </html>
   )

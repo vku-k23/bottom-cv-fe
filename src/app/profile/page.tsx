@@ -1,129 +1,390 @@
-import {
-  Paper,
-  ProfileImg,
-  PaperHeader,
-  VerticalLine,
-  HorizontalLine
-}
-  from '@/components/ui/cv_paper'
+'use client'
 
-export default function CVPage() {
+import { useEffect, useState } from 'react'
+import { profileApi } from '@/lib/profileApi'
+import { ProfileResponse, ProfileRequest } from '@/types/profile'
+import { useTranslation } from '@/hooks/useTranslation'
+import Image from 'next/image'
+
+export default function ProfilePage() {
+  const { t } = useTranslation()
+  const [profile, setProfile] = useState<ProfileResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  const [formData, setFormData] = useState<ProfileRequest>({
+    firstName: '',
+    lastName: '',
+    dayOfBirth: '',
+    address: '',
+    email: '',
+    phoneNumber: '',
+    avatar: '',
+    description: '',
+  })
+
+  // Load profile on mount
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        setIsLoading(true)
+        const response = await profileApi.getProfile()
+        setProfile(response)
+
+        // Populate form data
+        setFormData({
+          firstName: response.firstName || '',
+          lastName: response.lastName || '',
+          dayOfBirth: response.dayOfBirth || '',
+          address: response.address || '',
+          email: response.email || '',
+          phoneNumber: response.phoneNumber || '',
+          avatar: response.avatar || '',
+          description: response.description || '',
+        })
+      } catch (error) {
+        console.error('Error loading profile:', error)
+        setError('Failed to load profile')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadProfile()
+  }, [])
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true)
+      setError(null)
+
+      const response = await profileApi.updateProfile(formData)
+      setProfile(response)
+      setIsEditing(false)
+      setSuccessMessage(t('Profile.successMessage'))
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(null), 3000)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      setError('Failed to update profile')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleCancel = () => {
+    if (profile) {
+      setFormData({
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        dayOfBirth: profile.dayOfBirth || '',
+        address: profile.address || '',
+        email: profile.email || '',
+        phoneNumber: profile.phoneNumber || '',
+        avatar: profile.avatar || '',
+        description: profile.description || '',
+      })
+    }
+    setIsEditing(false)
+    setError(null)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">{t('Profile.loadingProfile')}</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="container mx-auto py-8 mt-17">
-      <h1 className="text-3xl font-bold text-center">CV Builder</h1>
-      <p className="mt-4 text-gray-600 mb-10 text-center">
-        Create and manage your professional CV here. This page will be
-        implemented with a comprehensive CV builder.
-      </p>
-      <Paper>
-        <PaperHeader>
-          <div className="flex items-center space-x-6">
-            {/* Ảnh */}
-            <ProfileImg>
-              <img
-                src="https://i.pinimg.com/originals/9b/c9/40/9bc940893848b63365d368e939d63bc1.jpg"
-                alt="ronalsi"
-                className="w-50 h-50 rounded-full object-cover"
-              />
-            </ProfileImg>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="rounded-lg bg-white shadow-sm">
+          <div className="border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {t('Profile.title')}
+                </h1>
+                <p className="text-gray-600">{t('Profile.subtitle')}</p>
+              </div>
+              <div className="flex space-x-3">
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  >
+                    {t('Profile.editButton')}
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleCancel}
+                      className="rounded-md bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+                    >
+                      {t('Profile.cancelButton')}
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isSaving
+                        ? t('Profile.savingButton')
+                        : t('Profile.saveButton')}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
 
-            {/* Line dọc */}
-            <VerticalLine />
+          <div className="p-6">
+            {successMessage && (
+              <div className="mb-4 rounded-md border border-green-200 bg-green-50 p-4">
+                <p className="text-green-800">{successMessage}</p>
+              </div>
+            )}
 
-            {/* Nội dung */}
-            <div className="flex-1 ml-8">
-              <div className="mb-5">
-                <h1 className="text-6xl font-bold"
-                  style={{ fontFamily: 'Elephant, serif' }}>Cris Leo Ronalsi</h1>
-                <p className="text-gray-600 text-2xl mx-1">Full-Stack Developer</p>
+            {error && (
+              <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4">
+                <p className="text-red-800">{error}</p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+              {/* Profile Image */}
+              <div className="lg:col-span-1">
+                <div className="text-center">
+                  <div className="relative inline-block">
+                    {profile?.avatar ? (
+                      <Image
+                        src={profile.avatar}
+                        alt="Profile"
+                        width={120}
+                        height={120}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-30 w-30 items-center justify-center rounded-full bg-gray-300">
+                        <span className="text-2xl font-medium text-gray-600">
+                          {profile?.firstName?.charAt(0) || 'U'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {isEditing && (
+                    <div className="mt-4">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        {t('Profile.avatarUrl')}
+                      </label>
+                      <input
+                        type="url"
+                        name="avatar"
+                        value={formData.avatar}
+                        onChange={handleInputChange}
+                        placeholder={t('Profile.avatarPlaceholder')}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Phần liên lạc */}
-              <div className="flex space-x-6 items-center mx-7 mt-10">
-                <div>
-                  <span className="text-xl font-bold"
-                    style={{ fontFamily: 'Elephant, serif' }}>PHONE</span> <br />
-                  <span className="px-1">+1234-567-8909</span>
-                </div>
-                <VerticalLine className="w-0.5 h-13 bg-black ml-23 mr-10" />
-                <div>
-                  <span className="text-xl font-bold"
-                    style={{ fontFamily: 'Elephant, serif' }}>EMAIL</span> <br />
-                  <span className="px-1">abcdxyz1234@domain.com</span>
-                </div>
-              </div>
+              {/* Profile Information */}
+              <div className="lg:col-span-2">
+                <div className="space-y-6">
+                  {/* Personal Information */}
+                  <div>
+                    <h3 className="mb-4 text-lg font-medium text-gray-900">
+                      {t('Profile.personalInfo')}
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.firstName')}{' '}
+                          <span className="text-red-500">*</span>
+                        </label>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleInputChange}
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            required
+                          />
+                        ) : (
+                          <p className="text-gray-900">
+                            {profile?.firstName || '-'}
+                          </p>
+                        )}
+                      </div>
 
-              <HorizontalLine className="h-0.5 bg-black m-5 w-135" />
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.lastName')}{' '}
+                          <span className="text-red-500">*</span>
+                        </label>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            required
+                          />
+                        ) : (
+                          <p className="text-gray-900">
+                            {profile?.lastName || '-'}
+                          </p>
+                        )}
+                      </div>
 
-              <div className="flex space-x-6 items-center mx-7">
-                <div>
-                  <span className="text-xl font-bold"
-                    style={{ fontFamily: 'Elephant, serif' }}>WEBSITE</span> <br />
-                  <span className="px-1">http://localhost:3000/profile</span>
-                </div>
-                <VerticalLine className="w-0.5 h-13 bg-black ml-3 mr-10" />
-                <div>
-                  <span className="text-xl font-bold"
-                    style={{ fontFamily: 'Elephant, serif' }}>ADDRESS</span> <br />
-                  <span className="px-1">123, ABC Street, Da Nang</span>
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.dateOfBirth')}
+                        </label>
+                        {isEditing ? (
+                          <input
+                            type="date"
+                            name="dayOfBirth"
+                            value={formData.dayOfBirth}
+                            onChange={handleInputChange}
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          />
+                        ) : (
+                          <p className="text-gray-900">
+                            {profile?.dayOfBirth || '-'}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.phoneNumber')}
+                        </label>
+                        {isEditing ? (
+                          <input
+                            type="tel"
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handleInputChange}
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          />
+                        ) : (
+                          <p className="text-gray-900">
+                            {profile?.phoneNumber || '-'}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.address')}
+                        </label>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleInputChange}
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          />
+                        ) : (
+                          <p className="text-gray-900">
+                            {profile?.address || '-'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* About Me */}
+                  <div>
+                    <h3 className="mb-4 text-lg font-medium text-gray-900">
+                      {t('Profile.aboutMe')}
+                    </h3>
+                    {isEditing ? (
+                      <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        rows={4}
+                        placeholder={t('Profile.aboutPlaceholder')}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    ) : (
+                      <p className="text-gray-900">
+                        {profile?.description || '-'}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Account Information */}
+                  <div>
+                    <h3 className="mb-4 text-lg font-medium text-gray-900">
+                      {t('Profile.accountInfo')}
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.email')}
+                        </label>
+                        <p className="text-gray-900">{profile?.email || '-'}</p>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.accountId')}
+                        </label>
+                        <p className="text-gray-900">{profile?.id || '-'}</p>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.createdAt')}
+                        </label>
+                        <p className="text-gray-900">
+                          {profile?.createdAt || '-'}
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          {t('Profile.lastUpdated')}
+                        </label>
+                        <p className="text-gray-900">
+                          {profile?.updatedAt || '-'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </PaperHeader>
-
-        {/* Line ngang */}
-        <HorizontalLine />
-
-        {/*Profile Info*/}
-        <div className='w-225 h-50 mx-auto mt-7 mb-5'>
-          <h1 className='text-4xl font-bold mb-5'
-            style={{ fontFamily: 'Elephant, serif' }}>My Profile</h1>
-          <p className='text-balance'>
-            Hi, I'm Cris Leo Ronalsi, a Full-Stack Developer with a passion for building clean, efficient, and user-focused web applications.
-            I specialize in working with technologies like React, Next.js, Node.js, and MongoDB, and enjoy tackling challenges across both front-end and back-end.
-            I take pride in writing maintainable code, collaborating effectively with teams, and constantly learning to stay ahead in this ever-evolving tech landscape.
-            For me, being a developer is not just about code — it's about creating experiences that solve real problems and deliver real value.
-          </p>
         </div>
-
-        <HorizontalLine />
-
-        {/* Skills ,Degree & Experience Info */}
-        <section className='w-225 h-50 mx-auto mt-7 mb-5 flex'>
-          <div>
-            <h1 className='text-4xl font-bold mb-5'
-              style={{ fontFamily: 'Elephant, serif' }}>Education</h1>
-            <p>2020 - 2024</p>
-            <p className='text-lg font-bold mb-1'
-              style={{ fontFamily: 'Elephant, serif' }}>HAVARD CS50 DEGREE <br /></p>
-            <p className='mb-10'>Havard University</p>
-            <p>2024 - 2029</p>
-            <p className='text-lg font-bold mb-1'
-              style={{ fontFamily: 'Elephant, serif' }}>VKU CS - K24 DEGREE</p>
-            <p className='mb-10'>Vietnam - Korea University</p>
-            <HorizontalLine className='w-70 ml-0 mb-5' />
-            <h1 className='text-4xl font-bold mb-5'
-              style={{ fontFamily: 'Elephant, serif' }}>Skills</h1>
-            <ul className='list-disc ml-5 space-y-5'>
-              <li>Full-stack Web Developer</li>
-              <li>Data Analyst</li>
-              <li>AI Engineer</li>
-              <li>Bussiness Startup</li>
-              <li>English C2-level</li>
-              <li>Korean C2-level</li>
-              <li>Overpowered Position</li>
-              <li>Left foot: 10/10</li>
-              <li>Right foot: 10/10</li>
-            </ul>
-          </div>
-          <VerticalLine className='ml-5 h-200 mr-10' />
-          <div>
-              <h1 className='text-4xl font-bold mb-5'
-              style={{ fontFamily: 'Elephant, serif' }}>EXPERIENCE</h1>
-          </div>
-        </section>
-      </Paper>
+      </div>
     </div>
   )
 }

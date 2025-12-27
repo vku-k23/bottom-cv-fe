@@ -3,8 +3,8 @@ import { ReactNode } from 'react'
 // Enums
 export enum Role {
   ADMIN = 'ADMIN',
-  HR = 'HR',
-  USER = 'USER',
+  EMPLOYER = 'EMPLOYER',
+  CANDIDATE = 'CANDIDATE',
 }
 
 export enum JobType {
@@ -15,15 +15,13 @@ export enum JobType {
 }
 
 export enum JobStatus {
-  OPEN = 'OPEN',
-  CLOSED = 'CLOSED',
-  DRAFT = 'DRAFT',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
 }
 
 export enum ApplicationStatus {
   PENDING = 'PENDING',
-  REVIEWED = 'REVIEWED',
-  ACCEPTED = 'ACCEPTED',
+  APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
 }
 
@@ -635,3 +633,6 @@ export type ApplicationStatusType = ApplicationStatus
 export type ExperienceLevelType = ExperienceLevel
 export type EducationLevelType = EducationLevel
 export type SkillLevelType = SkillLevel
+
+// Export profile types
+export type { ProfileResponse, ProfileRequest } from './profile'

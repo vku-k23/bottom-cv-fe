@@ -2,7 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuthStore } from '@/stores/authStore'
+import { UserAvatar } from '@/components/ui/UserAvatar'
+import { useTranslation } from '@/hooks/useTranslation'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 // Simple SVG icon components
 const SearchIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
@@ -69,22 +73,6 @@ const UserIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
   </svg>
 )
 
-const BellIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M15 17h5l-5 5l-5-5h5V7a1 1 0 011-1h1a1 1 0 011 1v10z"
-    />
-  </svg>
-)
-
 const MenuIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
   <svg
     className={className}
@@ -125,30 +113,109 @@ const navigation = [
 ]
 
 export function Navbar() {
+  const { t } = useTranslation()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { isAuthenticated, user, logout, fetchCurrentUser } = useAuthStore()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    if (isAuthenticated && !user) fetchCurrentUser()
+  }, [isAuthenticated, user, fetchCurrentUser])
+  useEffect(() => setMounted(true), [])
 
   return (
-    <nav className="border-b bg-white shadow-sm fixed w-full z-100">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-between">
-          <div className="flex">
-            <div className="flex flex-shrink-0 items-center">
-              <Link href="/" className="text-2xl font-bold text-blue-600">
-                JobPortal
+    <nav
+      className="fixed z-100 w-full bg-white shadow-sm"
+      suppressHydrationWarning
+    >
+      {/* Top mini bar */}
+      <div className="hidden border-b border-gray-200 bg-gray-50 text-[11px] text-gray-600 lg:block">
+        <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <ul className="flex items-center gap-4 font-medium">
+            <li>
+              <Link
+                href="/"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.home') : 'Home'}
               </Link>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+            </li>
+            <li>
+              <Link
+                href="/jobs"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.findJob') : 'Find Job'}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/employers"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.employers') : 'Employers'}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/candidates"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.candidates') : 'Candidates'}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/pricing"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.pricingPlans') : 'Pricing Plans'}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/support"
+                className="hover:text-blue-600"
+                suppressHydrationWarning
+              >
+                {mounted ? t('Navbar.customerSupports') : 'Customer Supports'}
+              </Link>
+            </li>
+          </ul>
+          <div className="flex items-center gap-4" suppressHydrationWarning>
+            <span>{mounted ? t('Navbar.phone') : '📞 +320 495 250'}</span>
+            <LanguageSwitcher />
+          </div>
+        </div>
+      </div>
+      {/* Main nav */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link
+              href="/"
+              className="text-2xl font-bold text-blue-600"
+              suppressHydrationWarning
+            >
+              {mounted ? t('Navbar.myJob') : 'MyJob'}
+            </Link>
+            <div className="hidden items-center gap-6 md:flex">
               {navigation.map((item) => {
                 const Icon = item.icon
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
+                    className={`inline-flex items-center text-sm font-medium transition ${
                       pathname === item.href
-                        ? 'border-blue-500 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                        ? 'text-blue-600'
+                        : 'text-gray-500 hover:text-gray-900'
                     }`}
                   >
                     <Icon className="mr-2 h-4 w-4" />
@@ -158,30 +225,36 @@ export function Navbar() {
               })}
             </div>
           </div>
-
-          <div className="hidden space-x-4 sm:ml-6 sm:flex sm:items-center">
-            <button className="relative p-2 text-gray-400 hover:text-gray-500">
-              <BellIcon />
-              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
-            </button>
-
-            <div className="flex items-center space-x-3">
-              <Link
-                href="/auth/signin"
-                className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-              >
-                Sign Up
-              </Link>
-            </div>
+          <div
+            className="hidden items-center gap-4 md:flex"
+            suppressHydrationWarning
+          >
+            {mounted ? (
+              isAuthenticated && user ? (
+                <UserAvatar user={user} onLogout={logout} />
+              ) : (
+                <div className="flex items-center gap-3 text-[11px]">
+                  <Link
+                    href="/auth/signin"
+                    className="font-medium text-gray-600 hover:text-blue-600"
+                    suppressHydrationWarning
+                  >
+                    {mounted ? t('Navbar.signIn') : 'Sign In'}
+                  </Link>
+                  <Link
+                    href="/post-job"
+                    className="rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700"
+                    suppressHydrationWarning
+                  >
+                    {mounted ? t('Navbar.postJob') : 'Post a Job'}
+                  </Link>
+                </div>
+              )
+            ) : (
+              <div className="h-9 w-20 animate-pulse rounded-md bg-gray-100" />
+            )}
           </div>
-
-          <div className="sm:hidden">
+          <div className="md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
@@ -191,46 +264,52 @@ export function Navbar() {
           </div>
         </div>
       </div>
-
-      {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden">
-          <div className="space-y-1 pt-2 pb-3">
+        <div className="border-t border-gray-200 bg-white md:hidden">
+          <div className="space-y-1 px-4 py-3">
             {navigation.map((item) => {
               const Icon = item.icon
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center border-l-4 px-3 py-2 text-base font-medium ${
+                  className={`flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium ${
                     pathname === item.href
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700'
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.name}
+                  <Icon className="h-4 w-4" /> {item.name}
                 </Link>
               )
             })}
-          </div>
-          <div className="border-t border-gray-200 pt-4 pb-3">
-            <div className="flex flex-col items-center space-y-3 px-4">
-              <Link
-                href="/auth/signin"
-                className="block text-base font-medium text-gray-500 hover:text-gray-800"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="block rounded-md bg-blue-600 px-4 py-2 text-base font-medium text-white hover:bg-blue-700"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sign Up
-              </Link>
+            <div className="mt-3 space-y-3">
+              <div className="flex items-center gap-2 px-2">
+                <LanguageSwitcher />
+              </div>
+              <div className="flex items-center gap-3">
+                {mounted && isAuthenticated && user ? (
+                  <UserAvatar user={user} onLogout={logout} />
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/signin"
+                      className="text-sm font-medium text-gray-600"
+                      suppressHydrationWarning
+                    >
+                      {mounted ? t('Navbar.signIn') : 'Sign In'}
+                    </Link>
+                    <Link
+                      href="/post-job"
+                      className="flex-1 rounded-md bg-blue-600 px-3 py-2 text-center text-xs font-medium text-white"
+                      suppressHydrationWarning
+                    >
+                      {mounted ? t('Navbar.postJob') : 'Post a Job'}
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

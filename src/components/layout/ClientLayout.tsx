@@ -1,18 +1,91 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import { Toaster } from 'react-hot-toast'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
+import { useInitializeAuth } from '@/stores/authStore'
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const pathname = usePathname()
-  const hideLayout = pathname.startsWith('/auth')
+  const isAuthPage = pathname.startsWith('/auth')
+  const isAdminPage = pathname.startsWith('/admin')
+
+  // Initialize authentication on app start
+  useInitializeAuth()
+
+  // Admin pages have their own layout - don't wrap with Navbar/Footer
+  if (isAdminPage) {
+    return (
+      <>
+        {children}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+            success: {
+              duration: 3000,
+              style: {
+                background: '#10b981',
+              },
+            },
+            error: {
+              duration: 5000,
+              style: {
+                background: '#ef4444',
+              },
+            },
+          }}
+        />
+      </>
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
-      {!hideLayout && <Navbar />}
-      <main className="flex-1">{children}</main>
-      {!hideLayout && <Footer />}
+      <Navbar />
+      <main
+        className={`flex-1 pt-16 lg:pt-24 ${isAuthPage ? 'bg-gray-50' : ''}`}
+      >
+        {isAuthPage ? (
+          children
+        ) : (
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {children}
+          </div>
+        )}
+      </main>
+      {!isAuthPage && <Footer />}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            style: {
+              background: '#10b981',
+            },
+          },
+          error: {
+            duration: 5000,
+            style: {
+              background: '#ef4444',
+            },
+          },
+        }}
+      />
     </div>
   )
 }
