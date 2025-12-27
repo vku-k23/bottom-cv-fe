@@ -22,6 +22,16 @@ export const API_ENDPOINTS = {
     recommended: '/front/jobs/recommended/result',
     requestRecommendation: '/front/jobs/recommended/request',
   },
+  cv: {
+    list: '/cvs',
+    get: (id: number) => `/cvs/${id}`,
+    create: '/cvs',
+    update: (id: number) => `/cvs/${id}`,
+    delete: (id: number) => `/cvs/${id}`,
+  },
+  user: {
+    profile: '/users/profile',
+  },
 } as const
 
 // --- Interfaces ---
@@ -174,7 +184,7 @@ export class ApiClient {
             errorData !== null &&
             (errorData as Record<string, unknown>).errorMessage &&
             typeof (errorData as Record<string, unknown>).errorMessage ===
-            'string' &&
+              'string' &&
             ((errorData as Record<string, unknown>).errorMessage as string)
               .toLowerCase()
               .includes('username'))

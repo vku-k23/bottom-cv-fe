@@ -62,7 +62,7 @@ export function RelatedJobsSection({ jobs }: RelatedJobsSectionProps) {
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 lg:px-20">
       {/* Section Title */}
-      <h2 className="mb-12 text-4xl font-medium leading-[48px] text-text-dark">
+      <h2 className="text-text-dark mb-12 text-4xl leading-[48px] font-medium">
         Open Position ({displayJobs.length.toString().padStart(2, '0')})
       </h2>
 

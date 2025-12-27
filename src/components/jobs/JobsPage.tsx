@@ -69,11 +69,6 @@ export function JobsPage() {
     setActiveFilters(activeFilters.filter((f) => f !== filter))
   }
 
-  const handleSaveJob = (id: string) => {
-    console.log('Save job:', id)
-    // TODO: Implement save job functionality
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -112,9 +107,7 @@ export function JobsPage() {
               {Math.min(currentPage * perPage, totalElements)}
             </span>{' '}
             {t('Jobs.of') || 'of'}{' '}
-            <span className="font-medium text-gray-900">
-              {totalElements}
-            </span>{' '}
+            <span className="font-medium text-gray-900">{totalElements}</span>{' '}
             {t('Jobs.jobs') || 'jobs'}
           </p>
         </div>
@@ -137,7 +130,7 @@ export function JobsPage() {
         {!isLoading && !error && (
           <div className="grid grid-cols-1 gap-6 pb-8 md:grid-cols-2 lg:grid-cols-3">
             {jobs.map((job) => (
-              <JobCard key={job.id} {...job} onSave={handleSaveJob} />
+              <JobCard key={job.id} {...job} />
             ))}
             {jobs.length === 0 && (
               <div className="col-span-full py-12 text-center text-gray-500">

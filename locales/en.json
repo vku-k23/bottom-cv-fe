@@ -182,12 +182,7 @@
     "heading": "Blog",
     "intro": "Insights, guides & product updates for job seekers and employers.",
     "placeholder": "Search articles...",
-    "categories": [
-      "All",
-      "Career",
-      "Guides",
-      "Product"
-    ]
+    "categories": ["All", "Career", "Guides", "Product"]
   },
   "Profile": {
     "title": "My Profile",
