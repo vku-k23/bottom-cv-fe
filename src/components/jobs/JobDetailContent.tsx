@@ -7,8 +7,7 @@ import PinterestIcon from '@/assets/icons/pinterest.svg'
 
 export interface JobContent {
   description: string
-  benefits: string
-  vision: string
+  responsibilities: string[]
 }
 
 interface JobDetailContentProps {
@@ -21,20 +20,17 @@ export function JobDetailContent({ content, onShare }: JobDetailContentProps) {
     {
       name: 'Facebook',
       icon: FacebookIcon,
-      borderColor: 'border-transparent',
-      textColor: 'text-facebook',
+      textColor: '#0a65cc',
     },
     {
       name: 'Facebook',
       icon: TwitterIcon,
-      borderColor: 'border-transparent',
-      textColor: 'text-twitter',
+      textColor: '#1da1f2',
     },
     {
       name: 'Pinterest',
       icon: PinterestIcon,
-      borderColor: 'border-transparent',
-      textColor: 'text-pinterest',
+      textColor: '#ca2127',
     },
   ]
 
@@ -43,16 +39,11 @@ export function JobDetailContent({ content, onShare }: JobDetailContentProps) {
     .split('\n')
     .filter((p) => p.trim())
 
-  // Parse benefits into list items
-  const benefitItems = content.benefits
-    ? content.benefits.split('\n').filter((b) => b.trim())
-    : []
-
   return (
-    <div className="flex flex-col gap-9">
+    <div className="flex flex-col gap-8">
       {/* Job Description */}
       <div className="flex flex-col gap-4">
-        <h2 className="text-text-dark text-xl font-medium">Description</h2>
+        <h2 className="text-lg font-medium text-black">Job Description</h2>
         <div className="flex flex-col gap-4">
           {descriptionParagraphs.map((paragraph, index) => (
             <p
@@ -65,44 +56,24 @@ export function JobDetailContent({ content, onShare }: JobDetailContentProps) {
         </div>
       </div>
 
-      {/* Company Benefits */}
-      {benefitItems.length > 0 && (
+      {/* Responsibilities */}
+      {content.responsibilities.length > 0 && (
         <div className="flex flex-col gap-4">
-          <h2 className="text-text-dark text-xl font-medium">
-            Company Benefits
-          </h2>
-          <div className="flex flex-col gap-3">
-            <p className="text-text-gray text-base leading-6 font-normal">
-              {benefitItems[0]}
-            </p>
-            <ul className="flex flex-col gap-3">
-              {benefitItems.slice(1).map((item, index) => (
-                <li
-                  key={index}
-                  className="text-text-gray text-base font-normal"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
+          <h2 className="text-lg font-medium text-black">Responsibilities</h2>
+          <div className="flex flex-col gap-4">
+            {content.responsibilities.map((item, index) => (
+              <p key={index} className="text-text-gray text-base font-normal">
+                {item}
+              </p>
+            ))}
           </div>
-        </div>
-      )}
-
-      {/* Company Vision */}
-      {content.vision && (
-        <div className="flex flex-col gap-4">
-          <h2 className="text-text-dark text-xl font-medium">Company Vision</h2>
-          <p className="text-text-gray text-base leading-6 font-normal">
-            {content.vision}
-          </p>
         </div>
       )}
 
       {/* Share this job */}
       <div className="flex items-center gap-5">
-        <span className="text-sm font-normal text-[#474c54]">
-          Share profile:
+        <span className="text-text-gray text-base font-normal">
+          Share this job:
         </span>
         <div className="flex gap-3">
           {socialPlatforms.map((platform, idx) => (
@@ -110,20 +81,16 @@ export function JobDetailContent({ content, onShare }: JobDetailContentProps) {
               key={idx}
               variant="outline"
               onClick={() => onShare?.(platform.name)}
-              className={`flex h-12 items-center gap-3 rounded border ${platform.borderColor} px-3`}
+              className="flex h-11 items-center gap-3 rounded border border-[#cee0f5] px-3"
             >
               <platform.icon
                 className="h-5 w-5"
-                style={{
-                  color:
-                    platform.textColor.replace('text-', '') === 'facebook'
-                      ? '#0066ff'
-                      : platform.textColor.replace('text-', '') === 'twitter'
-                        ? '#1da1f2'
-                        : '#ca2127',
-                }}
+                style={{ color: platform.textColor }}
               />
-              <span className={`text-sm font-normal ${platform.textColor}`}>
+              <span
+                className="text-sm font-normal"
+                style={{ color: platform.textColor }}
+              >
                 {platform.name}
               </span>
             </Button>

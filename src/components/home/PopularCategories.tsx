@@ -13,7 +13,7 @@ export function PopularCategories() {
 
   return (
     <section className="py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         <div className="mb-10 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900 md:text-2xl">
             {t('PopularCategories.heading')}

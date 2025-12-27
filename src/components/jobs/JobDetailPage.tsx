@@ -2,15 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import { apiClient, API_ENDPOINTS, JobResponse } from '@/lib/api'
+import { Breadcrumb } from './Breadcrumb'
 import { JobDetailHeader, JobHeaderInfo } from './JobDetailHeader'
+import { JobOverviewCard, JobOverview } from './JobOverviewCard'
 import { CompanyProfileCard, CompanyProfile } from './CompanyProfileCard'
 import { JobDetailContent, JobContent } from './JobDetailContent'
 import { RelatedJobsSection } from './RelatedJobsSection'
 import { JobCardProps } from './JobCard'
-import Image from 'next/image'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export interface JobDetailData {
   header: JobHeaderInfo
+  overview: JobOverview
   company: CompanyProfile
   content: JobContent
   relatedJobs: JobCardProps[]
@@ -21,6 +24,7 @@ interface JobDetailPageProps {
 }
 
 export function JobDetailPage({ jobId }: JobDetailPageProps) {
+  const { t } = useTranslation()
   const [job, setJob] = useState<JobDetailData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -34,34 +38,62 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
           API_ENDPOINTS.jobs.get(Number(jobId))
         )
 
+        // Helper to format date
+        const formatDate = (dateString?: string) => {
+          if (!dateString) return 'N/A'
+          return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        }
+
         const mappedJob: JobDetailData = {
           header: {
             id: response.id.toString(),
             title: response.title,
-            companyName: response.company.name,
-            industry:
-              response.company.industry || 'Information Technology (IT)',
-            companyLogo: response.company.logo || '',
-            companyBanner: response.company.cover || '',
+            companyName: response.company?.name || 'Unknown Company',
+            companyLogo: response.company?.logo || '',
+            featured: false,
+            jobType: response.jobType.replace('_', ' '),
+            website: response.company?.website || '',
+            phone: response.company?.phone || '',
+            email: response.company?.email || '',
+            expirationDate: formatDate(response.expiryDate),
+          },
+          overview: {
+            datePosted: formatDate(response.createdAt),
+            expirationDate: formatDate(response.expiryDate),
+            education: 'Graduation',
+            salary: response.salary
+              ? `$${response.salary}/month`
+              : '$50k-80k/month',
+            location: response.location,
+            jobType: response.jobType.replace('_', ' '),
+            experience: '10-15 Years',
           },
           company: {
-            name: response.company.name,
-            logo: response.company.logo || '',
-            description: response.jobDescription || '',
-            foundedIn: response.company.foundedYear?.toString() || 'N/A',
-            organizationType: response.company.industry || 'Private Company',
-            companySize: response.company.companySize || 'N/A',
-            teamSize: response.company.companySize || '120-300 Candidates',
-            industryTypes: response.company.industry || 'Technology',
-            phone: response.company.phone || 'N/A',
-            email: response.company.email || 'N/A',
-            website: response.company.website || 'N/A',
-            socialLinks: response.company.socialMediaLinks || {},
+            id: response.company?.id.toString() || '',
+            name: response.company?.name || 'Unknown Company',
+            logo: response.company?.logo || '',
+            description: 'Social networking service',
+            foundedIn: response.company?.foundedYear
+              ? `March 21, ${response.company.foundedYear}`
+              : 'March 21, 2006',
+            organizationType: response.company?.industry || 'Private Company',
+            companySize: response.company?.companySize || '120-300 Employers',
+            teamSize: response.company?.companySize || '120-300 Employers',
+            industryTypes: response.company?.industry || 'Technology',
+            phone: response.company?.phone || '(406) 555-0120',
+            email: response.company?.email || 'twitter@gmail.com',
+            website: response.company?.website || 'https://twitter.com',
+            socialLinks: response.company?.socialMediaLinks || {},
           },
           content: {
             description: response.jobDescription || '',
-            benefits: response.jobBenefit || '',
-            vision: response.company.introduce || '',
+            responsibilities: response.jobRequirement
+              ? response.jobRequirement.split('\n').filter((r) => r.trim())
+              : [],
           },
           relatedJobs: [],
         }
@@ -80,12 +112,12 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
     }
   }, [jobId])
 
-  const handleViewOpenPosition = () => {
-    // Scroll to open positions section
-    const openPositionsSection = document.getElementById('open-positions')
-    if (openPositionsSection) {
-      openPositionsSection.scrollIntoView({ behavior: 'smooth' })
-    }
+  const handleApply = () => {
+    console.log('Apply to job:', jobId)
+  }
+
+  const handleSave = () => {
+    console.log('Save job:', jobId)
   }
 
   const handleShare = (platform: string) => {
@@ -114,41 +146,47 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Banner Section */}
-      <div className="border-border-gray relative h-80 w-full overflow-hidden rounded-b-lg border">
-        <Image
-          src={job?.header.companyBanner || ''}
-          alt="Company banner"
-          className="h-full w-full object-cover"
-          width={1920}
-          height={1080}
+    <div className="min-h-screen">
+      <div className="mx-auto max-w-7xl">
+        {/* Breadcrumb */}
+        <Breadcrumb
+          title={job.header.title}
+          items={[
+            { label: t('Navbar.home') || 'Home', href: '/' },
+            { label: t('Jobs.findJob') || 'Find Job', href: '/jobs' },
+            { label: job.header.title },
+          ]}
         />
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 lg:px-20">
-        {/* Company Info Card - Overlaps banner */}
-        <div className="relative z-10 -mt-20 mb-9">
+      {/* Navigation Border */}
+      <div className="border-border-gray border-b"></div>
+
+      <div className="mx-auto max-w-7xl py-12">
+        {/* Job Header */}
+        <div className="mb-8">
           <JobDetailHeader
             job={job.header}
-            onViewOpenPosition={handleViewOpenPosition}
+            onApply={handleApply}
+            onSave={handleSave}
           />
         </div>
 
-        {/* Main Content */}
-        <div className="grid gap-6 pb-12 lg:grid-cols-[1fr_538px]">
-          {/* Left Column: Description, Benefits, Vision */}
+        {/* Main Content Grid */}
+        <div className="grid gap-8 lg:grid-cols-[1fr_536px]">
+          {/* Left Column: Job Description & Responsibilities */}
           <JobDetailContent content={job.content} onShare={handleShare} />
 
-          {/* Right Column: Company Profile Sidebar */}
-          <div>
+          {/* Right Column: Job Overview & Company Profile */}
+          <div className="flex flex-col gap-8">
+            <JobOverviewCard overview={job.overview} />
             <CompanyProfileCard company={job.company} />
           </div>
         </div>
       </div>
 
-      {/* Open Position Section */}
-      <div id="open-positions" className="border-border-gray border-t pt-12">
+      {/* Related Jobs Section */}
+      <div className="border-border-light border-t pt-12">
         <RelatedJobsSection jobs={job.relatedJobs} />
       </div>
     </div>

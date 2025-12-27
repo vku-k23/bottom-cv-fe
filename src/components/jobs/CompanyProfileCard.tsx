@@ -1,20 +1,15 @@
 'use client'
 
-import { Separator } from '@/components/ui/separator'
+import Link from 'next/link'
+import Image from 'next/image'
 import type { FC, SVGProps } from 'react'
-import CalendarIcon from '@/assets/icons/calendar.svg'
-import TimerIcon from '@/assets/icons/timer.svg'
-import WalletIcon from '@/assets/icons/wallet.svg'
-import BriefcaseIcon from '@/assets/icons/briefcase.svg'
-import GlobeIcon from '@/assets/icons/globe.svg'
-import PhoneIcon from '@/assets/icons/phone.svg'
-import EnvelopeIcon from '@/assets/icons/envelope.svg'
 import FacebookIcon from '@/assets/icons/social-facebook.svg'
 import TwitterIcon from '@/assets/icons/social-twitter.svg'
 import InstagramIcon from '@/assets/icons/social-instagram.svg'
 import YoutubeIcon from '@/assets/icons/social-youtube.svg'
 
 export interface CompanyProfile {
+  id?: string
   name: string
   logo?: string
   description: string
@@ -35,135 +30,81 @@ interface CompanyProfileCardProps {
 
 export function CompanyProfileCard({ company }: CompanyProfileCardProps) {
   return (
-    <div className="flex flex-col gap-6">
-      {/* Company Profile Stats */}
-      <div className="border-bg-blue-light rounded-xl border-2 bg-white p-6">
-        <div className="flex flex-col gap-6">
-          {/* First Row */}
-          <div className="flex gap-6">
-            <StatItem
-              icon={CalendarIcon}
-              label="Founded in:"
-              value={company.foundedIn}
-            />
-            <StatItem
-              icon={TimerIcon}
-              label="Organization type"
-              value={company.organizationType}
-            />
-          </div>
-          {/* Second Row */}
-          <div className="flex gap-6">
-            <StatItem
-              icon={WalletIcon}
-              label="Team size"
-              value={company.teamSize}
-            />
-            <StatItem
-              icon={BriefcaseIcon}
-              label="Industry types"
-              value={company.industryTypes}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Contact Information */}
-      <div className="rounded-xl border-2 border-[rgba(206,224,245,0.70)] bg-white p-6">
-        <h3 className="text-text-dark mb-4 text-xl font-medium">
-          Contact Information
-        </h3>
-        <div className="flex flex-col gap-4">
-          <ContactItem
-            icon={GlobeIcon}
-            label="Website"
-            value={company.website}
-            href={
-              company.website !== 'N/A'
-                ? `https://${company.website}`
-                : undefined
-            }
+    <div className="border-bg-blue-light rounded-xl border-2 bg-white p-8">
+      {/* Company Header */}
+      <div className="mb-8 flex items-center gap-4">
+        {company.logo && (
+          <Image
+            src={company.logo}
+            alt={company.name}
+            width={64}
+            height={64}
+            className="h-16 w-16 rounded-md object-cover"
           />
-          <Separator className="border-border-gray" />
-          <ContactItem icon={PhoneIcon} label="Phone" value={company.phone} />
-          <Separator className="border-border-gray" />
-          <ContactItem
-            icon={EnvelopeIcon}
-            label="Email address"
-            value={company.email}
-          />
-        </div>
-      </div>
-
-      {/* Follow us on */}
-      <div className="rounded-xl border-2 border-[rgba(206,224,245,0.70)] bg-white p-6">
-        <h3 className="text-text-dark mb-4 text-lg font-medium">
-          Follow us on:
-        </h3>
-        <div className="flex gap-3">
-          <SocialButton icon={FacebookIcon} bgColor="bg-blue-primary" />
-          <SocialButton icon={TwitterIcon} bgColor="bg-white" />
-          <SocialButton icon={InstagramIcon} bgColor="bg-white" />
-          <SocialButton icon={YoutubeIcon} bgColor="bg-blue-primary" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function StatItem({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: FC<SVGProps<SVGElement>>
-  label: string
-  value: string
-}) {
-  return (
-    <div className="flex flex-1 flex-col gap-4">
-      <Icon className="h-6 w-6" style={{ color: '#0a65cc' }} />
-      <div className="flex flex-col gap-1">
-        <p className="text-text-light-gray text-xs font-normal uppercase">
-          {label}
-        </p>
-        <p className="text-text-dark text-sm font-medium">{value}</p>
-      </div>
-    </div>
-  )
-}
-
-function ContactItem({
-  icon: Icon,
-  label,
-  value,
-  href,
-}: {
-  icon: FC<SVGProps<SVGElement>>
-  label: string
-  value: string
-  href?: string
-}) {
-  return (
-    <div className="flex items-start gap-4">
-      <Icon className="h-8 w-8 flex-shrink-0" style={{ color: '#0a65cc' }} />
-      <div className="flex flex-col gap-1">
-        <p className="text-text-light-gray text-xs font-normal uppercase">
-          {label}
-        </p>
-        {href ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-dark hover:text-blue-primary text-base font-medium"
-          >
-            {value}
-          </a>
-        ) : (
-          <p className="text-text-dark text-base font-medium">{value}</p>
         )}
+        <div>
+          {company.id ? (
+            <Link href={`/companies/${company.id}`}>
+              <h3 className="text-text-dark hover:text-blue-primary cursor-pointer text-xl font-medium transition-colors">
+                {company.name}
+              </h3>
+            </Link>
+          ) : (
+            <h3 className="text-text-dark text-xl font-medium">
+              {company.name}
+            </h3>
+          )}
+          <p className="text-text-light-gray text-sm font-normal">
+            {company.description}
+          </p>
+        </div>
       </div>
+
+      {/* Company Info List */}
+      <div className="flex flex-col gap-4">
+        <InfoRow label="Founded in:" value={company.foundedIn} />
+        <InfoRow label="Organization type:" value={company.organizationType} />
+        <InfoRow label="Company size:" value={company.companySize} />
+        <InfoRow label="Phone:" value={company.phone} />
+        <InfoRow label="Email:" value={company.email} />
+        <InfoRow label="Website:" value={company.website} isLink />
+      </div>
+
+      {/* Social Media Icons */}
+      <div className="mt-6 flex gap-2">
+        <SocialButton icon={FacebookIcon} bgColor="#0a65cc" />
+        <SocialButton icon={TwitterIcon} bgColor="#0a65cc" />
+        <SocialButton icon={InstagramIcon} bgColor="transparent" />
+        <SocialButton icon={YoutubeIcon} bgColor="#0a65cc" />
+      </div>
+    </div>
+  )
+}
+
+function InfoRow({
+  label,
+  value,
+  isLink = false,
+}: {
+  label: string
+  value: string
+  isLink?: boolean
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-text-gray text-base font-normal">{label}</span>
+      {isLink && value !== 'N/A' ? (
+        <a
+          href={value.startsWith('http') ? value : `https://${value}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-text-dark hover:text-blue-primary line-clamp-1 text-base font-normal"
+        >
+          {value}
+        </a>
+      ) : (
+        <span className="text-text-dark text-base font-normal">{value}</span>
+      )}
     </div>
   )
 }
@@ -175,11 +116,15 @@ function SocialButton({
   icon: FC<SVGProps<SVGElement>>
   bgColor: string
 }) {
-  const iconColor = bgColor === 'bg-blue-primary' ? '#ffffff' : '#0a65cc'
+  const isTransparent = bgColor === 'transparent'
+  const iconColor = isTransparent ? '#0a65cc' : '#ffffff'
 
   return (
     <button
-      className={`flex h-10 w-10 items-center justify-center rounded ${bgColor} transition-colors hover:opacity-80`}
+      className={`flex h-10 w-10 items-center justify-center rounded transition-colors hover:opacity-80 ${
+        isTransparent ? 'bg-transparent' : ''
+      }`}
+      style={!isTransparent ? { backgroundColor: bgColor } : {}}
     >
       <Icon className="h-4 w-4" style={{ color: iconColor }} />
     </button>

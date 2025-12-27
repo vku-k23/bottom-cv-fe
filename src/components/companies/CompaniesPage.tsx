@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from '@/hooks/useTranslation'
 import { Breadcrumb } from '@/components/jobs/Breadcrumb'
 import {
@@ -9,85 +9,16 @@ import {
 } from './CompaniesSearchSection'
 import { CompaniesFilterSidebar, FilterState } from './CompaniesFilterSidebar'
 import { CompanyCard, CompanyCardProps } from './CompanyCard'
+import { CompanyCardList } from './CompanyCardList'
 import { Pagination } from '@/components/jobs/Pagination'
-import { SlidersHorizontal, ChevronDown } from 'lucide-react'
+import { SlidersHorizontal, ChevronDown, Grid, List } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
-// Mock data
-const MOCK_COMPANIES: CompanyCardProps[] = [
-  {
-    id: '1',
-    name: 'Dribbble',
-    location: 'United States',
-    openJobs: 3,
-  },
-  {
-    id: '2',
-    name: 'Udemy',
-    location: 'China',
-    openJobs: 3,
-  },
-  {
-    id: '3',
-    name: 'Figma',
-    location: 'United States',
-    openJobs: 3,
-  },
-  {
-    id: '4',
-    name: 'Twitter',
-    location: 'Australia',
-    openJobs: 3,
-  },
-  {
-    id: '5',
-    name: 'Instagram',
-    location: 'Australia',
-    openJobs: 3,
-  },
-  {
-    id: '6',
-    name: 'Google',
-    location: 'Australia',
-    openJobs: 3,
-  },
-  {
-    id: '7',
-    name: 'Slack',
-    location: 'Germany',
-    openJobs: 3,
-  },
-  {
-    id: '8',
-    name: 'Apple',
-    location: 'United States',
-    openJobs: 3,
-  },
-  {
-    id: '9',
-    name: 'Youtube',
-    location: 'Canada',
-    openJobs: 3,
-  },
-  {
-    id: '10',
-    name: 'Reddit',
-    location: 'France',
-    openJobs: 3,
-  },
-  {
-    id: '11',
-    name: 'Upwork',
-    location: 'China',
-    openJobs: 3,
-  },
-  {
-    id: '12',
-    name: 'Microsoft',
-    location: 'United States',
-    openJobs: 3,
-  },
-]
+import {
+  apiClient,
+  API_ENDPOINTS,
+  CompanyResponse,
+  ListResponse,
+} from '@/lib/api'
 
 export function CompaniesPage() {
   const { t } = useTranslation()
@@ -95,11 +26,74 @@ export function CompaniesPage() {
   const [sortBy, setSortBy] = useState('latest')
   const [perPage, setPerPage] = useState(12)
   const [showFilters, setShowFilters] = useState(false)
+  const [viewType, setViewType] = useState<'grid' | 'list'>('grid')
 
-  const totalPages = Math.ceil(MOCK_COMPANIES.length / perPage)
-  const startIndex = (currentPage - 1) * perPage
-  const endIndex = startIndex + perPage
-  const currentCompanies = MOCK_COMPANIES.slice(startIndex, endIndex)
+  // API State
+  const [companies, setCompanies] = useState<CompanyCardProps[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [totalPages, setTotalPages] = useState(1)
+  const [_totalElements, setTotalElements] = useState(0)
+
+  // Fetch companies from API
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        // Map sortBy to backend format
+        let backendSortBy = 'id'
+        let backendSortType = 'desc'
+
+        switch (sortBy) {
+          case 'latest':
+            backendSortBy = 'id'
+            backendSortType = 'desc'
+            break
+          case 'oldest':
+            backendSortBy = 'id'
+            backendSortType = 'asc'
+            break
+          case 'name-az':
+            backendSortBy = 'name'
+            backendSortType = 'asc'
+            break
+          case 'name-za':
+            backendSortBy = 'name'
+            backendSortType = 'desc'
+            break
+        }
+
+        const response = await apiClient.get<ListResponse<CompanyResponse>>(
+          `${API_ENDPOINTS.companies.list}?pageNo=${currentPage - 1}&pageSize=${perPage}&sortBy=${backendSortBy}&sortType=${backendSortType}`
+        )
+
+        // Map backend response to CompanyCardProps
+        const mappedCompanies: CompanyCardProps[] = (response.data || []).map(
+          (company) => ({
+            id: company.id.toString(),
+            name: company.name,
+            location: company.addresses
+              ? Object.values(company.addresses)[0] || 'N/A'
+              : 'N/A',
+            openJobs: company.jobs?.length || 0, // Use actual jobs count from API
+            logo: company.logo,
+          })
+        )
+
+        setCompanies(mappedCompanies)
+        setTotalPages(response.totalPages)
+        setTotalElements(response.totalElements)
+      } catch (err) {
+        console.error('Failed to fetch companies:', err)
+        setError('Failed to load companies. Please try again later.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchCompanies()
+  }, [currentPage, perPage, sortBy])
 
   const handleSearch = (filters: CompanySearchFilters) => {
     console.log('Search filters:', filters)
@@ -112,8 +106,8 @@ export function CompaniesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen">
+      <div className="mx-auto max-w-7xl">
         {/* Breadcrumb */}
         <Breadcrumb
           title={t('Companies.findEmployers') || 'Find Employers'}
@@ -124,12 +118,12 @@ export function CompaniesPage() {
         />
 
         {/* Search Section */}
-        <div className="mb-6">
+        <div>
           <CompaniesSearchSection onSearch={handleSearch} />
         </div>
 
         {/* Filter Button & Controls */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="my-3 flex items-center justify-between">
           {/* Filter Toggle Button */}
           <Button
             onClick={() => setShowFilters(!showFilters)}
@@ -170,15 +164,31 @@ export function CompaniesPage() {
               <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
             </div>
 
-            {/* View Type Toggle - Hidden for now since design shows list view only */}
-            {/* <div className="flex rounded-md border border-gray-200 bg-white">
-              <button className="p-2 text-gray-400">
+            {/* View Type Toggle */}
+            <div className="flex rounded-md border border-gray-200 bg-white">
+              <button
+                onClick={() => setViewType('grid')}
+                className={`p-2 transition-colors ${
+                  viewType === 'grid'
+                    ? 'bg-gray-50 text-gray-900'
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+                aria-label="Grid view"
+              >
                 <Grid className="h-5 w-5" />
               </button>
-              <button className="p-2 bg-gray-50 text-gray-900">
+              <button
+                onClick={() => setViewType('list')}
+                className={`p-2 transition-colors ${
+                  viewType === 'list'
+                    ? 'bg-gray-50 text-gray-900'
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+                aria-label="List view"
+              >
                 <List className="h-5 w-5" />
               </button>
-            </div> */}
+            </div>
           </div>
         </div>
 
@@ -193,11 +203,43 @@ export function CompaniesPage() {
 
           {/* Companies List */}
           <div className={showFilters ? '' : 'lg:col-span-2'}>
-            <div className="space-y-6">
-              {currentCompanies.map((company) => (
-                <CompanyCard key={company.id} {...company} />
-              ))}
-            </div>
+            {/* Loading State */}
+            {isLoading && (
+              <div className="flex h-64 items-center justify-center">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && (
+              <div className="rounded-md bg-red-50 p-4 text-center text-red-600">
+                {error}
+              </div>
+            )}
+
+            {/* Companies Grid/List */}
+            {!isLoading && !error && (
+              <div
+                className={
+                  viewType === 'grid'
+                    ? 'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'
+                    : 'flex flex-col gap-4'
+                }
+              >
+                {companies.map((company) =>
+                  viewType === 'grid' ? (
+                    <CompanyCard key={company.id} {...company} />
+                  ) : (
+                    <CompanyCardList key={company.id} {...company} />
+                  )
+                )}
+                {companies.length === 0 && (
+                  <div className="col-span-full py-12 text-center text-gray-500">
+                    No companies found. Try adjusting your search filters.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

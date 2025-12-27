@@ -22,6 +22,10 @@ export const API_ENDPOINTS = {
     recommended: '/front/jobs/recommended/result',
     requestRecommendation: '/front/jobs/recommended/request',
   },
+  companies: {
+    list: '/front/companies',
+    get: (id: number) => `/front/companies/${id}`,
+  },
   cv: {
     list: '/cvs',
     get: (id: number) => `/cvs/${id}`,
@@ -61,6 +65,7 @@ export interface CompanyResponse {
   companySize?: string
   foundedYear?: number
   verified?: boolean
+  jobs?: JobResponse[]
 }
 
 export interface CategoryResponse {
@@ -80,7 +85,7 @@ export interface JobResponse {
   salary?: number
   expiryDate?: string
   status: string
-  company: CompanyResponse
+  company?: CompanyResponse
   categories?: CategoryResponse[]
   createdAt: string
 }

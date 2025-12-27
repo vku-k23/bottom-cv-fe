@@ -1,7 +1,10 @@
 'use client'
 
-import { Calendar, Clock, Briefcase, DollarSign, MapPin } from 'lucide-react'
-import { useTranslation } from '@/hooks/useTranslation'
+import CalendarIcon from '@/assets/icons/calendar.svg'
+import TimerIcon from '@/assets/icons/timer.svg'
+import BriefcaseIcon from '@/assets/icons/briefcase.svg'
+import WalletIcon from '@/assets/icons/wallet.svg'
+import MapPinIcon from '@/assets/icons/map-pin.svg'
 
 export interface JobOverview {
   datePosted: string
@@ -18,96 +21,79 @@ interface JobOverviewCardProps {
 }
 
 export function JobOverviewCard({ overview }: JobOverviewCardProps) {
-  const { t } = useTranslation()
-
-  const overviewItems = [
-    {
-      icon: Calendar,
-      label: t('JobDetail.jobPosted') || 'Job Posted:',
-      value: overview.datePosted,
-    },
-    {
-      icon: Clock,
-      label: t('JobDetail.jobExpireIn') || 'Job expire in:',
-      value: overview.expirationDate,
-    },
-    {
-      icon: Briefcase,
-      label: t('JobDetail.education') || 'Education',
-      value: overview.education,
-    },
-    {
-      icon: DollarSign,
-      label: t('JobDetail.salary') || 'Salary:',
-      value: overview.salary,
-    },
-    {
-      icon: MapPin,
-      label: t('JobDetail.location') || 'Location:',
-      value: overview.location,
-    },
-    {
-      icon: Briefcase,
-      label: t('JobDetail.jobType') || 'Job type:',
-      value: overview.jobType,
-    },
-    {
-      icon: Briefcase,
-      label: t('JobDetail.experience') || 'Experience',
-      value: overview.experience,
-    },
-  ]
-
   return (
-    <div className="space-y-6 rounded-lg border-2 border-blue-50 bg-white p-8">
-      <h3 className="text-xl font-medium text-gray-900">
-        {t('JobDetail.jobOverview') || 'Job Overview'}
-      </h3>
+    <div className="border-bg-blue-light rounded-lg border-2 bg-white p-8">
+      <h3 className="text-text-dark mb-6 text-xl font-medium">Job Overview</h3>
 
-      <div className="space-y-5">
-        {/* First row */}
-        <div className="grid grid-cols-2 gap-5">
-          {overviewItems.slice(0, 2).map((item, index) => (
-            <OverviewItem key={index} {...item} />
-          ))}
-          {overviewItems.slice(2, 3).map((item, index) => (
-            <OverviewItem key={index + 2} {...item} />
-          ))}
+      <div className="flex flex-col gap-6">
+        {/* First Row - 3 columns */}
+        <div className="flex gap-6">
+          <OverviewItem
+            icon={CalendarIcon}
+            label="Job Posted:"
+            value={overview.datePosted}
+          />
+          <OverviewItem
+            icon={TimerIcon}
+            label="Job expire in:"
+            value={overview.expirationDate}
+          />
+          <OverviewItem
+            icon={BriefcaseIcon}
+            label="Education"
+            value={overview.education}
+          />
         </div>
 
-        {/* Second row */}
-        <div className="grid grid-cols-2 gap-5">
-          {overviewItems.slice(3, 6).map((item, index) => (
-            <OverviewItem key={index + 3} {...item} />
-          ))}
+        {/* Second Row - 3 columns */}
+        <div className="flex gap-6">
+          <OverviewItem
+            icon={WalletIcon}
+            label="Salery:"
+            value={overview.salary}
+          />
+          <OverviewItem
+            icon={MapPinIcon}
+            label="LOCATIOn:"
+            value={overview.location}
+          />
+          <OverviewItem
+            icon={BriefcaseIcon}
+            label="job type:"
+            value={overview.jobType}
+          />
         </div>
 
-        {/* Third row */}
-        <div className="grid grid-cols-2 gap-5">
-          {overviewItems.slice(6, 7).map((item, index) => (
-            <OverviewItem key={index + 6} {...item} />
-          ))}
+        {/* Third Row - Single item */}
+        <div className="flex">
+          <OverviewItem
+            icon={BriefcaseIcon}
+            label="Experience"
+            value={overview.experience}
+          />
         </div>
       </div>
     </div>
   )
 }
 
-interface OverviewItemProps {
-  icon: React.ElementType
+function OverviewItem({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   label: string
   value: string
-}
-
-function OverviewItem({ icon: Icon, label, value }: OverviewItemProps) {
+}) {
   return (
-    <div className="flex gap-4">
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
-        <Icon className="h-8 w-8 text-white" />
-      </div>
+    <div className="flex flex-1 gap-4">
+      <Icon className="h-6 w-6 flex-shrink-0" style={{ color: '#0a65cc' }} />
       <div className="flex flex-col gap-1">
-        <p className="text-xs font-normal text-gray-500 uppercase">{label}</p>
-        <p className="text-sm font-medium text-gray-900">{value}</p>
+        <p className="text-text-light-gray text-xs font-normal uppercase">
+          {label}
+        </p>
+        <p className="text-text-dark text-sm font-medium">{value}</p>
       </div>
     </div>
   )

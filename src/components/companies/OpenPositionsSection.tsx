@@ -16,7 +16,7 @@ export function OpenPositionsSection({
 
   return (
     <div className="border-t border-gray-100 bg-white py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         {/* Section Title */}
         <h2 className="mb-12 text-4xl font-medium text-gray-900">
           {t('CompanyDetail.openPosition') || 'Open Position'} ({jobs.length})

@@ -7,7 +7,7 @@ export function CTASections() {
   const { t } = useTranslation()
   return (
     <section className="py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-6 md:flex-row">
           {/* For Job Seekers - Gray Card */}
           <div className="flex-1 rounded-xl bg-gray-100 p-12">

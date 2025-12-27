@@ -6,8 +6,8 @@ export function AboutPage() {
   const { t } = useTranslation()
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-8">
+      <div className="mx-auto max-w-7xl">
         <div className="text-center">
           <h1 className="mb-4 text-4xl font-bold text-gray-900">
             {t('AboutPage.heading')}

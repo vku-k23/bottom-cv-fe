@@ -6,6 +6,7 @@ import { Breadcrumb } from './Breadcrumb'
 import { JobSearchSection, SearchFilters } from './JobSearchSection'
 import { FilterBar } from './FilterBar'
 import { JobCard, JobCardProps } from './JobCard'
+import { JobCardList } from './JobCardList'
 import { Pagination } from './Pagination'
 import { apiClient, API_ENDPOINTS, JobResponse, ListResponse } from '@/lib/api'
 
@@ -38,8 +39,8 @@ export function JobsPage() {
         const mappedJobs: JobCardProps[] = (response.data || []).map((job) => ({
           id: job.id.toString(),
           title: job.title,
-          company: job.company.name,
-          companyLogo: job.company.logo,
+          company: job.company?.name || 'Unknown Company',
+          companyLogo: job.company?.logo,
           location: job.location, // or job.company.addresses? using simplified location for now
           jobType: job.jobType.replace('_', ' '), // e.g. FULL_TIME -> FULL TIME
           salary: job.salary ? `$${job.salary}` : 'Negotiable',
@@ -70,8 +71,8 @@ export function JobsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen">
+      <div className="mx-auto max-w-7xl">
         {/* Breadcrumb */}
         <Breadcrumb
           title={t('Jobs.findJob') || 'Find Job'}
@@ -82,7 +83,7 @@ export function JobsPage() {
         />
 
         {/* Search Section */}
-        <div className="mb-6">
+        <div>
           <JobSearchSection onSearch={handleSearch} />
         </div>
 
@@ -126,12 +127,22 @@ export function JobsPage() {
           </div>
         )}
 
-        {/* Job Cards Grid */}
+        {/* Job Cards Grid/List */}
         {!isLoading && !error && (
-          <div className="grid grid-cols-1 gap-6 pb-8 md:grid-cols-2 lg:grid-cols-3">
-            {jobs.map((job) => (
-              <JobCard key={job.id} {...job} />
-            ))}
+          <div
+            className={
+              viewType === 'grid'
+                ? 'grid grid-cols-1 gap-6 pb-8 md:grid-cols-2 lg:grid-cols-3'
+                : 'flex flex-col gap-4 pb-8'
+            }
+          >
+            {jobs.map((job) =>
+              viewType === 'grid' ? (
+                <JobCard key={job.id} {...job} />
+              ) : (
+                <JobCardList key={job.id} {...job} />
+              )
+            )}
             {jobs.length === 0 && (
               <div className="col-span-full py-12 text-center text-gray-500">
                 No jobs found. Try adjusting your search filters.

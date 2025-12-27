@@ -46,14 +46,14 @@ export function ApplicationsTableRow({
         {/* Job Info - 432px */}
         <div className="flex w-[432px] items-start gap-4">
           {/* Company Logo */}
-          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded bg-gray-100 p-4">
+          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded bg-gray-100">
             {application.companyLogo ? (
               <Image
                 src={application.companyLogo}
                 alt={application.company}
                 width={56}
                 height={56}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-cover"
               />
             ) : (
               <span className="text-lg font-semibold text-gray-600">

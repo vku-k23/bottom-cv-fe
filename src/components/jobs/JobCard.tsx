@@ -36,14 +36,14 @@ export function JobCard({
       {/* Company Info */}
       <div className="mb-4 flex items-start gap-4">
         {/* Company Logo */}
-        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center">
+        <div className="flex size-12 items-center justify-center overflow-hidden rounded-md">
           {companyLogo ? (
             <Image
               src={companyLogo}
               alt={company}
-              width={24}
-              height={24}
-              className="h-full w-full object-contain"
+              width={48}
+              height={48}
+              className="h-full w-full object-cover"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center rounded bg-gray-100">

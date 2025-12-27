@@ -131,7 +131,7 @@ export function Navbar() {
     >
       {/* Top mini bar */}
       <div className="hidden border-b border-gray-200 bg-gray-50 text-[11px] text-gray-600 lg:block">
-        <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-8 max-w-7xl items-center justify-between">
           <ul className="flex items-center gap-4 font-medium">
             <li>
               <Link
@@ -195,7 +195,7 @@ export function Navbar() {
         </div>
       </div>
       {/* Main nav */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link

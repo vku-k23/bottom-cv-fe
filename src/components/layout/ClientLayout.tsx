@@ -52,15 +52,11 @@ export default function ClientLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main
-        className={`flex-1 pt-16 lg:pt-24 ${isAuthPage ? 'bg-gray-50' : ''}`}
-      >
+      <main className={`flex-1 bg-white pt-16 lg:pt-24`}>
         {isAuthPage ? (
           children
         ) : (
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {children}
-          </div>
+          <div className="mx-auto max-w-7xl">{children}</div>
         )}
       </main>
       {!isAuthPage && <Footer />}
