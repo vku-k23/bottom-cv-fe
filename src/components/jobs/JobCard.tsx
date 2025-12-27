@@ -1,6 +1,6 @@
 'use client'
 
-import { MapPin, Bookmark } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -13,7 +13,6 @@ export interface JobCardProps {
   jobType: string
   salary: string
   featured?: boolean
-  onSave?: (id: string) => void
 }
 
 export function JobCard({
@@ -25,7 +24,6 @@ export function JobCard({
   jobType,
   salary,
   featured = false,
-  onSave,
 }: JobCardProps) {
   const cardClasses = featured
     ? 'bg-gradient-to-r from-[#fff6e6] to-white border-border-light'
@@ -59,18 +57,18 @@ export function JobCard({
         {/* Company Name & Location */}
         <div className="min-w-0 flex-1">
           <div className="mb-1.5 flex items-center gap-2">
-            <h3 className="text-base font-medium text-text-dark">
-              {company}
-            </h3>
+            <h3 className="text-text-dark text-base font-medium">{company}</h3>
             {featured && (
-              <span className="inline-flex items-center text-sm font-normal text-red-accent">
+              <span className="text-red-accent inline-flex items-center text-sm font-normal">
                 Featured
               </span>
             )}
           </div>
           <div className="flex items-center gap-1.5">
-            <MapPin className="h-4.5 w-4.5 flex-shrink-0 text-text-gray" />
-            <span className="text-sm font-normal text-text-muted">{location}</span>
+            <MapPin className="text-text-gray h-4.5 w-4.5 flex-shrink-0" />
+            <span className="text-text-muted text-sm font-normal">
+              {location}
+            </span>
           </div>
         </div>
       </div>
@@ -78,15 +76,15 @@ export function JobCard({
       {/* Job Title */}
       <Link
         href={`/jobs/${id}`}
-        className="mb-2 block text-xl font-medium text-[#191f33] transition-colors hover:text-blue-primary"
+        className="hover:text-blue-primary mb-2 block text-xl font-medium text-[#191f33] transition-colors"
       >
         {title}
       </Link>
 
       {/* Job Info */}
-      <div className="flex items-center gap-2 text-sm font-normal text-text-light-gray">
+      <div className="text-text-light-gray flex items-center gap-2 text-sm font-normal">
         <span>{jobType}</span>
-        <div className="h-1 w-1 rounded-full bg-text-light-gray" />
+        <div className="bg-text-light-gray h-1 w-1 rounded-full" />
         <span>{salary}</span>
       </div>
     </div>

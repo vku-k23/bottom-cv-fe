@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useTranslation } from '@/hooks/useTranslation'
 import { apiClient, API_ENDPOINTS, JobResponse } from '@/lib/api'
 import { JobDetailHeader, JobHeaderInfo } from './JobDetailHeader'
 import { CompanyProfileCard, CompanyProfile } from './CompanyProfileCard'
 import { JobDetailContent, JobContent } from './JobDetailContent'
 import { RelatedJobsSection } from './RelatedJobsSection'
 import { JobCardProps } from './JobCard'
+import Image from 'next/image'
 
 export interface JobDetailData {
   header: JobHeaderInfo
@@ -21,7 +21,6 @@ interface JobDetailPageProps {
 }
 
 export function JobDetailPage({ jobId }: JobDetailPageProps) {
-  const { t } = useTranslation()
   const [job, setJob] = useState<JobDetailData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -35,22 +34,13 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
           API_ENDPOINTS.jobs.get(Number(jobId))
         )
 
-        // Helper to format date
-        const formatDate = (dateString?: string) => {
-          if (!dateString) return 'N/A'
-          return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        }
-
         const mappedJob: JobDetailData = {
           header: {
             id: response.id.toString(),
             title: response.title,
             companyName: response.company.name,
-            industry: response.company.industry || 'Information Technology (IT)',
+            industry:
+              response.company.industry || 'Information Technology (IT)',
             companyLogo: response.company.logo || '',
             companyBanner: response.company.cover || '',
           },
@@ -126,9 +116,9 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
   return (
     <div className="min-h-screen bg-white">
       {/* Banner Section */}
-      <div className="relative h-80 w-full overflow-hidden rounded-b-lg border border-border-gray">
-        <img
-          src={job.header.companyBanner}
+      <div className="border-border-gray relative h-80 w-full overflow-hidden rounded-b-lg border">
+        <Image
+          src={job?.header.companyBanner || ''}
           alt="Company banner"
           className="h-full w-full object-cover"
         />
@@ -136,7 +126,7 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
 
       <div className="mx-auto max-w-7xl px-6 lg:px-20">
         {/* Company Info Card - Overlaps banner */}
-        <div className="-mt-20 relative z-10 mb-9">
+        <div className="relative z-10 -mt-20 mb-9">
           <JobDetailHeader
             job={job.header}
             onViewOpenPosition={handleViewOpenPosition}
@@ -156,7 +146,7 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
       </div>
 
       {/* Open Position Section */}
-      <div id="open-positions" className="border-t border-border-gray pt-12">
+      <div id="open-positions" className="border-border-gray border-t pt-12">
         <RelatedJobsSection jobs={job.relatedJobs} />
       </div>
     </div>

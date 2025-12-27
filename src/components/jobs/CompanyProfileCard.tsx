@@ -1,6 +1,7 @@
 'use client'
 
 import { Separator } from '@/components/ui/separator'
+import type { FC, SVGProps } from 'react'
 import CalendarIcon from '@/assets/icons/calendar.svg'
 import TimerIcon from '@/assets/icons/timer.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
@@ -36,7 +37,7 @@ export function CompanyProfileCard({ company }: CompanyProfileCardProps) {
   return (
     <div className="flex flex-col gap-6">
       {/* Company Profile Stats */}
-      <div className="rounded-xl border-2 border-bg-blue-light bg-white p-6">
+      <div className="border-bg-blue-light rounded-xl border-2 bg-white p-6">
         <div className="flex flex-col gap-6">
           {/* First Row */}
           <div className="flex gap-6">
@@ -69,20 +70,22 @@ export function CompanyProfileCard({ company }: CompanyProfileCardProps) {
 
       {/* Contact Information */}
       <div className="rounded-xl border-2 border-[rgba(206,224,245,0.70)] bg-white p-6">
-        <h3 className="mb-4 text-xl font-medium text-text-dark">Contact Information</h3>
+        <h3 className="text-text-dark mb-4 text-xl font-medium">
+          Contact Information
+        </h3>
         <div className="flex flex-col gap-4">
           <ContactItem
             icon={GlobeIcon}
             label="Website"
             value={company.website}
-            href={company.website !== 'N/A' ? `https://${company.website}` : undefined}
+            href={
+              company.website !== 'N/A'
+                ? `https://${company.website}`
+                : undefined
+            }
           />
           <Separator className="border-border-gray" />
-          <ContactItem
-            icon={PhoneIcon}
-            label="Phone"
-            value={company.phone}
-          />
+          <ContactItem icon={PhoneIcon} label="Phone" value={company.phone} />
           <Separator className="border-border-gray" />
           <ContactItem
             icon={EnvelopeIcon}
@@ -94,7 +97,9 @@ export function CompanyProfileCard({ company }: CompanyProfileCardProps) {
 
       {/* Follow us on */}
       <div className="rounded-xl border-2 border-[rgba(206,224,245,0.70)] bg-white p-6">
-        <h3 className="mb-4 text-lg font-medium text-text-dark">Follow us on:</h3>
+        <h3 className="text-text-dark mb-4 text-lg font-medium">
+          Follow us on:
+        </h3>
         <div className="flex gap-3">
           <SocialButton icon={FacebookIcon} bgColor="bg-blue-primary" />
           <SocialButton icon={TwitterIcon} bgColor="bg-white" />
@@ -106,13 +111,23 @@ export function CompanyProfileCard({ company }: CompanyProfileCardProps) {
   )
 }
 
-function StatItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+function StatItem({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: FC<SVGProps<SVGElement>>
+  label: string
+  value: string
+}) {
   return (
     <div className="flex flex-1 flex-col gap-4">
       <Icon className="h-6 w-6" style={{ color: '#0a65cc' }} />
       <div className="flex flex-col gap-1">
-        <p className="text-xs font-normal uppercase text-text-light-gray">{label}</p>
-        <p className="text-sm font-medium text-text-dark">{value}</p>
+        <p className="text-text-light-gray text-xs font-normal uppercase">
+          {label}
+        </p>
+        <p className="text-text-dark text-sm font-medium">{value}</p>
       </div>
     </div>
   )
@@ -124,7 +139,7 @@ function ContactItem({
   value,
   href,
 }: {
-  icon: any
+  icon: FC<SVGProps<SVGElement>>
   label: string
   value: string
   href?: string
@@ -133,29 +148,39 @@ function ContactItem({
     <div className="flex items-start gap-4">
       <Icon className="h-8 w-8 flex-shrink-0" style={{ color: '#0a65cc' }} />
       <div className="flex flex-col gap-1">
-        <p className="text-xs font-normal uppercase text-text-light-gray">{label}</p>
+        <p className="text-text-light-gray text-xs font-normal uppercase">
+          {label}
+        </p>
         {href ? (
           <a
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-base font-medium text-text-dark hover:text-blue-primary"
+            className="text-text-dark hover:text-blue-primary text-base font-medium"
           >
             {value}
           </a>
         ) : (
-          <p className="text-base font-medium text-text-dark">{value}</p>
+          <p className="text-text-dark text-base font-medium">{value}</p>
         )}
       </div>
     </div>
   )
 }
 
-function SocialButton({ icon: Icon, bgColor }: { icon: any; bgColor: string }) {
+function SocialButton({
+  icon: Icon,
+  bgColor,
+}: {
+  icon: FC<SVGProps<SVGElement>>
+  bgColor: string
+}) {
   const iconColor = bgColor === 'bg-blue-primary' ? '#ffffff' : '#0a65cc'
-  
+
   return (
-    <button className={`flex h-10 w-10 items-center justify-center rounded ${bgColor} transition-colors hover:opacity-80`}>
+    <button
+      className={`flex h-10 w-10 items-center justify-center rounded ${bgColor} transition-colors hover:opacity-80`}
+    >
       <Icon className="h-4 w-4" style={{ color: iconColor }} />
     </button>
   )

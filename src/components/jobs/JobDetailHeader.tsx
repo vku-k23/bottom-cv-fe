@@ -23,7 +23,7 @@ export function JobDetailHeader({
   onViewOpenPosition,
 }: JobDetailHeaderProps) {
   return (
-    <div className="flex items-center justify-between gap-6 rounded-xl border border-border-gray bg-white p-10">
+    <div className="border-border-gray flex items-center justify-between gap-6 rounded-xl border bg-white p-10">
       {/* Left: Company Info */}
       <div className="flex items-center gap-6">
         {/* Company Logo */}
@@ -47,15 +47,17 @@ export function JobDetailHeader({
 
         {/* Company Details */}
         <div className="flex flex-col gap-2.5">
-          <h1 className="text-2xl font-medium text-text-dark">{job.companyName}</h1>
-          <p className="text-base font-normal text-text-gray">{job.industry}</p>
+          <h1 className="text-text-dark text-2xl font-medium">
+            {job.companyName}
+          </h1>
+          <p className="text-text-gray text-base font-normal">{job.industry}</p>
         </div>
       </div>
 
       {/* Right: View Open Position Button */}
       <Button
         onClick={onViewOpenPosition}
-        className="flex h-14 items-center gap-3 rounded bg-blue-primary px-8 text-base font-semibold capitalize text-white hover:bg-blue-600"
+        className="bg-blue-primary flex h-14 items-center gap-3 rounded px-8 text-base font-semibold text-white capitalize hover:bg-blue-600"
       >
         View Open Position
         <ArrowRightIcon className="h-6 w-6" style={{ color: 'white' }} />
