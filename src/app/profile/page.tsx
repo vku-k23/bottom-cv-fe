@@ -4,16 +4,20 @@ import { useEffect, useState } from 'react'
 import { profileApi } from '@/lib/profileApi'
 import { ProfileResponse, ProfileRequest } from '@/types/profile'
 import { useTranslation } from '@/hooks/useTranslation'
+import { useAuthStore } from '@/stores/authStore'
 import Image from 'next/image'
 
 export default function ProfilePage() {
   const { t } = useTranslation()
+  const { fetchCurrentUser } = useAuthStore()
   const [profile, setProfile] = useState<ProfileResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [previewAvatar, setPreviewAvatar] = useState<string>('')
 
   const [formData, setFormData] = useState<ProfileRequest>({
     firstName: '',
@@ -33,6 +37,7 @@ export default function ProfilePage() {
         setIsLoading(true)
         const response = await profileApi.getProfile()
         setProfile(response)
+        setPreviewAvatar(response.avatar || '')
 
         // Populate form data
         setFormData({
@@ -66,6 +71,47 @@ export default function ProfilePage() {
     }))
   }
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      
+      // Basic validation
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setError('Image size must be less than 5MB')
+        return
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        setError('Only image files are allowed')
+        return
+      }
+
+      try {
+        setIsUploading(true)
+        setError(null)
+        
+        const response = await profileApi.uploadAvatar(file)
+        
+        if (response.success) {
+          setPreviewAvatar(response.fileUrl)
+          setFormData((prev) => ({
+            ...prev,
+            avatar: response.objectName,
+          }))
+          // Optionally update profile immediately if needed, but saving is handled by handleSave
+          setSuccessMessage(t('Profile.avatarUploadSuccess') || 'Avatar uploaded successfully')
+          await fetchCurrentUser(true) // Refresh auth store to update header avatar
+          setTimeout(() => setSuccessMessage(null), 3000)
+        }
+      } catch (error) {
+        console.error('Error uploading avatar:', error)
+        setError('Failed to upload avatar')
+      } finally {
+        setIsUploading(false)
+      }
+    }
+  }
+
   const handleSave = async () => {
     try {
       setIsSaving(true)
@@ -73,6 +119,7 @@ export default function ProfilePage() {
 
       const response = await profileApi.updateProfile(formData)
       setProfile(response)
+      await fetchCurrentUser(true) // Refresh auth store
       setIsEditing(false)
       setSuccessMessage(t('Profile.successMessage'))
 
@@ -88,6 +135,7 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     if (profile) {
+      setPreviewAvatar(profile.avatar || '')
       setFormData({
         firstName: profile.firstName || '',
         lastName: profile.lastName || '',
@@ -174,36 +222,45 @@ export default function ProfilePage() {
               {/* Profile Image */}
               <div className="lg:col-span-1">
                 <div className="text-center">
-                  <div className="relative inline-block">
-                    {profile?.avatar ? (
+                  <div className="relative inline-block group">
+                    {previewAvatar && (previewAvatar.startsWith('http') || previewAvatar.startsWith('/')) ? (
                       <Image
-                        src={profile.avatar}
+                        src={previewAvatar}
                         alt="Profile"
                         width={120}
                         height={120}
-                        className="rounded-full object-cover"
+                        className="rounded-full object-cover w-[120px] h-[120px]"
                       />
                     ) : (
-                      <div className="flex h-30 w-30 items-center justify-center rounded-full bg-gray-300">
+                      <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full bg-gray-300">
                         <span className="text-2xl font-medium text-gray-600">
                           {profile?.firstName?.charAt(0) || 'U'}
                         </span>
                       </div>
                     )}
+                    
+                    {isEditing && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                        <label htmlFor="avatar-upload" className="cursor-pointer text-white text-sm font-medium">
+                          {isUploading ? 'Uploading...' : 'Change'}
+                        </label>
+                        <input 
+                          id="avatar-upload" 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={handleAvatarUpload}
+                          disabled={isUploading}
+                        />
+                      </div>
+                    )}
                   </div>
+                  
                   {isEditing && (
                     <div className="mt-4">
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
-                        {t('Profile.avatarUrl')}
-                      </label>
-                      <input
-                        type="url"
-                        name="avatar"
-                        value={formData.avatar}
-                        onChange={handleInputChange}
-                        placeholder={t('Profile.avatarPlaceholder')}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      />
+                      <p className="text-sm text-gray-500 mb-2">
+                        Click on the image to change
+                      </p>
                     </div>
                   )}
                 </div>

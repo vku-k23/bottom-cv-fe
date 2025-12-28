@@ -1,6 +1,7 @@
 'use client'
 
 import { Bell, Search, LogOut, User, ChevronDown } from 'lucide-react'
+import Image from 'next/image'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,6 +61,7 @@ export function AdminHeader({ title, breadcrumbs }: AdminHeaderProps) {
     user?.profile?.firstName && user?.profile?.lastName
       ? `${user.profile.firstName} ${user.profile.lastName}`
       : user?.username || 'Admin'
+  const userAvatar = user?.profile?.avatar
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white shadow-sm">
@@ -128,8 +130,17 @@ export function AdminHeader({ title, breadcrumbs }: AdminHeaderProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center space-x-2 rounded-lg px-2 py-2 transition-colors hover:bg-gray-100 lg:px-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                  <User className="h-4 w-4" />
+                <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 overflow-hidden">
+                  {userAvatar && (userAvatar.startsWith('http') || userAvatar.startsWith('/')) ? (
+                    <Image
+                      src={userAvatar}
+                      alt={userName}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <User className="h-4 w-4" />
+                  )}
                 </div>
                 <div className="hidden text-left lg:block">
                   <p className="text-sm font-medium text-gray-900">

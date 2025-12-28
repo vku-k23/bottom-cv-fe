@@ -20,7 +20,7 @@ interface AuthActions {
   setError: (error: string | null) => void
   clearError: () => void
   initializeAuth: () => void
-  fetchCurrentUser: () => Promise<void>
+  fetchCurrentUser: (force?: boolean) => Promise<void>
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
@@ -186,7 +186,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           })
         }
       },
-      fetchCurrentUser: async () => {
+      fetchCurrentUser: async (force?: boolean) => {
         try {
           const { isAuthenticated, user } = get()
           // Fetch if:
@@ -199,7 +199,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             user.profile.firstName &&
             user.profile.lastName
           )
-          if (user && hasCompleteProfile) return
+          if (!force && user && hasCompleteProfile) return
           const currentUser = await authService.getCurrentUser()
           set({ user: currentUser })
         } catch (e: unknown) {

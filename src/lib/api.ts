@@ -36,6 +36,11 @@ export const API_ENDPOINTS = {
   user: {
     profile: '/users/profile',
   },
+  upload: {
+    cv: '/upload/cv',
+    profileImage: '/upload/profile-image',
+    companyLogo: '/upload/company-logo',
+  },
 } as const
 
 // --- Interfaces ---
