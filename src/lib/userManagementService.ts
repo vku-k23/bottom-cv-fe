@@ -56,7 +56,26 @@ export interface UpdateUserStatusRequest {
   reason?: string
 }
 
+export interface CreateUserRequest {
+  username: string
+  password: string
+  email: string
+  phoneNumber: string
+  firstName: string
+  lastName: string
+  dayOfBirth: string // dd-MM-yyyy
+  address: string
+  roles: Array<'ADMIN' | 'EMPLOYER' | 'CANDIDATE'>
+  description?: string
+  avatar?: string
+}
+
 export const userManagementService = {
+  // Create user
+  async createUser(data: CreateUserRequest): Promise<User> {
+    return apiClient.post<User>('/back/users', data)
+  },
+
   // Get users with filters
   async getUsers(params: UserFilterParams): Promise<PaginatedResponse<User>> {
     const queryParams = new URLSearchParams()

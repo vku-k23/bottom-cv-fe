@@ -10,6 +10,7 @@ import { JobDetailContent, JobContent } from './JobDetailContent'
 import { RelatedJobsSection } from './RelatedJobsSection'
 import { JobCardProps } from './JobCard'
 import { useTranslation } from '@/hooks/useTranslation'
+import { ApplyJobModal } from './ApplyJobModal'
 
 export interface JobDetailData {
   header: JobHeaderInfo
@@ -28,6 +29,7 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
   const [job, setJob] = useState<JobDetailData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -56,6 +58,7 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
             companyLogo: response.company?.logo || '',
             featured: false,
             jobType: response.jobType.replace('_', ' '),
+            categories: response.categories?.map((c) => c.name) || [],
             website: response.company?.website || '',
             phone: response.company?.phone || '',
             email: response.company?.email || '',
@@ -64,13 +67,13 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
           overview: {
             datePosted: formatDate(response.createdAt),
             expirationDate: formatDate(response.expiryDate),
-            education: 'Graduation',
+            education: response.qualification || 'N/A',
             salary: response.salary
               ? `$${response.salary}/month`
-              : '$50k-80k/month',
+              : 'Negotiable',
             location: response.location,
             jobType: response.jobType.replace('_', ' '),
-            experience: '10-15 Years',
+            experience: response.experience || 'N/A',
           },
           company: {
             id: response.company?.id.toString() || '',
@@ -113,7 +116,7 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
   }, [jobId])
 
   const handleApply = () => {
-    console.log('Apply to job:', jobId)
+    setIsApplyModalOpen(true)
   }
 
   const handleSave = () => {
@@ -189,6 +192,15 @@ export function JobDetailPage({ jobId }: JobDetailPageProps) {
       <div className="border-border-light border-t pt-12">
         <RelatedJobsSection jobs={job.relatedJobs} />
       </div>
+
+      {job && (
+        <ApplyJobModal
+          isOpen={isApplyModalOpen}
+          onClose={() => setIsApplyModalOpen(false)}
+          jobId={Number(jobId)}
+          jobTitle={job.header.title}
+        />
+      )}
     </div>
   )
 }

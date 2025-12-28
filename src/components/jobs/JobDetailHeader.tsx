@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import LinkIcon from '@/assets/icons/link.svg'
 import PhoneIcon from '@/assets/icons/phone-blue.svg'
 import EnvelopeIcon from '@/assets/icons/envelope-blue.svg'
@@ -15,6 +16,7 @@ export interface JobHeaderInfo {
   companyLogo?: string
   featured?: boolean
   jobType: string
+  categories?: string[]
   website?: string
   phone?: string
   email?: string
@@ -58,16 +60,23 @@ export function JobDetailHeader({
         {/* Job Details */}
         <div className="flex flex-col gap-3">
           {/* Title & Badges */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2">
             <h1 className="text-text-dark text-2xl font-medium">{job.title}</h1>
-            {job.featured && (
-              <span className="text-red-accent text-sm font-normal">
-                Featured
-              </span>
-            )}
-            <span className="text-sm font-normal text-[#0066ff]">
-              {job.jobType}
-            </span>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary" className="text-[#0066ff]">
+                {job.jobType}
+              </Badge>
+              {job.categories?.map((cat, index) => (
+                <Badge key={index} variant="outline" className="text-gray-600">
+                  {cat}
+                </Badge>
+              ))}
+              {job.featured && (
+                <span className="text-red-accent text-sm font-normal">
+                  Featured
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Contact Info */}

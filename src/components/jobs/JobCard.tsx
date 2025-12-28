@@ -1,8 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { ApplyJobModal } from './ApplyJobModal'
 
 export interface JobCardProps {
   id: string
@@ -25,6 +28,8 @@ export function JobCard({
   salary,
   featured = false,
 }: JobCardProps) {
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
+
   const cardClasses = featured
     ? 'bg-gradient-to-r from-[#fff6e6] to-white border-border-light'
     : 'bg-white border-border-light'
@@ -82,11 +87,28 @@ export function JobCard({
       </Link>
 
       {/* Job Info */}
-      <div className="text-text-light-gray flex items-center gap-2 text-sm font-normal">
+      <div className="text-text-light-gray mb-4 flex items-center gap-2 text-sm font-normal">
         <span>{jobType}</span>
         <div className="bg-text-light-gray h-1 w-1 rounded-full" />
         <span>{salary}</span>
       </div>
+
+      {/* Apply Button */}
+      <Button
+        variant="outline"
+        className="w-full text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+        onClick={() => setIsApplyModalOpen(true)}
+      >
+        Apply Now
+      </Button>
+
+      <ApplyJobModal
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        jobId={Number(id)}
+        jobTitle={title}
+      />
     </div>
   )
 }
+

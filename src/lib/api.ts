@@ -83,6 +83,9 @@ export interface JobResponse {
   jobType: string // 'FULL_TIME', 'PART_TIME', etc.
   location: string
   salary?: number
+  careerLevel?: string
+  qualification?: string
+  experience?: string
   expiryDate?: string
   status: string
   company?: CompanyResponse

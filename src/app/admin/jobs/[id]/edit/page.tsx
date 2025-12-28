@@ -3,11 +3,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { jobService, Job } from '@/lib/jobService'
 import { companyService } from '@/lib/companyService'
+import { categoryService } from '@/lib/categoryService'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -30,6 +32,9 @@ interface JobFormData {
   location: string
   workTime: string
   salary: number
+  careerLevel: string
+  qualification: string
+  experience: string
   expiryDate: string
   status: string
   companyId: number
@@ -52,6 +57,11 @@ export default function EditJobPage() {
     queryFn: () => companyService.getAllCompanies({ pageNo: 0, pageSize: 100 }),
   })
 
+  const { data: categories } = useQuery({
+    queryKey: ['admin-categories-list'],
+    queryFn: () => categoryService.getAllCategories({ pageNo: 0, pageSize: 100 }),
+  })
+
   const {
     register,
     handleSubmit,
@@ -62,36 +72,27 @@ export default function EditJobPage() {
 
   useEffect(() => {
     if (job) {
-      const jobTypeStr =
-        typeof job.jobType === 'string'
-          ? job.jobType
-          : (job.jobType as { displayName?: string; name?: string })
-              ?.displayName ||
-            (job.jobType as { displayName?: string; name?: string })?.name ||
-            'FULL_TIME'
-      const statusStr =
-        typeof job.status === 'string'
-          ? job.status
-          : (job.status as { displayName?: string; name?: string })
-              ?.displayName ||
-            (job.status as { displayName?: string; name?: string })?.name ||
-            'PENDING'
-
       reset({
         title: job.title || '',
         jobDescription: job.jobDescription || '',
         jobRequirement: job.jobRequirement || '',
         jobBenefit: job.jobBenefit || '',
-        jobType: jobTypeStr,
+        jobType: typeof job.jobType === 'string' ? job.jobType : (job.jobType as { name: string })?.name || 'FULL_TIME',
         location: job.location || '',
         workTime: job.workTime || '',
         salary: job.salary || 0,
+        careerLevel: job.careerLevel || '',
+        qualification: job.qualification || '',
+        experience: job.experience || '',
         expiryDate: job.expiryDate
           ? new Date(job.expiryDate).toISOString().split('T')[0]
           : '',
-        status: statusStr,
-        companyId: job.company?.id || 0,
-        categoryIds: job.categories?.map((c) => c.id) || [],
+        status:
+          typeof job.status === 'string'
+            ? job.status
+            : (job.status as { name: string } | undefined)?.name || 'PENDING',
+        companyId: job.company?.id || job.companyId || 0,
+        categoryIds: job.categories?.map((c) => c.id) || job.categoryIds || [],
       })
     }
   }, [job, reset])
@@ -261,6 +262,43 @@ export default function EditJobPage() {
               </div>
 
               <div>
+                <Label className="mb-2 block">Categories</Label>
+                <Controller
+                  name="categoryIds"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="grid grid-cols-1 gap-2 rounded-md border p-4 sm:grid-cols-2">
+                      {categories?.data.map((cat) => (
+                        <div
+                          key={cat.id}
+                          className="flex items-center space-x-2"
+                        >
+                          <Checkbox
+                            id={`cat-${cat.id}`}
+                            checked={field.value?.includes(cat.id)}
+                            onCheckedChange={(checked) => {
+                              const newValue = checked
+                                ? [...(field.value || []), cat.id]
+                                : (field.value || []).filter(
+                                    (id) => id !== cat.id
+                                  )
+                              field.onChange(newValue)
+                            }}
+                          />
+                          <Label
+                            htmlFor={`cat-${cat.id}`}
+                            className="font-normal cursor-pointer"
+                          >
+                            {cat.name}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                />
+              </div>
+
+              <div>
                 <Label htmlFor="jobType">Job Type *</Label>
                 <Controller
                   name="jobType"
@@ -328,6 +366,33 @@ export default function EditJobPage() {
                   id="salary"
                   type="number"
                   {...register('salary', { valueAsNumber: true })}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="careerLevel">Career Level</Label>
+                <Input
+                  id="careerLevel"
+                  {...register('careerLevel')}
+                  placeholder="e.g. Senior, Lead"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="qualification">Qualification</Label>
+                <Input
+                  id="qualification"
+                  {...register('qualification')}
+                  placeholder="e.g. Bachelor's Degree"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="experience">Experience</Label>
+                <Input
+                  id="experience"
+                  {...register('experience')}
+                  placeholder="e.g. 3+ years"
                 />
               </div>
 

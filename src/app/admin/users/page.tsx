@@ -266,11 +266,16 @@ export default function UsersManagementPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          {t('Admin.users.title')}
-        </h1>
-        <p className="mt-1 text-gray-600">{t('Admin.users.description')}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t('Admin.users.title')}
+          </h1>
+          <p className="mt-1 text-gray-600">{t('Admin.users.description')}</p>
+        </div>
+        <Button onClick={() => router.push('/admin/users/new')}>
+          {t('Admin.users.addUser') || 'Add User'}
+        </Button>
       </div>
 
       {/* Filters */}

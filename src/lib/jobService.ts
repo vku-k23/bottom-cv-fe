@@ -12,6 +12,9 @@ export interface Job {
   longitude?: number
   workTime?: string
   salary?: number
+  careerLevel?: string
+  qualification?: string
+  experience?: string
   expiryDate?: string
   status: string | { displayName?: string; name?: string } // Backend returns StatusJob enum
   company?: {
@@ -19,10 +22,12 @@ export interface Job {
     name: string
     logo?: string
   }
+  companyId?: number
   categories?: Array<{
     id: number
     name: string
   }>
+  categoryIds?: number[]
   createdAt?: string
   updatedAt?: string
   applicationCount?: number
