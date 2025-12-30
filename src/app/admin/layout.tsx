@@ -93,10 +93,16 @@ export default function AdminLayout({
       typeof role.name === 'string'
         ? role.name.toUpperCase()
         : String(role.name).toUpperCase()
-    return roleName === 'EMPLOYER' && !user?.roles?.some((r) => {
-      const rName = typeof r.name === 'string' ? r.name.toUpperCase() : String(r.name).toUpperCase()
-      return rName === 'ADMIN'
-    })
+    return (
+      roleName === 'EMPLOYER' &&
+      !user?.roles?.some((r) => {
+        const rName =
+          typeof r.name === 'string'
+            ? r.name.toUpperCase()
+            : String(r.name).toUpperCase()
+        return rName === 'ADMIN'
+      })
+    )
   })
 
   return (

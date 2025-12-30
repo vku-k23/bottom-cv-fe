@@ -71,23 +71,40 @@ export function EmployerDashboard() {
   }
 
   // Get job type display name
-  const getJobTypeDisplay = (jobType?: string | { displayName?: string; name?: string }) => {
+  const getJobTypeDisplay = (
+    jobType?: string | { displayName?: string; name?: string }
+  ) => {
     if (!jobType) return 'N/A'
     if (typeof jobType === 'string') return jobType
     return jobType.displayName || jobType.name || 'N/A'
   }
 
   // Get status display
-  const getStatusDisplay = (status?: string | { displayName?: string; name?: string }) => {
+  const getStatusDisplay = (
+    status?: string | { displayName?: string; name?: string }
+  ) => {
     if (!status) return { text: 'Unknown', variant: 'secondary' as const }
-    const statusStr = typeof status === 'string' ? status : status.name || status.displayName || ''
+    const statusStr =
+      typeof status === 'string'
+        ? status
+        : status.name || status.displayName || ''
     const upperStatus = statusStr.toUpperCase()
-    
+
     if (upperStatus === 'ACTIVE') {
-      return { text: 'Active', variant: 'default' as const, icon: CheckCircle, color: 'text-green-600' }
+      return {
+        text: 'Active',
+        variant: 'default' as const,
+        icon: CheckCircle,
+        color: 'text-green-600',
+      }
     }
     if (upperStatus === 'EXPIRED' || upperStatus === 'EXPIRE') {
-      return { text: 'Expire', variant: 'destructive' as const, icon: XCircle, color: 'text-red-600' }
+      return {
+        text: 'Expire',
+        variant: 'destructive' as const,
+        icon: XCircle,
+        color: 'text-red-600',
+      }
     }
     return { text: statusStr, variant: 'secondary' as const }
   }
@@ -122,11 +139,13 @@ export function EmployerDashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {/* Open Jobs Card */}
-        <Card className="bg-blue-50 border-blue-100">
+        <Card className="border-blue-100 bg-blue-50">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-2xl font-semibold text-gray-900">{openJobs}</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {openJobs}
+                </p>
                 <p className="text-sm text-gray-900 opacity-80">Open Jobs</p>
               </div>
               <div className="rounded-lg bg-white p-4">
@@ -137,12 +156,16 @@ export function EmployerDashboard() {
         </Card>
 
         {/* Saved Candidates Card */}
-        <Card className="bg-amber-50 border-amber-100">
+        <Card className="border-amber-100 bg-amber-50">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-2xl font-semibold text-gray-900">{savedCandidates.toLocaleString()}</p>
-                <p className="text-sm text-gray-900 opacity-80">Saved Candidates</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {savedCandidates.toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-900 opacity-80">
+                  Saved Candidates
+                </p>
               </div>
               <div className="rounded-lg bg-white p-4">
                 <Users className="h-8 w-8 text-amber-600" />
@@ -168,7 +191,7 @@ export function EmployerDashboard() {
           </div>
 
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 border-b border-gray-100 bg-gray-50 px-6 py-3 text-xs font-medium uppercase text-gray-700">
+          <div className="grid grid-cols-12 gap-4 border-b border-gray-100 bg-gray-50 px-6 py-3 text-xs font-medium text-gray-700 uppercase">
             <div className="col-span-4">JOBS</div>
             <div className="col-span-2">STATUS</div>
             <div className="col-span-3">APPLICATIONS</div>
@@ -197,7 +220,7 @@ export function EmployerDashboard() {
                 return (
                   <div
                     key={job.id}
-                    className="grid grid-cols-12 gap-4 px-6 py-5 hover:bg-gray-50 transition-colors"
+                    className="grid grid-cols-12 gap-4 px-6 py-5 transition-colors hover:bg-gray-50"
                   >
                     {/* Job Info */}
                     <div className="col-span-4 space-y-2">
@@ -218,11 +241,15 @@ export function EmployerDashboard() {
                           variant={statusInfo.variant}
                           className="flex w-fit items-center gap-1"
                         >
-                          <StatusIcon className={`h-4 w-4 ${statusInfo.color || ''}`} />
+                          <StatusIcon
+                            className={`h-4 w-4 ${statusInfo.color || ''}`}
+                          />
                           {statusInfo.text}
                         </Badge>
                       ) : (
-                        <Badge variant={statusInfo.variant}>{statusInfo.text}</Badge>
+                        <Badge variant={statusInfo.variant}>
+                          {statusInfo.text}
+                        </Badge>
                       )}
                     </div>
 
@@ -237,13 +264,19 @@ export function EmployerDashboard() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => router.push(`/admin/jobs/${job.id}/applications`)}
+                        onClick={() =>
+                          router.push(`/admin/jobs/${job.id}/applications`)
+                        }
                       >
                         View Applications
                       </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 w-9 p-0"
+                          >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -252,7 +285,9 @@ export function EmployerDashboard() {
                             <PlusCircle className="mr-2 h-4 w-4" />
                             Promote Job
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => router.push(`/admin/jobs/${job.id}`)}>
+                          <DropdownMenuItem
+                            onClick={() => router.push(`/admin/jobs/${job.id}`)}
+                          >
                             <Eye className="mr-2 h-4 w-4" />
                             View Detail
                           </DropdownMenuItem>
@@ -273,4 +308,3 @@ export function EmployerDashboard() {
     </div>
   )
 }
-

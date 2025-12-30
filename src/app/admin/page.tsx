@@ -44,10 +44,16 @@ export default function AdminDashboard() {
       typeof role.name === 'string'
         ? role.name.toUpperCase()
         : String(role.name).toUpperCase()
-    return roleName === 'EMPLOYER' && !user?.roles?.some((r) => {
-      const rName = typeof r.name === 'string' ? r.name.toUpperCase() : String(r.name).toUpperCase()
-      return rName === 'ADMIN'
-    })
+    return (
+      roleName === 'EMPLOYER' &&
+      !user?.roles?.some((r) => {
+        const rName =
+          typeof r.name === 'string'
+            ? r.name.toUpperCase()
+            : String(r.name).toUpperCase()
+        return rName === 'ADMIN'
+      })
+    )
   })
 
   // Fetch real data from backend - hooks must be called at top level
