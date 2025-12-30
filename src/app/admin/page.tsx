@@ -30,30 +30,49 @@ import {
 } from 'recharts'
 import Image from 'next/image'
 import { useTranslation } from '@/hooks/useTranslation'
+import { useAuth } from '@/hooks/useAuth'
+import { EmployerDashboard } from '@/components/employer/EmployerDashboard'
 
 export default function AdminDashboard() {
   const router = useRouter()
   const { t } = useTranslation()
+  const { user } = useAuth()
 
-  // Fetch real data from backend
+  // Check if user is EMPLOYER (not ADMIN)
+  const isEmployer = user?.roles?.some((role) => {
+    const roleName =
+      typeof role.name === 'string'
+        ? role.name.toUpperCase()
+        : String(role.name).toUpperCase()
+    return roleName === 'EMPLOYER' && !user?.roles?.some((r) => {
+      const rName = typeof r.name === 'string' ? r.name.toUpperCase() : String(r.name).toUpperCase()
+      return rName === 'ADMIN'
+    })
+  })
+
+  // Fetch real data from backend - hooks must be called at top level
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: () => adminService.getStats(),
+    enabled: !isEmployer, // Only fetch if not employer
   })
 
   const { data: activities, isLoading: activitiesLoading } = useQuery({
     queryKey: ['admin-activities'],
     queryFn: () => adminService.getActivities(),
+    enabled: !isEmployer, // Only fetch if not employer
   })
 
   const { data: userGrowthData } = useQuery({
     queryKey: ['user-growth-chart'],
     queryFn: () => adminService.getUserGrowthChart(30),
+    enabled: !isEmployer, // Only fetch if not employer
   })
 
   const { data: jobTrendData } = useQuery({
     queryKey: ['job-trend-chart'],
     queryFn: () => adminService.getJobTrendChart(30),
+    enabled: !isEmployer, // Only fetch if not employer
   })
 
   // Fetch recent companies and jobs
@@ -66,6 +85,7 @@ export default function AdminDashboard() {
         sortBy: 'createdAt',
         sortType: 'desc',
       }),
+    enabled: !isEmployer, // Only fetch if not employer
   })
 
   const { data: recentJobs } = useQuery({
@@ -77,7 +97,13 @@ export default function AdminDashboard() {
         sortBy: 'createdAt',
         sortType: 'desc',
       }),
+    enabled: !isEmployer, // Only fetch if not employer
   })
+
+  // Show employer dashboard if user is employer
+  if (isEmployer) {
+    return <EmployerDashboard />
+  }
 
   if (statsLoading) {
     return (

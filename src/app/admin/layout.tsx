@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
+import { EmployerSidebar } from '@/components/employer/EmployerSidebar'
 import { AdminHeader } from '@/components/admin/AdminHeader'
 import { AdminFooter } from '@/components/admin/AdminFooter'
 
@@ -87,12 +88,23 @@ export default function AdminLayout({
     )
   }
 
+  const isEmployer = user?.roles?.some((role) => {
+    const roleName =
+      typeof role.name === 'string'
+        ? role.name.toUpperCase()
+        : String(role.name).toUpperCase()
+    return roleName === 'EMPLOYER' && !user?.roles?.some((r) => {
+      const rName = typeof r.name === 'string' ? r.name.toUpperCase() : String(r.name).toUpperCase()
+      return rName === 'ADMIN'
+    })
+  })
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-gray-50">
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Fixed width, hidden on mobile */}
         <aside className="hidden lg:block">
-          <AdminSidebar />
+          {isEmployer ? <EmployerSidebar /> : <AdminSidebar />}
         </aside>
 
         {/* Main Content Area */}
