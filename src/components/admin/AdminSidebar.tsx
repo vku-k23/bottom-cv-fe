@@ -15,65 +15,89 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/hooks/useTranslation'
+import { useAuth } from '@/hooks/useAuth'
 
 interface NavItem {
   titleKey: string
   href: string
   icon: React.ComponentType<{ className?: string }>
   badge?: number
+  roles?: ('ADMIN' | 'EMPLOYER')[] // Roles that can see this item
 }
 
-const navItems: NavItem[] = [
+const allNavItems: NavItem[] = [
   {
     titleKey: 'Admin.sidebar.dashboard',
     href: '/admin',
     icon: LayoutDashboard,
+    roles: ['ADMIN', 'EMPLOYER'],
   },
   {
     titleKey: 'Admin.sidebar.users',
     href: '/admin/users',
     icon: Users,
+    roles: ['ADMIN'], // Only Admin can manage users
   },
   {
     titleKey: 'Admin.sidebar.jobs',
     href: '/admin/jobs',
     icon: Briefcase,
+    roles: ['ADMIN', 'EMPLOYER'],
   },
   {
     titleKey: 'Admin.sidebar.jobModeration',
     href: '/admin/moderation',
-    icon: Briefcase,
+    icon: Briefcase, // Change icon for moderation? Figma has Briefcase.
+    roles: ['ADMIN'], // Only Admin can do moderation
   },
   {
     titleKey: 'Admin.sidebar.companies',
     href: '/admin/companies',
     icon: Building,
+    roles: ['ADMIN'], // Admin can manage all companies
+  },
+  {
+    titleKey: 'Admin.sidebar.employerCompanyProfile', // New item for employer
+    href: '/admin/company-profile',
+    icon: Building,
+    roles: ['EMPLOYER'], // Employer's own company profile
   },
   {
     titleKey: 'Admin.sidebar.reports',
     href: '/admin/reports',
     icon: Flag,
+    roles: ['ADMIN'],
   },
   {
     titleKey: 'Admin.sidebar.categories',
     href: '/admin/categories',
     icon: FolderTree,
+    roles: ['ADMIN'],
   },
   {
     titleKey: 'Admin.sidebar.payments',
     href: '/admin/payments',
     icon: CreditCard,
+    roles: ['ADMIN'],
   },
   {
     titleKey: 'Admin.sidebar.settings',
     href: '/admin/settings',
     icon: Settings,
+    roles: ['ADMIN', 'EMPLOYER'],
   },
 ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
   const { t } = useTranslation()
+  const { user } = useAuth()
+
+  const userRoles = user?.roles?.map((role) => role.name) || []
+  const filteredNavItems = allNavItems.filter((item) => {
+    if (!item.roles) return true // If no roles defined, visible to all by default (or assume public/default role)
+    return item.roles.some((role) => userRoles.includes(role))
+  })
 
   return (
     <div className="flex h-full w-64 flex-col border-r bg-gray-50">
@@ -89,7 +113,7 @@ export function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {navItems.map((item) => {
+        {filteredNavItems.map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href !== '/admin' && pathname.startsWith(item.href))

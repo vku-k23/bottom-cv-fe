@@ -51,7 +51,8 @@ export default function NewJobPage() {
 
   const { data: categories } = useQuery({
     queryKey: ['admin-categories-list'],
-    queryFn: () => categoryService.getAllCategories({ pageNo: 0, pageSize: 100 }),
+    queryFn: () =>
+      categoryService.getAllCategories({ pageNo: 0, pageSize: 100 }),
   })
 
   const {
@@ -242,7 +243,7 @@ export default function NewJobPage() {
                           />
                           <Label
                             htmlFor={`cat-${cat.id}`}
-                            className="font-normal cursor-pointer"
+                            className="cursor-pointer font-normal"
                           >
                             {cat.name}
                           </Label>

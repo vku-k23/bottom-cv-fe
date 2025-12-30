@@ -74,13 +74,14 @@ export default function ProfilePage() {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      
+
       // Basic validation
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
         setError('Image size must be less than 5MB')
         return
       }
-      
+
       if (!file.type.startsWith('image/')) {
         setError('Only image files are allowed')
         return
@@ -89,9 +90,9 @@ export default function ProfilePage() {
       try {
         setIsUploading(true)
         setError(null)
-        
+
         const response = await profileApi.uploadAvatar(file)
-        
+
         if (response.success) {
           setPreviewAvatar(response.fileUrl)
           setFormData((prev) => ({
@@ -99,7 +100,9 @@ export default function ProfilePage() {
             avatar: response.objectName,
           }))
           // Optionally update profile immediately if needed, but saving is handled by handleSave
-          setSuccessMessage(t('Profile.avatarUploadSuccess') || 'Avatar uploaded successfully')
+          setSuccessMessage(
+            t('Profile.avatarUploadSuccess') || 'Avatar uploaded successfully'
+          )
           await fetchCurrentUser(true) // Refresh auth store to update header avatar
           setTimeout(() => setSuccessMessage(null), 3000)
         }
@@ -222,14 +225,16 @@ export default function ProfilePage() {
               {/* Profile Image */}
               <div className="lg:col-span-1">
                 <div className="text-center">
-                  <div className="relative inline-block group">
-                    {previewAvatar && (previewAvatar.startsWith('http') || previewAvatar.startsWith('/')) ? (
+                  <div className="group relative inline-block">
+                    {previewAvatar &&
+                    (previewAvatar.startsWith('http') ||
+                      previewAvatar.startsWith('/')) ? (
                       <Image
                         src={previewAvatar}
                         alt="Profile"
                         width={120}
                         height={120}
-                        className="rounded-full object-cover w-[120px] h-[120px]"
+                        className="h-[120px] w-[120px] rounded-full object-cover"
                       />
                     ) : (
                       <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full bg-gray-300">
@@ -238,27 +243,30 @@ export default function ProfilePage() {
                         </span>
                       </div>
                     )}
-                    
+
                     {isEditing && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                        <label htmlFor="avatar-upload" className="cursor-pointer text-white text-sm font-medium">
+                      <div className="bg-opacity-50 absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black opacity-0 transition-opacity group-hover:opacity-100">
+                        <label
+                          htmlFor="avatar-upload"
+                          className="cursor-pointer text-sm font-medium text-white"
+                        >
                           {isUploading ? 'Uploading...' : 'Change'}
                         </label>
-                        <input 
-                          id="avatar-upload" 
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
+                        <input
+                          id="avatar-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
                           onChange={handleAvatarUpload}
                           disabled={isUploading}
                         />
                       </div>
                     )}
                   </div>
-                  
+
                   {isEditing && (
                     <div className="mt-4">
-                      <p className="text-sm text-gray-500 mb-2">
+                      <p className="mb-2 text-sm text-gray-500">
                         Click on the image to change
                       </p>
                     </div>

@@ -1,5 +1,11 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Get the bottom-cv-fe directory (parent of .husky)
+BOTTOM_CV_FE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Change to bottom-cv-fe directory if not already there
+cd "$BOTTOM_CV_FE_DIR" || exit 1
 
 npm run lint:fix
 npm run format

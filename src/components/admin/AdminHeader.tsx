@@ -130,8 +130,10 @@ export function AdminHeader({ title, breadcrumbs }: AdminHeaderProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center space-x-2 rounded-lg px-2 py-2 transition-colors hover:bg-gray-100 lg:px-3">
-                <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 overflow-hidden">
-                  {userAvatar && (userAvatar.startsWith('http') || userAvatar.startsWith('/')) ? (
+                <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-blue-600">
+                  {userAvatar &&
+                  (userAvatar.startsWith('http') ||
+                    userAvatar.startsWith('/')) ? (
                     <Image
                       src={userAvatar}
                       alt={userName}
@@ -159,6 +161,13 @@ export function AdminHeader({ title, breadcrumbs }: AdminHeaderProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              {user &&
+                (user.roles?.some((role) => role.name === 'ADMIN') ||
+                  user.roles?.some((role) => role.name === 'EMPLOYER')) && (
+                  <DropdownMenuItem onClick={() => router.push('/admin')}>
+                    Dashboard
+                  </DropdownMenuItem>
+                )}
               <DropdownMenuItem onClick={() => router.push('/admin/settings')}>
                 Settings
               </DropdownMenuItem>

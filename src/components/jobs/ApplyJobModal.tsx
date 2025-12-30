@@ -53,9 +53,11 @@ export function ApplyJobModal({
       }
       // Validate file type
       if (
-        !['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(
-          file.type
-        )
+        ![
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ].includes(file.type)
       ) {
         toast.error('Only PDF and Word documents are allowed')
         return
@@ -103,7 +105,7 @@ export function ApplyJobModal({
             <Label htmlFor="cv-upload" className="text-base font-medium">
               Upload CV/Resume <span className="text-red-500">*</span>
             </Label>
-            
+
             {!selectedFile ? (
               <div className="border-border-gray hover:bg-bg-gray mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors">
                 <Input
@@ -182,7 +184,7 @@ export function ApplyJobModal({
             </Button>
             <Button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 text-white hover:bg-blue-700"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Submitting...' : 'Apply Now'}

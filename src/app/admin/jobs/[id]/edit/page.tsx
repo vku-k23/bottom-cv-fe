@@ -59,7 +59,8 @@ export default function EditJobPage() {
 
   const { data: categories } = useQuery({
     queryKey: ['admin-categories-list'],
-    queryFn: () => categoryService.getAllCategories({ pageNo: 0, pageSize: 100 }),
+    queryFn: () =>
+      categoryService.getAllCategories({ pageNo: 0, pageSize: 100 }),
   })
 
   const {
@@ -77,7 +78,10 @@ export default function EditJobPage() {
         jobDescription: job.jobDescription || '',
         jobRequirement: job.jobRequirement || '',
         jobBenefit: job.jobBenefit || '',
-        jobType: typeof job.jobType === 'string' ? job.jobType : (job.jobType as { name: string })?.name || 'FULL_TIME',
+        jobType:
+          typeof job.jobType === 'string'
+            ? job.jobType
+            : (job.jobType as { name: string })?.name || 'FULL_TIME',
         location: job.location || '',
         workTime: job.workTime || '',
         salary: job.salary || 0,
@@ -287,7 +291,7 @@ export default function EditJobPage() {
                           />
                           <Label
                             htmlFor={`cat-${cat.id}`}
-                            className="font-normal cursor-pointer"
+                            className="cursor-pointer font-normal"
                           >
                             {cat.name}
                           </Label>

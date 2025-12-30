@@ -46,7 +46,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, onLogout }) => {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        {profileLike?.avatar && (profileLike.avatar.startsWith('http') || profileLike.avatar.startsWith('/')) ? (
+        {profileLike?.avatar &&
+        (profileLike.avatar.startsWith('http') ||
+          profileLike.avatar.startsWith('/')) ? (
           <Image
             src={profileLike.avatar}
             alt="avatar"

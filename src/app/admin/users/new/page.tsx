@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { userManagementService, CreateUserRequest } from '@/lib/userManagementService'
+import {
+  userManagementService,
+  CreateUserRequest,
+} from '@/lib/userManagementService'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,44 +31,50 @@ export default function CreateUserPage() {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<CreateUserRequest & { role: 'ADMIN' | 'EMPLOYER' | 'CANDIDATE' }>({
-    defaultValues: {
-      role: 'CANDIDATE',
-    },
-  })
+  } = useForm<CreateUserRequest & { role: 'ADMIN' | 'EMPLOYER' | 'CANDIDATE' }>(
+    {
+      defaultValues: {
+        role: 'CANDIDATE',
+      },
+    }
+  )
 
   const createMutation = useMutation({
-    mutationFn: (data: CreateUserRequest) => userManagementService.createUser(data),
+    mutationFn: (data: CreateUserRequest) =>
+      userManagementService.createUser(data),
     onSuccess: () => {
       toast.success('User created successfully')
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       router.push('/admin/users')
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error(error)
-      const message = error?.message || 'Failed to create user'
+      const message =
+        error instanceof Error ? error.message : 'Failed to create user'
       toast.error(message)
     },
   })
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (
+    data: CreateUserRequest & { role: 'ADMIN' | 'EMPLOYER' | 'CANDIDATE' }
+  ) => {
     let formattedDate = ''
     if (data.dayOfBirth) {
-        const [year, month, day] = data.dayOfBirth.split('-')
-        formattedDate = `${day}-${month}-${year}`
+      const [year, month, day] = data.dayOfBirth.split('-')
+      formattedDate = `${day}-${month}-${year}`
     }
 
     const formattedData: CreateUserRequest = {
-        username: data.username,
-        password: data.password,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        dayOfBirth: formattedDate,
-        address: data.address,
-        roles: [data.role],
-        description: data.description,
+      username: data.username,
+      password: data.password,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      dayOfBirth: formattedDate,
+      address: data.address,
+      roles: [data.role],
+      description: data.description,
     }
     createMutation.mutate(formattedData)
   }
@@ -80,7 +88,9 @@ export default function CreateUserPage() {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Create New User</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create New User
+            </h1>
             <p className="mt-1 text-gray-600">Add a new user to the system</p>
           </div>
         </div>
@@ -97,13 +107,17 @@ export default function CreateUserPage() {
                 <Label htmlFor="username">Username *</Label>
                 <Input
                   id="username"
-                  {...register('username', { 
+                  {...register('username', {
                     required: 'Username is required',
-                    minLength: { value: 3, message: 'Minimum 3 characters' }
+                    minLength: { value: 3, message: 'Minimum 3 characters' },
                   })}
                   className={errors.username ? 'border-red-500' : ''}
                 />
-                {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
+                {errors.username && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.username.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -111,17 +125,23 @@ export default function CreateUserPage() {
                 <Input
                   id="password"
                   type="password"
-                  {...register('password', { 
+                  {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 6, message: 'Minimum 6 characters' },
                     pattern: {
-                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
-                        message: "Password must contain like Az0@1 and be at least 6 characters long"
-                    }
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                      message:
+                        'Password must contain like Az0@1 and be at least 6 characters long',
+                    },
                   })}
                   className={errors.password ? 'border-red-500' : ''}
                 />
-                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -129,16 +149,20 @@ export default function CreateUserPage() {
                 <Input
                   id="email"
                   type="email"
-                  {...register('email', { 
+                  {...register('email', {
                     required: 'Email is required',
                     pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address"
-                    }
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Invalid email address',
+                    },
                   })}
                   className={errors.email ? 'border-red-500' : ''}
                 />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -148,7 +172,10 @@ export default function CreateUserPage() {
                   control={control}
                   rules={{ required: 'Role is required' }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
@@ -171,22 +198,34 @@ export default function CreateUserPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <Label htmlFor="firstName">First Name *</Label>
-                    <Input
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input
                     id="firstName"
-                    {...register('firstName', { required: 'First name is required' })}
+                    {...register('firstName', {
+                      required: 'First name is required',
+                    })}
                     className={errors.firstName ? 'border-red-500' : ''}
-                    />
-                    {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>}
+                  />
+                  {errors.firstName && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.firstName.message}
+                    </p>
+                  )}
                 </div>
                 <div>
-                    <Label htmlFor="lastName">Last Name *</Label>
-                    <Input
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
                     id="lastName"
-                    {...register('lastName', { required: 'Last name is required' })}
+                    {...register('lastName', {
+                      required: 'Last name is required',
+                    })}
                     className={errors.lastName ? 'border-red-500' : ''}
-                    />
-                    {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>}
+                  />
+                  {errors.lastName && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.lastName.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -194,16 +233,20 @@ export default function CreateUserPage() {
                 <Label htmlFor="phoneNumber">Phone Number *</Label>
                 <Input
                   id="phoneNumber"
-                  {...register('phoneNumber', { 
+                  {...register('phoneNumber', {
                     required: 'Phone number is required',
                     pattern: {
-                        value: /^[0-9]{10,15}$/,
-                        message: "Phone number must be digits only (10-15)"
-                    }
+                      value: /^[0-9]{10,15}$/,
+                      message: 'Phone number must be digits only (10-15)',
+                    },
                   })}
                   className={errors.phoneNumber ? 'border-red-500' : ''}
                 />
-                {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber.message}</p>}
+                {errors.phoneNumber && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.phoneNumber.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -211,10 +254,16 @@ export default function CreateUserPage() {
                 <Input
                   id="dayOfBirth"
                   type="date"
-                  {...register('dayOfBirth', { required: 'Date of birth is required' })}
+                  {...register('dayOfBirth', {
+                    required: 'Date of birth is required',
+                  })}
                   className={errors.dayOfBirth ? 'border-red-500' : ''}
                 />
-                {errors.dayOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dayOfBirth.message}</p>}
+                {errors.dayOfBirth && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.dayOfBirth.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -224,15 +273,16 @@ export default function CreateUserPage() {
                   {...register('address', { required: 'Address is required' })}
                   className={errors.address ? 'border-red-500' : ''}
                 />
-                {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>}
+                {errors.address && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.address.message}
+                  </p>
+                )}
               </div>
 
               <div>
                 <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  {...register('description')}
-                />
+                <Textarea id="description" {...register('description')} />
               </div>
             </CardContent>
           </Card>

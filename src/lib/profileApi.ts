@@ -13,7 +13,9 @@ export const profileApi = {
   },
 
   // Upload profile avatar
-  uploadAvatar: async (file: File): Promise<{ success: boolean; fileUrl: string; objectName: string }> => {
+  uploadAvatar: async (
+    file: File
+  ): Promise<{ success: boolean; fileUrl: string; objectName: string }> => {
     const formData = new FormData()
     formData.append('file', file)
     return apiClient.postFormData(API_ENDPOINTS.upload.profileImage, formData)

@@ -49,22 +49,23 @@ export default function AdminLayout({
         user?.roles?.map((r) => r.name)
       )
 
-      // Check if user has ADMIN role
-      // Role.name from backend is string "ADMIN", "CANDIDATE", etc.
-      const isAdmin = user?.roles?.some((role) => {
+      // Check if user has ADMIN or EMPLOYER role
+      const hasAdminAccess = user?.roles?.some((role) => {
         const roleName =
           typeof role.name === 'string'
             ? role.name.toUpperCase()
             : String(role.name).toUpperCase()
-        return roleName === 'ADMIN'
+        return roleName === 'ADMIN' || roleName === 'EMPLOYER'
       })
 
-      console.log('Admin Layout - Is Admin:', isAdmin)
+      console.log('Admin Layout - Has Admin Access:', hasAdminAccess)
 
       setIsChecking(false)
 
-      if (!isAdmin) {
-        console.warn('User does not have ADMIN role, redirecting to 403')
+      if (!hasAdminAccess) {
+        console.warn(
+          'User does not have required access to admin, redirecting to 403'
+        )
         router.push('/403')
       }
     }
