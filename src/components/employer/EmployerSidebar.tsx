@@ -87,9 +87,25 @@ export function EmployerSidebar() {
 
           <nav className="space-y-1">
             {navItems.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== '/admin' && pathname.startsWith(item.href))
+              // Fix active logic: exact match or child routes, but exclude /admin/jobs/new when checking /admin/jobs
+              let isActive = false
+              if (item.href === '/admin') {
+                // For dashboard, only exact match
+                isActive = pathname === item.href
+              } else if (item.href === '/admin/jobs') {
+                // For My Jobs, match /admin/jobs but NOT /admin/jobs/new
+                isActive =
+                  pathname === item.href ||
+                  (pathname.startsWith('/admin/jobs/') &&
+                    !pathname.startsWith('/admin/jobs/new'))
+              } else if (item.href === '/admin/jobs/new') {
+                // For Post a Job, only exact match
+                isActive = pathname === item.href
+              } else {
+                // For other routes, exact match or starts with
+                isActive =
+                  pathname === item.href || pathname.startsWith(item.href + '/')
+              }
               const Icon = item.icon
 
               return (

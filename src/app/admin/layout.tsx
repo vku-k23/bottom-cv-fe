@@ -120,7 +120,7 @@ export default function AdminLayout({
 
           {/* Page Content - Scrollable */}
           <main className="flex-1 overflow-y-auto bg-gray-50">
-            <div className="p-4 lg:p-6">{children}</div>
+            <div className="p-4 pb-2 lg:p-6 lg:pb-2">{children}</div>
           </main>
 
           {/* Footer - Fixed bottom */}

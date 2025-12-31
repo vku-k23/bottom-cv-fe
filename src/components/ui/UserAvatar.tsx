@@ -79,7 +79,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, onLogout }) => {
               {user.username || profileLike?.firstName || profileLike?.lastName}
             </p>
           </div>
-          {user.roles?.some((role) => role.name === 'ADMIN') && (
+          {(user.roles?.some((role) => role.name === 'ADMIN') ||
+            user.roles?.some((role) => role.name === 'EMPLOYER')) && (
             <Link
               href="/admin"
               onClick={() => setOpen(false)}

@@ -45,6 +45,12 @@ const allNavItems: NavItem[] = [
     roles: ['ADMIN', 'EMPLOYER'],
   },
   {
+    titleKey: 'Admin.sidebar.applications',
+    href: '/admin/applications',
+    icon: FileText,
+    roles: ['ADMIN', 'EMPLOYER'],
+  },
+  {
     titleKey: 'Admin.sidebar.jobModeration',
     href: '/admin/moderation',
     icon: Briefcase, // Change icon for moderation? Figma has Briefcase.

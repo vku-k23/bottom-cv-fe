@@ -3,7 +3,7 @@
 import { ApplicationsKanbanPage } from '@/components/applications'
 import { useSearchParams } from 'next/navigation'
 
-export default function Applications() {
+export default function AdminApplicationsPage() {
   const searchParams = useSearchParams()
   const jobId = searchParams.get('jobId')
     ? Number(searchParams.get('jobId'))

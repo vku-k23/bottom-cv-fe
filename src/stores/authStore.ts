@@ -193,6 +193,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           // - not authenticated => skip
           // - authenticated and no user => fetch
           // - authenticated and user exists but missing profile or essential profile fields => fetch
+          // - force is true => always fetch (to refresh company data)
           if (!isAuthenticated) return
           const hasCompleteProfile = !!(
             user?.profile &&
@@ -200,6 +201,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             user.profile.lastName
           )
           if (!force && user && hasCompleteProfile) return
+          // Always fetch from API to get latest data including company
           const currentUser = await authService.getCurrentUser()
           set({ user: currentUser })
         } catch (e: unknown) {

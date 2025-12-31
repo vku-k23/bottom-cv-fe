@@ -39,6 +39,11 @@ export interface User {
   status: string
   createdAt: string
   updatedAt: string
+  company?: {
+    id: number
+    name: string
+    [key: string]: unknown
+  }
 }
 
 export interface Role {
