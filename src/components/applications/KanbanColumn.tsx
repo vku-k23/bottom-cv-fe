@@ -24,9 +24,7 @@ interface KanbanColumnProps {
   onEditColumn?: (columnId: string) => void
   onDeleteColumn?: (columnId: string) => void
   onDownloadCV?: (applicationId: number) => void
-  getUserInfo?: (
-    userId: number
-  ) =>
+  getUserInfo?: (userId: number) =>
     | {
         firstName?: string
         lastName?: string
