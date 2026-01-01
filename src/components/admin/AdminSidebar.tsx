@@ -12,6 +12,7 @@ import {
   FileText,
   CreditCard,
   FolderTree,
+  Newspaper,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/hooks/useTranslation'
@@ -85,6 +86,12 @@ const allNavItems: NavItem[] = [
     href: '/admin/payments',
     icon: CreditCard,
     roles: ['ADMIN'],
+  },
+  {
+    titleKey: 'Admin.sidebar.blogs',
+    href: '/admin/blogs',
+    icon: Newspaper,
+    roles: ['ADMIN'], // Only Admin can manage blogs
   },
   {
     titleKey: 'Admin.sidebar.settings',
