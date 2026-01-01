@@ -58,7 +58,9 @@ export const blogService = {
     return apiClient.get<Blog>(`/front/blogs/${slug}`)
   },
 
-  async getPublishedBlogs(params?: BlogSearchParams): Promise<BlogListResponse> {
+  async getPublishedBlogs(
+    params?: BlogSearchParams
+  ): Promise<BlogListResponse> {
     const queryParams = new URLSearchParams()
     if (params?.keyword) queryParams.append('keyword', params.keyword)
     if (params?.categoryId)
@@ -85,4 +87,3 @@ export const blogService = {
     return apiClient.get<Blog[]>(`/front/blogs/${blogId}/related`)
   },
 }
-

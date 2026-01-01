@@ -13,11 +13,19 @@ export function BlogsPage() {
   const [page, setPage] = useState(0)
   const [pageSize] = useState(8)
   const [searchKeyword, setSearchKeyword] = useState('')
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>()
+  const [selectedCategoryId, setSelectedCategoryId] = useState<
+    number | undefined
+  >()
 
   // Fetch published blogs
   const { data, isLoading, error } = useQuery({
-    queryKey: ['public-blogs', page, pageSize, searchKeyword, selectedCategoryId],
+    queryKey: [
+      'public-blogs',
+      page,
+      pageSize,
+      searchKeyword,
+      selectedCategoryId,
+    ],
     queryFn: () =>
       blogService.getPublishedBlogs({
         page,
@@ -143,7 +151,9 @@ export function BlogsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(totalPages - 1, p + 1))
+                  }
                   disabled={page >= totalPages - 1}
                   className="h-12 w-12 rounded-full border-blue-100 bg-blue-50 p-0 text-blue-600 hover:bg-blue-100"
                 >
@@ -157,4 +167,3 @@ export function BlogsPage() {
     </div>
   )
 }
-

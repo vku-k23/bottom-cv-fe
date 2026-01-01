@@ -72,7 +72,9 @@ export function BlogCard({ blog, isHighlighted = false }: BlogCardProps) {
 
           {/* Excerpt */}
           <p className="line-clamp-3 text-sm leading-relaxed text-gray-600">
-            {blog.excerpt || blog.content.substring(0, 200).replace(/<[^>]*>/g, '')}...
+            {blog.excerpt ||
+              blog.content.substring(0, 200).replace(/<[^>]*>/g, '')}
+            ...
           </p>
 
           {/* Read more link */}
@@ -88,4 +90,3 @@ export function BlogCard({ blog, isHighlighted = false }: BlogCardProps) {
     </article>
   )
 }
-

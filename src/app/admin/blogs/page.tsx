@@ -125,7 +125,10 @@ export default function BlogsPage() {
             </Select>
           </div>
         </div>
-        <Button onClick={() => router.push('/admin/blogs/new')} className="h-11">
+        <Button
+          onClick={() => router.push('/admin/blogs/new')}
+          className="h-11"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Create Blog
         </Button>
@@ -135,19 +138,19 @@ export default function BlogsPage() {
       <div className="rounded-lg border border-gray-200 bg-white">
         {/* Table Header */}
         <div className="grid grid-cols-[1fr_120px_150px_100px_150px] gap-4 border-b border-gray-100 bg-gray-50 px-5 py-3">
-          <div className="text-xs font-medium uppercase text-gray-700">
+          <div className="text-xs font-medium text-gray-700 uppercase">
             Blog
           </div>
-          <div className="text-xs font-medium uppercase text-gray-700">
+          <div className="text-xs font-medium text-gray-700 uppercase">
             Status
           </div>
-          <div className="text-xs font-medium uppercase text-gray-700">
+          <div className="text-xs font-medium text-gray-700 uppercase">
             Published
           </div>
-          <div className="text-xs font-medium uppercase text-gray-700">
+          <div className="text-xs font-medium text-gray-700 uppercase">
             Views
           </div>
-          <div className="text-xs font-medium uppercase text-gray-700">
+          <div className="text-xs font-medium text-gray-700 uppercase">
             Actions
           </div>
         </div>
@@ -343,4 +346,3 @@ export default function BlogsPage() {
     </div>
   )
 }
-

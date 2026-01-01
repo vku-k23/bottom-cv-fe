@@ -21,7 +21,9 @@ interface BlogDetailPageProps {
 
 export function BlogDetailPage({ slug }: BlogDetailPageProps) {
   const [searchKeyword, setSearchKeyword] = useState('')
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>()
+  const [selectedCategoryId, setSelectedCategoryId] = useState<
+    number | undefined
+  >()
 
   // Fetch blog by slug
   const {
@@ -63,7 +65,8 @@ export function BlogDetailPage({ slug }: BlogDetailPageProps) {
         <span className="text-6xl">📝</span>
         <h1 className="text-2xl font-semibold text-gray-900">Blog Not Found</h1>
         <p className="text-gray-500">
-          The blog you&apos;re looking for doesn&apos;t exist or has been removed.
+          The blog you&apos;re looking for doesn&apos;t exist or has been
+          removed.
         </p>
         <Link
           href="/blogs"
@@ -118,7 +121,7 @@ export function BlogDetailPage({ slug }: BlogDetailPageProps) {
 
               {/* Article Header */}
               <header className="space-y-6">
-                <h1 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">
+                <h1 className="text-3xl leading-tight font-bold text-gray-900 sm:text-4xl">
                   {blog.title}
                 </h1>
 
@@ -166,7 +169,7 @@ export function BlogDetailPage({ slug }: BlogDetailPageProps) {
 
               {/* Article Content */}
               <div
-                className="prose prose-lg max-w-none prose-headings:font-semibold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-blockquote:border-l-4 prose-blockquote:border-blue-200 prose-blockquote:bg-blue-50/50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-gray-800"
+                className="prose prose-lg prose-headings:font-semibold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-blockquote:border-l-4 prose-blockquote:border-blue-200 prose-blockquote:bg-blue-50/50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-gray-800 max-w-none"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
               />
 
@@ -249,7 +252,8 @@ function RelatedBlogCard({ blog }: { blog: Blog }) {
         </Link>
 
         <p className="line-clamp-3 text-sm text-gray-500">
-          {blog.excerpt || blog.content.substring(0, 150).replace(/<[^>]*>/g, '')}
+          {blog.excerpt ||
+            blog.content.substring(0, 150).replace(/<[^>]*>/g, '')}
           ...
         </p>
 
@@ -264,4 +268,3 @@ function RelatedBlogCard({ blog }: { blog: Blog }) {
     </article>
   )
 }
-

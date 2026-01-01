@@ -218,7 +218,10 @@ export default function EditBlogPage() {
                 id="thumbnail"
                 value={formData.thumbnail}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, thumbnail: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    thumbnail: e.target.value,
+                  }))
                 }
                 placeholder="https://example.com/image.jpg"
                 className="mt-1"
@@ -250,7 +253,10 @@ export default function EditBlogPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
+                    <SelectItem
+                      key={category.id}
+                      value={category.id.toString()}
+                    >
                       {category.name}
                     </SelectItem>
                   ))}
@@ -274,7 +280,9 @@ export default function EditBlogPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={BlogStatus.DRAFT}>Draft</SelectItem>
-                  <SelectItem value={BlogStatus.PUBLISHED}>Published</SelectItem>
+                  <SelectItem value={BlogStatus.PUBLISHED}>
+                    Published
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -322,7 +330,10 @@ export default function EditBlogPage() {
                 id="metaTitle"
                 value={formData.metaTitle}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    metaTitle: e.target.value,
+                  }))
                 }
                 placeholder="SEO title"
                 className="mt-1"
@@ -367,4 +378,3 @@ export default function EditBlogPage() {
     </div>
   )
 }
-

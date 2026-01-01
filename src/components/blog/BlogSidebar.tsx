@@ -49,7 +49,7 @@ export function BlogSidebar({
       <div className="rounded-xl border border-gray-100 bg-white p-6">
         <h3 className="mb-4 text-lg font-semibold text-gray-900">Search</h3>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Search blogs..."
             value={searchKeyword}
@@ -110,7 +110,9 @@ export function BlogSidebar({
 
       {/* Recent Posts */}
       <div className="rounded-xl border border-gray-100 bg-white p-6">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">Recent Post</h3>
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
+          Recent Post
+        </h3>
         <div className="space-y-4">
           {recentBlogs?.slice(0, 3).map((blog, index) => (
             <div key={blog.id}>
@@ -151,21 +153,27 @@ export function BlogSidebar({
 
       {/* Popular Tags */}
       <div className="rounded-xl border border-gray-100 bg-white p-6">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">Popular Tag</h3>
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
+          Popular Tag
+        </h3>
         <div className="flex flex-wrap gap-2">
-          {['Design', 'Programming', 'Health & Care', 'Motion Design', 'Photography', 'Politics'].map(
-            (tag) => (
-              <span
-                key={tag}
-                className="cursor-pointer rounded-md bg-gray-50 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-blue-600 hover:text-white"
-              >
-                {tag}
-              </span>
-            )
-          )}
+          {[
+            'Design',
+            'Programming',
+            'Health & Care',
+            'Motion Design',
+            'Photography',
+            'Politics',
+          ].map((tag) => (
+            <span
+              key={tag}
+              className="cursor-pointer rounded-md bg-gray-50 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-blue-600 hover:text-white"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
     </div>
   )
 }
-
