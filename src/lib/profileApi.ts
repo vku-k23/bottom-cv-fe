@@ -7,6 +7,11 @@ export const profileApi = {
     return apiClient.get<ProfileResponse>(API_ENDPOINTS.user.profile)
   },
 
+  // Get profile by userId (for EMPLOYER and ADMIN)
+  getProfileByUserId: async (userId: number): Promise<ProfileResponse> => {
+    return apiClient.get<ProfileResponse>(`/back/profile/user/${userId}`)
+  },
+
   // Update current user profile
   updateProfile: async (data: ProfileRequest): Promise<ProfileResponse> => {
     return apiClient.post<ProfileResponse>(API_ENDPOINTS.user.profile, data)

@@ -39,6 +39,7 @@ interface KanbanBoardProps {
         education?: string
       }
     | undefined
+  jobTitle?: string
 }
 
 export function KanbanBoard({
@@ -49,6 +50,7 @@ export function KanbanBoard({
   onDeleteColumn,
   onDownloadCV,
   getUserInfo,
+  jobTitle,
 }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<number | null>(null)
   const [overId, setOverId] = useState<string | number | null>(null)
@@ -180,6 +182,7 @@ export function KanbanBoard({
                 getUserInfo={getUserInfo}
                 activeId={activeId}
                 overId={overId}
+                jobTitle={jobTitle}
               />
             </SortableContext>
           </div>
@@ -209,6 +212,7 @@ export function KanbanBoard({
             <ApplicationCard
               application={activeApplication}
               userInfo={getUserInfo?.(activeApplication.userId)}
+              jobTitle={jobTitle}
             />
           </div>
         )}

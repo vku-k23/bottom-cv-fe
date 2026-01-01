@@ -36,6 +36,7 @@ interface KanbanColumnProps {
     | undefined
   activeId?: number | null
   overId?: string | number | null
+  jobTitle?: string
 }
 
 export function KanbanColumn({
@@ -46,6 +47,7 @@ export function KanbanColumn({
   getUserInfo,
   activeId,
   overId,
+  jobTitle,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
@@ -120,6 +122,7 @@ export function KanbanColumn({
                 userInfo={getUserInfo?.(application.userId)}
                 onDownloadCV={onDownloadCV}
                 isDragging={activeId === application.id}
+                jobTitle={jobTitle}
               />
               {/* Drop Indicator after card */}
               {isOverCard && (

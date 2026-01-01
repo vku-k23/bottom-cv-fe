@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
@@ -21,7 +21,6 @@ import {
   ApplicationStatus,
 } from '@/lib/applicationService'
 import { statusColumnService } from '@/lib/statusColumnService'
-import { userManagementService, User } from '@/lib/userManagementService'
 import { CreateColumnModal } from './CreateColumnModal'
 import Link from 'next/link'
 
@@ -81,40 +80,12 @@ export function ApplicationsKanbanPage({
   const isLoading = isLoadingColumns || isLoadingApplications
   const error = columnsError || applicationsError
 
-  // Get unique user IDs from all applications
-  const userIds = useMemo(() => {
-    if (!groupedApplications) return []
-    const allApps = Object.values(groupedApplications).flat()
-    return Array.from(new Set(allApps.map((app) => app.userId)))
-  }, [groupedApplications])
-
-  // Fetch user profiles for all applications (batch fetch)
-  const { data: usersData } = useQuery({
-    queryKey: ['applications-users', userIds],
-    queryFn: async () => {
-      const users: Record<number, User> = {}
-      // Fetch users in parallel (limit to avoid too many requests)
-      const limitedUserIds = userIds.slice(0, 50) // Limit to 50 users for performance
-      await Promise.all(
-        limitedUserIds.map(async (userId) => {
-          try {
-            const user = await userManagementService.getUserById(userId)
-            users[userId] = user
-          } catch (error) {
-            console.error(`Failed to fetch user ${userId}:`, error)
-          }
-        })
-      )
-      return users
-    },
-    enabled: userIds.length > 0,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  })
-
-  // Get user info helper
+  // Get user info helper - returns undefined since we'll fetch profile data in the modal
+  // This avoids permission issues with batch fetching users (which requires ADMIN role)
+  // Profile data will be fetched lazily when the candidate profile modal opens
   const getUserInfo = useCallback(
     (
-      userId: number
+      _userId: number
     ):
       | {
           firstName?: string
@@ -124,24 +95,11 @@ export function ApplicationsKanbanPage({
           education?: string
         }
       | undefined => {
-      const user = usersData?.[userId]
-      if (!user?.profile) return undefined
-
-      // Calculate experience (placeholder - would need actual experience data)
-      const experience = '7 Years Experience' // TODO: Calculate from profile data
-
-      // Get education (placeholder - would need actual education data)
-      const education = 'Master Degree' // TODO: Get from profile or CV data
-
-      return {
-        firstName: user.profile.firstName,
-        lastName: user.profile.lastName,
-        avatar: user.profile.avatar,
-        experience,
-        education,
-      }
+      // Return undefined - profile data will be fetched when modal opens
+      // This avoids 403 errors from trying to batch fetch users (which requires ADMIN role)
+      return undefined
     },
-    [usersData]
+    []
   )
 
   // Set mounted state to prevent hydration mismatch
@@ -623,6 +581,7 @@ export function ApplicationsKanbanPage({
         onDeleteColumn={handleDeleteColumn}
         onDownloadCV={handleDownloadCV}
         getUserInfo={getUserInfo}
+        jobTitle={jobTitle}
       />
 
       {/* Create Column Modal */}

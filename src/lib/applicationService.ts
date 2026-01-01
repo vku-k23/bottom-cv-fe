@@ -1,5 +1,18 @@
 import { apiClient, ListResponse } from './api'
 
+// Candidate profile information included in application response
+export interface CandidateProfile {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber?: string
+  address?: string
+  avatar?: string
+  dayOfBirth?: string // Format: "dd-MM-yyyy"
+  description?: string
+}
+
 export interface ApplyResponse {
   id: number
   jobId: number
@@ -14,6 +27,7 @@ export interface ApplyResponse {
   updatedAt?: string
   createdBy?: string
   updatedBy?: string
+  candidateProfile?: CandidateProfile // Included for employer/admin viewing
 }
 
 export type ApplicationStatus = 'PENDING' | 'ACTIVE' | 'INACTIVE'

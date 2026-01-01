@@ -16,6 +16,7 @@ interface DraggableApplicationCardProps {
   }
   onDownloadCV?: (applicationId: number) => void
   isDragging?: boolean
+  jobTitle?: string
 }
 
 export function DraggableApplicationCard({
@@ -23,6 +24,7 @@ export function DraggableApplicationCard({
   userInfo,
   onDownloadCV,
   isDragging: externalIsDragging,
+  jobTitle,
 }: DraggableApplicationCardProps) {
   const {
     setNodeRef,
@@ -59,6 +61,7 @@ export function DraggableApplicationCard({
         application={application}
         userInfo={userInfo}
         onDownloadCV={onDownloadCV}
+        jobTitle={jobTitle}
       />
     </div>
   )
