@@ -31,7 +31,16 @@ export default function AdminLayout({
           return
         } catch (error) {
           console.error('Failed to fetch user:', error)
-          router.push('/403')
+          // Only redirect to 403 if it's a permission error, not auth error
+          if (
+            error instanceof Error &&
+            (error as Error & { isForbidden?: boolean }).isForbidden
+          ) {
+            router.push('/403')
+          } else {
+            // Auth error - redirect to login
+            router.push('/auth/signin')
+          }
           return
         }
       }

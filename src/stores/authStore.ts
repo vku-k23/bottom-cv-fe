@@ -206,9 +206,11 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           set({ user: currentUser })
         } catch (e: unknown) {
           console.error('Fetch current user failed', e)
+          // Only logout on authentication errors (401), not on permission errors (403)
           if (
             e instanceof Error &&
-            (/Authentication failed/i.test(e.message) || /403/.test(e.message))
+            /Authentication failed/i.test(e.message) &&
+            !(e as Error & { isForbidden?: boolean }).isForbidden
           ) {
             get().logout()
           }

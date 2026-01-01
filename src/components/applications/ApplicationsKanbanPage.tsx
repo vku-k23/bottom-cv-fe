@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { Filter, ArrowUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -35,6 +35,7 @@ export function ApplicationsKanbanPage({
   jobTitle,
 }: ApplicationsKanbanPageProps) {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const queryClient = useQueryClient()
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [isCreateColumnModalOpen, setIsCreateColumnModalOpen] = useState(false)
@@ -147,6 +148,25 @@ export function ApplicationsKanbanPage({
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  // Handle 403 errors - redirect to 403 page without logging out
+  useEffect(() => {
+    const checkForbiddenError = (err: unknown) => {
+      if (
+        err instanceof Error &&
+        (err as Error & { isForbidden?: boolean }).isForbidden
+      ) {
+        router.push('/403')
+      }
+    }
+
+    if (columnsError) {
+      checkForbiddenError(columnsError)
+    }
+    if (applicationsError) {
+      checkForbiddenError(applicationsError)
+    }
+  }, [columnsError, applicationsError, router])
 
   // Mutation for creating status column
   const createColumnMutation = useMutation({
@@ -482,6 +502,14 @@ export function ApplicationsKanbanPage({
   }
 
   if (error) {
+    // Don't show error UI for 403 - redirect is handled in useEffect
+    if (
+      error instanceof Error &&
+      (error as Error & { isForbidden?: boolean }).isForbidden
+    ) {
+      return null
+    }
+
     return (
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">

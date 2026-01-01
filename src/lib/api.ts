@@ -188,10 +188,10 @@ export class ApiClient {
           // ignore json parse error
         }
 
-        // Check if this is an authentication-related error (401, 403, or 404 with user not found)
+        // Check if this is an authentication-related error (401, or 404 with user not found)
+        // Note: 403 is NOT an auth error - user is authenticated but lacks permission
         const isAuthError =
           response.status === 401 ||
-          response.status === 403 ||
           (response.status === 404 &&
             typeof errorData === 'object' &&
             errorData !== null &&
@@ -207,21 +207,23 @@ export class ApiClient {
           this.setToken(null)
           // If we got a specific error message from backend, use it; otherwise use generic
           if (errorMessage === `HTTP Error: ${response.status}`) {
-            if (response.status === 403) {
-              errorMessage = 'Access forbidden'
-            } else {
-              errorMessage =
-                'Authentication failed. Please check your username and password.'
-            }
+            errorMessage =
+              'Authentication failed. Please check your username and password.'
           }
-
-          // For 403, redirect to 403 page
-          if (response.status === 403 && typeof window !== 'undefined') {
-            window.location.href = '/403'
-            return Promise.reject(new Error(errorMessage))
-          }
-
           throw new Error(errorMessage)
+        }
+
+        // Handle 403 (Forbidden) - user is authenticated but lacks permission
+        // Don't clear token, just throw error with special flag
+        if (response.status === 403) {
+          if (errorMessage === `HTTP Error: ${response.status}`) {
+            errorMessage = 'Access forbidden'
+          }
+          const forbiddenError = new Error(errorMessage) as Error & {
+            isForbidden?: boolean
+          }
+          forbiddenError.isForbidden = true
+          throw forbiddenError
         }
 
         const error = new Error(errorMessage)
@@ -304,11 +306,12 @@ export class ApiClient {
         }
 
         if (response.status === 403) {
-          if (typeof window !== 'undefined') {
-            window.location.href = '/403'
-            return Promise.reject(new Error('Access forbidden'))
+          // Don't clear token - user is authenticated but lacks permission
+          const forbiddenError = new Error('Access forbidden') as Error & {
+            isForbidden?: boolean
           }
-          throw new Error('Access forbidden')
+          forbiddenError.isForbidden = true
+          throw forbiddenError
         }
 
         let errorMessage = `HTTP Error: ${response.status}`
@@ -387,11 +390,12 @@ export class ApiClient {
         }
 
         if (response.status === 403) {
-          if (typeof window !== 'undefined') {
-            window.location.href = '/403'
-            return Promise.reject(new Error('Access forbidden'))
+          // Don't clear token - user is authenticated but lacks permission
+          const forbiddenError = new Error('Access forbidden') as Error & {
+            isForbidden?: boolean
           }
-          throw new Error('Access forbidden')
+          forbiddenError.isForbidden = true
+          throw forbiddenError
         }
 
         let errorMessage = `HTTP Error: ${response.status}`
