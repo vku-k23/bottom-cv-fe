@@ -48,4 +48,3 @@ export const statusColumnService = {
     return apiClient.delete(`/status-columns/${id}`)
   },
 }
-

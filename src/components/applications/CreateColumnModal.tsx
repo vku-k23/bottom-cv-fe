@@ -41,7 +41,11 @@ export function CreateColumnModal({
     }
 
     // Validate duplicate
-    if (existingColumnNames.some((n) => n.toLowerCase() === name.trim().toLowerCase())) {
+    if (
+      existingColumnNames.some(
+        (n) => n.toLowerCase() === name.trim().toLowerCase()
+      )
+    ) {
       setError('A column with this name already exists')
       return
     }
@@ -79,7 +83,8 @@ export function CreateColumnModal({
         <DialogHeader>
           <DialogTitle>Create New Column</DialogTitle>
           <DialogDescription>
-            Enter a name for the new status column. This column will be saved to the database.
+            Enter a name for the new status column. This column will be saved to
+            the database.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -98,7 +103,9 @@ export function CreateColumnModal({
                 autoFocus
               />
               {error && (
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {error}
+                </p>
               )}
             </div>
           </div>
@@ -120,4 +127,3 @@ export function CreateColumnModal({
     </Dialog>
   )
 }
-

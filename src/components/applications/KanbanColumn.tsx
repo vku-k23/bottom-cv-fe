@@ -52,7 +52,10 @@ export function KanbanColumn({
   })
 
   const isColumnOver = isOver && overId === column.id
-  const isCardOver = overId && typeof overId === 'number' && column.applications.some(app => app.id === overId)
+  const isCardOver =
+    overId &&
+    typeof overId === 'number' &&
+    column.applications.some((app) => app.id === overId)
 
   return (
     <div
@@ -100,14 +103,17 @@ export function KanbanColumn({
       {/* Applications List */}
       <div className="flex-1 space-y-4 overflow-y-auto p-5">
         {column.applications.map((application, index) => {
-          const isOverCard = overId === application.id && activeId !== application.id
-          const showDropIndicator = isOverCard || (isColumnOver && index === 0 && column.applications.length === 0)
-          
+          const isOverCard =
+            overId === application.id && activeId !== application.id
+          const showDropIndicator =
+            isOverCard ||
+            (isColumnOver && index === 0 && column.applications.length === 0)
+
           return (
             <div key={application.id} className="relative">
               {/* Drop Indicator - Jira style */}
               {showDropIndicator && (
-                <div className="absolute -top-2 left-0 right-0 z-10 h-0.5 bg-blue-500 rounded-full animate-pulse" />
+                <div className="absolute -top-2 right-0 left-0 z-10 h-0.5 animate-pulse rounded-full bg-blue-500" />
               )}
               <DraggableApplicationCard
                 application={application}
@@ -117,20 +123,20 @@ export function KanbanColumn({
               />
               {/* Drop Indicator after card */}
               {isOverCard && (
-                <div className="absolute -bottom-2 left-0 right-0 z-10 h-0.5 bg-blue-500 rounded-full animate-pulse" />
+                <div className="absolute right-0 -bottom-2 left-0 z-10 h-0.5 animate-pulse rounded-full bg-blue-500" />
               )}
             </div>
           )
         })}
         {/* Drop indicator at the end of column */}
         {isColumnOver && column.applications.length > 0 && !isCardOver && (
-          <div className="h-0.5 bg-blue-500 rounded-full animate-pulse" />
+          <div className="h-0.5 animate-pulse rounded-full bg-blue-500" />
         )}
         {column.applications.length === 0 && (
           <div className="flex h-32 items-center justify-center text-sm text-gray-500">
             {isColumnOver ? (
               <div className="flex flex-col items-center gap-2">
-                <div className="h-0.5 w-full max-w-[200px] bg-blue-500 rounded-full animate-pulse" />
+                <div className="h-0.5 w-full max-w-[200px] animate-pulse rounded-full bg-blue-500" />
                 <span>Drop here</span>
               </div>
             ) : (
