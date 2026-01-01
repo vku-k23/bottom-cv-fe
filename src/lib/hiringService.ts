@@ -9,7 +9,9 @@ export const hiringService = {
   /**
    * Hire a candidate
    */
-  async hireCandidate(request: HireCandidateRequest): Promise<HireCandidateResponse> {
+  async hireCandidate(
+    request: HireCandidateRequest
+  ): Promise<HireCandidateResponse> {
     return apiClient.post<HireCandidateResponse>('/admin/hiring/hire', request)
   },
 
@@ -42,4 +44,3 @@ export const hiringService = {
     )
   },
 }
-

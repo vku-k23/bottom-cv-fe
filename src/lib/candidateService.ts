@@ -42,11 +42,14 @@ export const candidateService = {
     jobId: number,
     note?: string
   ): Promise<ToggleSaveResponse> {
-    return apiClient.post<ToggleSaveResponse>('/admin/saved-candidates/toggle', {
-      candidateId,
-      jobId,
-      note,
-    })
+    return apiClient.post<ToggleSaveResponse>(
+      '/admin/saved-candidates/toggle',
+      {
+        candidateId,
+        jobId,
+        note,
+      }
+    )
   },
 
   /**
@@ -68,7 +71,9 @@ export const candidateService = {
    * Remove a saved candidate by ID
    */
   async removeSavedCandidate(id: number): Promise<{ message: string }> {
-    return apiClient.delete<{ message: string }>(`/admin/saved-candidates/${id}`)
+    return apiClient.delete<{ message: string }>(
+      `/admin/saved-candidates/${id}`
+    )
   },
 
   /**

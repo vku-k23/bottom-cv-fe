@@ -76,7 +76,9 @@ export const emailService = {
    * Retry a failed email
    */
   async retryEmail(emailLogId: number): Promise<EmailLog> {
-    return apiClient.post<EmailLog>(`/admin/emails/logs/${emailLogId}/retry`, {})
+    return apiClient.post<EmailLog>(
+      `/admin/emails/logs/${emailLogId}/retry`,
+      {}
+    )
   },
 }
-

@@ -52,4 +52,3 @@ export interface ApplicationStatusHistory {
   note?: string
   offerDetails?: string
 }
-

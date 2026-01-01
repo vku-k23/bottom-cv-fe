@@ -59,4 +59,3 @@ export interface RenderTemplateResponse {
   templateId: string
   templateName: string
 }
-

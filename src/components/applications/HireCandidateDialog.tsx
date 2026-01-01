@@ -78,12 +78,15 @@ export function HireCandidateDialog({
     : `User ${application.userId}`
 
   const hireMutation = useMutation({
-    mutationFn: (request: HireCandidateRequest) => hiringService.hireCandidate(request),
+    mutationFn: (request: HireCandidateRequest) =>
+      hiringService.hireCandidate(request),
     onSuccess: (data) => {
       toast.success(data.message || 'Candidate hired successfully!')
       queryClient.invalidateQueries({ queryKey: ['applications-grouped'] })
       queryClient.invalidateQueries({ queryKey: ['applications'] })
-      queryClient.invalidateQueries({ queryKey: ['application-status-history'] })
+      queryClient.invalidateQueries({
+        queryKey: ['application-status-history'],
+      })
       onSuccess?.()
       onOpenChange(false)
       resetForm()
@@ -149,8 +152,11 @@ export function HireCandidateDialog({
             Hire Candidate
           </AlertDialogTitle>
           <AlertDialogDescription className="text-base">
-            You are about to hire <strong className="text-gray-900">{candidateName}</strong> for
-            the position of <strong className="text-gray-900">{jobTitle || 'this role'}</strong>.
+            You are about to hire{' '}
+            <strong className="text-gray-900">{candidateName}</strong> for the
+            position of{' '}
+            <strong className="text-gray-900">{jobTitle || 'this role'}</strong>
+            .
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -161,7 +167,9 @@ export function HireCandidateDialog({
             <Textarea
               id="note"
               value={formData.note}
-              onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, note: e.target.value })
+              }
               placeholder="Add any notes about this hiring decision..."
               className="min-h-[80px]"
             />
@@ -171,7 +179,9 @@ export function HireCandidateDialog({
           <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
             <div>
               <p className="font-medium text-gray-900">Include Offer Details</p>
-              <p className="text-sm text-gray-500">Add salary, start date, and other offer information</p>
+              <p className="text-sm text-gray-500">
+                Add salary, start date, and other offer information
+              </p>
             </div>
             <Switch
               checked={showOfferDetails}
@@ -190,7 +200,9 @@ export function HireCandidateDialog({
                     id="salary"
                     type="number"
                     value={formData.salary}
-                    onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, salary: e.target.value })
+                    }
                     placeholder="e.g., 50000"
                   />
                 </div>
@@ -198,7 +210,9 @@ export function HireCandidateDialog({
                   <Label htmlFor="currency">Currency</Label>
                   <Select
                     value={formData.salaryCurrency}
-                    onValueChange={(value) => setFormData({ ...formData, salaryCurrency: value })}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, salaryCurrency: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -221,7 +235,9 @@ export function HireCandidateDialog({
                   id="startDate"
                   type="date"
                   value={formData.startDate}
-                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startDate: e.target.value })
+                  }
                 />
               </div>
 
@@ -233,7 +249,9 @@ export function HireCandidateDialog({
                     id="position"
                     type="text"
                     value={formData.position}
-                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, position: e.target.value })
+                    }
                     placeholder="e.g., Senior Developer"
                   />
                 </div>
@@ -243,7 +261,9 @@ export function HireCandidateDialog({
                     id="department"
                     type="text"
                     value={formData.department}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, department: e.target.value })
+                    }
                     placeholder="e.g., Engineering"
                   />
                 </div>
@@ -254,7 +274,9 @@ export function HireCandidateDialog({
                 <Label htmlFor="contractType">Contract Type</Label>
                 <Select
                   value={formData.contractType}
-                  onValueChange={(value) => setFormData({ ...formData, contractType: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, contractType: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -275,7 +297,12 @@ export function HireCandidateDialog({
                 <Textarea
                   id="benefits"
                   value={formData.additionalBenefits}
-                  onChange={(e) => setFormData({ ...formData, additionalBenefits: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      additionalBenefits: e.target.value,
+                    })
+                  }
                   placeholder="e.g., Health insurance, flexible hours, remote work..."
                   className="min-h-[60px]"
                 />
@@ -293,7 +320,9 @@ export function HireCandidateDialog({
             </div>
             <Switch
               checked={formData.sendOfferEmail}
-              onCheckedChange={(checked) => setFormData({ ...formData, sendOfferEmail: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, sendOfferEmail: checked })
+              }
             />
           </div>
         </div>
@@ -330,4 +359,3 @@ export function HireCandidateDialog({
     </AlertDialog>
   )
 }
-
