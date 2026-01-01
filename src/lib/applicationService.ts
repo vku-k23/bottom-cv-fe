@@ -8,6 +8,7 @@ export interface ApplyResponse {
   cvUrl?: string
   coverLetter?: string
   status: string
+  position?: number // Position within the status column
   message?: string
   createdAt: string
   updatedAt?: string
@@ -19,6 +20,7 @@ export type ApplicationStatus = 'PENDING' | 'ACTIVE' | 'INACTIVE'
 
 export interface UpdateApplicationStatusRequest {
   status: ApplicationStatus
+  position?: number // Optional position within the status column
 }
 
 export interface ApplicationsGroupedByStatus {
@@ -96,10 +98,12 @@ export const applicationService = {
 
   async updateApplicationStatus(
     applicationId: number,
-    status: ApplicationStatus
+    status: ApplicationStatus,
+    position?: number
   ): Promise<ApplyResponse> {
     return apiClient.put<ApplyResponse>(`/applies/${applicationId}/status`, {
       status,
+      position,
     })
   },
 
@@ -121,5 +125,33 @@ export const applicationService = {
     return apiClient.get<ListResponse<ApplyResponse>>(
       `/applies${query ? `?${query}` : ''}`
     )
+  },
+
+  async downloadApplicationCV(applicationId: number): Promise<Blob> {
+    // Use apiClient's internal method to get baseURL and token
+    const baseURL =
+      (apiClient as unknown as { baseURL: string }).baseURL ||
+      'http://localhost:8088/api/v1'
+    const token =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('access_token')
+        : null
+
+    const response = await fetch(
+      `${baseURL}/applies/${applicationId}/cv/download`,
+      {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to download CV: ${response.status} ${response.statusText}`
+      )
+    }
+
+    return response.blob()
   },
 }

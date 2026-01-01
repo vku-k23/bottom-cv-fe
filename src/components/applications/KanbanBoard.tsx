@@ -3,6 +3,7 @@
 import {
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   DragOverlay,
   DragStartEvent,
   PointerSensor,
@@ -22,7 +23,8 @@ interface KanbanBoardProps {
   onMoveApplication: (
     applicationId: number,
     fromStatus: string,
-    toStatus: string
+    toStatus: string,
+    position?: number
   ) => Promise<void>
   onCreateColumn?: () => void
   onEditColumn?: (columnId: string) => void
@@ -49,6 +51,7 @@ export function KanbanBoard({
   getUserInfo,
 }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<number | null>(null)
+  const [overId, setOverId] = useState<string | number | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -62,9 +65,15 @@ export function KanbanBoard({
     setActiveId(event.active.id as number)
   }
 
+  const handleDragOver = (event: DragOverEvent) => {
+    const { over } = event
+    setOverId(over?.id ?? null)
+  }
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
     setActiveId(null)
+    setOverId(null)
 
     if (!over) return
 
@@ -84,22 +93,47 @@ export function KanbanBoard({
 
     if (!sourceColumn) return
 
-    // Determine target column
+    // Determine target column and position
     let finalTargetColumn = targetColumn
+    let targetPosition: number | undefined
+
     if (targetCard && !targetColumn) {
-      // Dropped on a card - find its column
+      // Dropped on a card - find its column and position
       finalTargetColumn = columns.find((col) =>
         col.applications.some((app) => app.id === targetId)
       )
+      if (finalTargetColumn) {
+        const cardIndex = finalTargetColumn.applications.findIndex(
+          (app) => app.id === targetId
+        )
+        targetPosition = cardIndex >= 0 ? cardIndex : undefined
+      }
+    } else if (targetColumn) {
+      // Dropped on column - add to end
+      targetPosition = targetColumn.applications.length
     }
 
-    if (!finalTargetColumn || sourceColumn.id === finalTargetColumn.id) {
-      return
-    }
+    if (!finalTargetColumn) return
 
     // Skip if moving to "all" column
     if (finalTargetColumn.id === 'all') {
       return
+    }
+
+    // If moving within same column, calculate position based on drop location
+    if (sourceColumn.id === finalTargetColumn.id && targetCard) {
+      const cardIndex = finalTargetColumn.applications.findIndex(
+        (app) => app.id === targetId
+      )
+      const currentIndex = finalTargetColumn.applications.findIndex(
+        (app) => app.id === applicationId
+      )
+      // If dropping below the card, insert after it
+      targetPosition = cardIndex >= 0 ? cardIndex + 1 : undefined
+      // Adjust if moving from above
+      if (currentIndex >= 0 && currentIndex < cardIndex) {
+        targetPosition = cardIndex
+      }
     }
 
     // Move application
@@ -107,7 +141,8 @@ export function KanbanBoard({
       await onMoveApplication(
         applicationId,
         sourceColumn.status,
-        finalTargetColumn.status
+        finalTargetColumn.status,
+        targetPosition
       )
     } catch (error) {
       console.error('Failed to move application:', error)
@@ -126,6 +161,7 @@ export function KanbanBoard({
       sensors={sensors}
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="flex gap-6 overflow-x-auto pb-4">
@@ -142,6 +178,8 @@ export function KanbanBoard({
                 onDeleteColumn={onDeleteColumn}
                 onDownloadCV={onDownloadCV}
                 getUserInfo={getUserInfo}
+                activeId={activeId}
+                overId={overId}
               />
             </SortableContext>
           </div>
@@ -165,9 +203,9 @@ export function KanbanBoard({
       </div>
 
       {/* Drag Overlay */}
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activeApplication && (
-          <div className="w-[280px] opacity-90">
+          <div className="w-[280px] rotate-2 opacity-95 shadow-xl">
             <ApplicationCard
               application={activeApplication}
               userInfo={getUserInfo?.(activeApplication.userId)}

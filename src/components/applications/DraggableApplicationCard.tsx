@@ -15,12 +15,14 @@ interface DraggableApplicationCardProps {
     education?: string
   }
   onDownloadCV?: (applicationId: number) => void
+  isDragging?: boolean
 }
 
 export function DraggableApplicationCard({
   application,
   userInfo,
   onDownloadCV,
+  isDragging: externalIsDragging,
 }: DraggableApplicationCardProps) {
   const {
     setNodeRef,
@@ -31,16 +33,28 @@ export function DraggableApplicationCard({
     isDragging,
   } = useSortable({
     id: application.id,
+    disabled: externalIsDragging,
   })
+
+  const isCurrentlyDragging = isDragging || externalIsDragging
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
+    transition: isCurrentlyDragging ? 'none' : transition || undefined,
+    opacity: isCurrentlyDragging ? 0.4 : 1,
+    scale: isCurrentlyDragging ? 0.95 : 1,
   }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`cursor-grab transition-all duration-200 active:cursor-grabbing ${
+        isCurrentlyDragging ? 'z-50' : ''
+      }`}
+    >
       <ApplicationCard
         application={application}
         userInfo={userInfo}

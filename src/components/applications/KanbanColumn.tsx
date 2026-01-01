@@ -17,6 +17,7 @@ export interface KanbanColumnData {
   status: string
   applications: ApplyResponse[]
   isCustom?: boolean
+  columnId?: number // Backend column ID for delete operations
 }
 
 interface KanbanColumnProps {
@@ -33,6 +34,8 @@ interface KanbanColumnProps {
         education?: string
       }
     | undefined
+  activeId?: number | null
+  overId?: string | number | null
 }
 
 export function KanbanColumn({
@@ -41,16 +44,21 @@ export function KanbanColumn({
   onDeleteColumn,
   onDownloadCV,
   getUserInfo,
+  activeId,
+  overId,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
   })
 
+  const isColumnOver = isOver && overId === column.id
+  const isCardOver = overId && typeof overId === 'number' && column.applications.some(app => app.id === overId)
+
   return (
     <div
       ref={setNodeRef}
-      className={`flex h-[790px] w-[312px] flex-col rounded-lg border border-gray-100 bg-gray-50/50 transition-colors ${
-        isOver ? 'border-blue-300 bg-blue-50' : ''
+      className={`flex h-[790px] w-[312px] flex-col rounded-lg border border-gray-100 bg-gray-50/50 transition-all duration-200 ${
+        isColumnOver ? 'border-blue-400 bg-blue-50/80 shadow-md' : ''
       }`}
     >
       {/* Column Header */}
@@ -91,17 +99,43 @@ export function KanbanColumn({
 
       {/* Applications List */}
       <div className="flex-1 space-y-4 overflow-y-auto p-5">
-        {column.applications.map((application) => (
-          <DraggableApplicationCard
-            key={application.id}
-            application={application}
-            userInfo={getUserInfo?.(application.userId)}
-            onDownloadCV={onDownloadCV}
-          />
-        ))}
+        {column.applications.map((application, index) => {
+          const isOverCard = overId === application.id && activeId !== application.id
+          const showDropIndicator = isOverCard || (isColumnOver && index === 0 && column.applications.length === 0)
+          
+          return (
+            <div key={application.id} className="relative">
+              {/* Drop Indicator - Jira style */}
+              {showDropIndicator && (
+                <div className="absolute -top-2 left-0 right-0 z-10 h-0.5 bg-blue-500 rounded-full animate-pulse" />
+              )}
+              <DraggableApplicationCard
+                application={application}
+                userInfo={getUserInfo?.(application.userId)}
+                onDownloadCV={onDownloadCV}
+                isDragging={activeId === application.id}
+              />
+              {/* Drop Indicator after card */}
+              {isOverCard && (
+                <div className="absolute -bottom-2 left-0 right-0 z-10 h-0.5 bg-blue-500 rounded-full animate-pulse" />
+              )}
+            </div>
+          )
+        })}
+        {/* Drop indicator at the end of column */}
+        {isColumnOver && column.applications.length > 0 && !isCardOver && (
+          <div className="h-0.5 bg-blue-500 rounded-full animate-pulse" />
+        )}
         {column.applications.length === 0 && (
           <div className="flex h-32 items-center justify-center text-sm text-gray-500">
-            No applications
+            {isColumnOver ? (
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-0.5 w-full max-w-[200px] bg-blue-500 rounded-full animate-pulse" />
+                <span>Drop here</span>
+              </div>
+            ) : (
+              'No applications'
+            )}
           </div>
         )}
       </div>

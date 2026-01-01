@@ -20,7 +20,9 @@ import {
   ApplyResponse,
   ApplicationStatus,
 } from '@/lib/applicationService'
+import { statusColumnService } from '@/lib/statusColumnService'
 import { userManagementService, User } from '@/lib/userManagementService'
+import { CreateColumnModal } from './CreateColumnModal'
 import Link from 'next/link'
 
 interface ApplicationsKanbanPageProps {
@@ -35,9 +37,7 @@ export function ApplicationsKanbanPage({
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
-  const [customColumns, setCustomColumns] = useState<
-    Array<{ id: string; title: string; status: string }>
-  >([])
+  const [isCreateColumnModalOpen, setIsCreateColumnModalOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
   // Get jobId from URL if not provided as prop
@@ -45,11 +45,27 @@ export function ApplicationsKanbanPage({
     jobId ||
     (searchParams.get('jobId') ? Number(searchParams.get('jobId')) : undefined)
 
+  // Fetch status columns from backend
+  const {
+    data: statusColumns,
+    isLoading: isLoadingColumns,
+    error: columnsError,
+  } = useQuery({
+    queryKey: ['status-columns', effectiveJobId],
+    queryFn: () => {
+      if (!effectiveJobId) {
+        throw new Error('Job ID is required')
+      }
+      return statusColumnService.getAllStatusColumns(effectiveJobId)
+    },
+    enabled: !!effectiveJobId,
+  })
+
   // Fetch applications grouped by status
   const {
     data: groupedApplications,
-    isLoading,
-    error,
+    isLoading: isLoadingApplications,
+    error: applicationsError,
   } = useQuery({
     queryKey: ['applications-grouped', effectiveJobId],
     queryFn: () => {
@@ -60,6 +76,9 @@ export function ApplicationsKanbanPage({
     },
     enabled: !!effectiveJobId,
   })
+
+  const isLoading = isLoadingColumns || isLoadingApplications
+  const error = columnsError || applicationsError
 
   // Get unique user IDs from all applications
   const userIds = useMemo(() => {
@@ -129,40 +148,58 @@ export function ApplicationsKanbanPage({
     setIsMounted(true)
   }, [])
 
-  // Load custom columns from localStorage (only after mount to prevent hydration mismatch)
-  useEffect(() => {
-    if (!isMounted) return
-
-    const saved = localStorage.getItem('kanban-custom-columns')
-    if (saved) {
-      try {
-        setCustomColumns(JSON.parse(saved))
-      } catch (e) {
-        console.error('Failed to load custom columns:', e)
+  // Mutation for creating status column
+  const createColumnMutation = useMutation({
+    mutationFn: (name: string) => {
+      if (!effectiveJobId) {
+        throw new Error('Job ID is required')
       }
-    }
-  }, [isMounted])
-
-  // Save custom columns to localStorage
-  const saveCustomColumns = useCallback(
-    (columns: Array<{ id: string; title: string; status: string }>) => {
-      setCustomColumns(columns)
-      if (isMounted) {
-        localStorage.setItem('kanban-custom-columns', JSON.stringify(columns))
-      }
+      return statusColumnService.createStatusColumn({
+        name,
+        jobId: effectiveJobId,
+      })
     },
-    [isMounted]
-  )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['status-columns'] })
+      toast.success('Column created successfully')
+      setIsCreateColumnModalOpen(false)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to create column')
+    },
+  })
+
+  // Mutation for deleting status column
+  const deleteColumnMutation = useMutation({
+    mutationFn: (columnId: number) => {
+      return statusColumnService.deleteStatusColumn(columnId)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['status-columns'] })
+      queryClient.invalidateQueries({ queryKey: ['applications-grouped'] })
+      toast.success('Column deleted successfully')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to delete column')
+    },
+  })
 
   // Mutation for updating application status
   const updateStatusMutation = useMutation({
     mutationFn: ({
       applicationId,
       status,
+      position,
     }: {
       applicationId: number
       status: ApplicationStatus
-    }) => applicationService.updateApplicationStatus(applicationId, status),
+      position?: number
+    }) =>
+      applicationService.updateApplicationStatus(
+        applicationId,
+        status,
+        position
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications-grouped'] })
       toast.success('Application status updated')
@@ -174,12 +211,12 @@ export function ApplicationsKanbanPage({
 
   // Handle moving application between columns
   const handleMoveApplication = useCallback(
-    async (applicationId: number, fromStatus: string, toStatus: string) => {
-      // Skip if moving to "all" column
-      if (toStatus === 'all') {
-        return
-      }
-
+    async (
+      applicationId: number,
+      fromStatus: string,
+      toStatus: string,
+      position?: number
+    ) => {
       // Map status strings to ApplicationStatus enum
       // Backend uses StatusJob: PENDING, ACTIVE, INACTIVE
       const statusMap: Record<string, ApplicationStatus> = {
@@ -195,36 +232,70 @@ export function ApplicationsKanbanPage({
         return
       }
 
-      // Optimistic update
+      // Optimistic update with position
       queryClient.setQueryData(
         ['applications-grouped', effectiveJobId],
         (old: Record<string, ApplyResponse[]> | undefined) => {
           if (!old) return old
 
           const updated = { ...old }
-          const app = Object.values(updated)
-            .flat()
-            .find((a) => a.id === applicationId)
+
+          // Find the application in all statuses
+          let app: ApplyResponse | undefined
+          let foundStatus: string | null = null
+          for (const statusKey in updated) {
+            const found = updated[statusKey]?.find(
+              (a) => a.id === applicationId
+            )
+            if (found) {
+              app = found
+              foundStatus = statusKey
+              // Remove from current status
+              updated[statusKey] = updated[statusKey].filter(
+                (a) => a.id !== applicationId
+              )
+              break
+            }
+          }
 
           if (!app) return old
 
-          // Remove from old status (skip if from "all")
-          if (fromStatus !== 'all') {
-            updated[fromStatus] = (updated[fromStatus] || []).filter(
-              (a) => a.id !== applicationId
-            )
+          // Update position for all applications in the old status
+          if (foundStatus && fromStatus !== toStatus) {
+            updated[foundStatus] = updated[foundStatus].map((a, idx) => ({
+              ...a,
+              position: idx,
+            }))
           }
 
-          // Add to new status (skip if to "all")
-          if (toStatus !== 'all') {
-            if (!updated[toStatus]) {
-              updated[toStatus] = []
-            }
-            updated[toStatus] = [
-              ...updated[toStatus],
-              { ...app, status: newStatus },
-            ]
+          // Add to new status at specified position
+          if (!updated[toStatus]) {
+            updated[toStatus] = []
           }
+
+          // Remove if already exists (avoid duplicates)
+          updated[toStatus] = updated[toStatus].filter(
+            (a) => a.id !== applicationId
+          )
+
+          // Insert at position or append
+          const updatedApp = {
+            ...app,
+            status: newStatus,
+            position: position ?? updated[toStatus].length,
+          }
+
+          if (position !== undefined && position < updated[toStatus].length) {
+            updated[toStatus].splice(position, 0, updatedApp)
+          } else {
+            updated[toStatus].push(updatedApp)
+          }
+
+          // Update positions for all applications in the new status
+          updated[toStatus] = updated[toStatus].map((a, idx) => ({
+            ...a,
+            position: idx,
+          }))
 
           return updated
         }
@@ -234,138 +305,169 @@ export function ApplicationsKanbanPage({
       await updateStatusMutation.mutateAsync({
         applicationId,
         status: newStatus,
+        position,
       })
     },
     [effectiveJobId, updateStatusMutation, queryClient]
   )
 
-  // Build columns from grouped data
+  // Build columns from backend status columns and grouped applications
   const buildColumns = useCallback((): KanbanColumnData[] => {
     if (!groupedApplications) return []
 
-    // Get all applications across all statuses
-    const allApplications = Object.values(groupedApplications).flat()
+    // If no status columns from backend, create default columns from grouped applications
+    if (!statusColumns || statusColumns.length === 0) {
+      const defaultStatuses: Array<{
+        code: string
+        name: string
+        order: number
+      }> = [
+        { code: 'PENDING', name: 'Pending', order: 0 },
+        { code: 'ACTIVE', name: 'Active', order: 1 },
+        { code: 'INACTIVE', name: 'Inactive', order: 2 },
+      ]
 
-    const defaultColumns: KanbanColumnData[] = [
-      {
-        id: 'all',
-        title: 'All Applications',
-        status: 'all',
-        applications: allApplications,
-        isCustom: false,
-      },
-      {
-        id: 'PENDING',
-        title: 'Pending',
-        status: 'PENDING',
-        applications: (groupedApplications.PENDING as ApplyResponse[]) || [],
-        isCustom: false,
-      },
-      {
-        id: 'ACTIVE',
-        title: 'Active',
-        status: 'ACTIVE',
-        applications: (groupedApplications.ACTIVE as ApplyResponse[]) || [],
-        isCustom: false,
-      },
-      {
-        id: 'INACTIVE',
-        title: 'Inactive',
-        status: 'INACTIVE',
-        applications: (groupedApplications.INACTIVE as ApplyResponse[]) || [],
-        isCustom: false,
-      },
-    ]
+      return defaultStatuses.map((status) => {
+        const applications =
+          (groupedApplications[status.code] as ApplyResponse[]) || []
 
-    // Add custom columns (for now, custom columns don't map to backend statuses)
-    // They would need backend support to work properly
-    const customCols = customColumns.map((col) => ({
-      id: col.id,
-      title: col.title,
-      status: col.status,
-      applications: [], // Custom columns start empty - would need backend support
-      isCustom: true,
-    }))
+        return {
+          id: status.code,
+          title: status.name,
+          status: status.code,
+          applications: applications.sort((a, b) => {
+            // Sort by position first, then by date
+            if (a.position !== undefined && b.position !== undefined) {
+              return a.position - b.position
+            }
+            const dateA = new Date(a.createdAt).getTime()
+            const dateB = new Date(b.createdAt).getTime()
+            return sortOrder === 'newest' ? dateB - dateA : dateA - dateB
+          }),
+          isCustom: false,
+        }
+      })
+    }
 
-    // Sort applications within each column
-    const sortedColumns = [...defaultColumns, ...customCols].map((col) => ({
-      ...col,
-      applications: [...col.applications].sort((a, b) => {
-        const dateA = new Date(a.createdAt).getTime()
-        const dateB = new Date(b.createdAt).getTime()
-        return sortOrder === 'newest' ? dateB - dateA : dateA - dateB
-      }),
-    }))
+    // Map status columns to KanbanColumnData
+    const columns: KanbanColumnData[] = statusColumns
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .map((col) => {
+        // Find applications for this column by code (match with StatusJob enum)
+        // Backend returns Map<StatusJob, List> where StatusJob is enum (PENDING, ACTIVE, INACTIVE)
+        const applications =
+          (groupedApplications[col.code] as ApplyResponse[]) || []
 
-    return sortedColumns
-  }, [groupedApplications, customColumns, sortOrder])
+        return {
+          id: col.code,
+          title: col.name,
+          status: col.code,
+          applications: applications.sort((a, b) => {
+            // Sort by position first, then by date
+            if (a.position !== undefined && b.position !== undefined) {
+              return a.position - b.position
+            }
+            const dateA = new Date(a.createdAt).getTime()
+            const dateB = new Date(b.createdAt).getTime()
+            return sortOrder === 'newest' ? dateB - dateA : dateA - dateB
+          }),
+          isCustom: !col.isDefault,
+          columnId: col.id, // Store backend ID for delete operations
+        }
+      })
+
+    return columns
+  }, [statusColumns, groupedApplications, sortOrder])
 
   const columns = buildColumns()
 
   // Handle download CV
   const handleDownloadCV = useCallback(
-    (applicationId: number) => {
-      // Find application
-      const app = columns
-        .flatMap((col) => col.applications)
-        .find((a) => a.id === applicationId)
+    async (applicationId: number) => {
+      try {
+        // Find application
+        const app = columns
+          .flatMap((col) => col.applications)
+          .find((a) => a.id === applicationId)
 
-      if (app?.cvUrl) {
-        window.open(app.cvUrl, '_blank')
-      } else {
-        toast.error('CV not available')
+        if (!app?.cvUrl) {
+          toast.error('CV not available')
+          return
+        }
+
+        // Download CV file using applicationService
+        const blob =
+          await applicationService.downloadApplicationCV(applicationId)
+
+        // Extract filename from cvUrl (e.g., "applications/123/filename.pdf" -> "filename.pdf")
+        const filename = app.cvUrl.split('/').pop() || `CV_${app.id}.pdf`
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+
+        // Cleanup
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+
+        toast.success('CV downloaded successfully')
+      } catch (error) {
+        console.error('Failed to download CV:', error)
+        toast.error('Failed to download CV')
       }
     },
     [columns]
   )
 
-  // Handle create column
+  // Handle create column - opens modal
   const handleCreateColumn = useCallback(() => {
-    const columnName = prompt('Enter column name:')
-    if (!columnName) return
+    setIsCreateColumnModalOpen(true)
+  }, [])
 
-    // Use a more stable ID generation to prevent hydration issues
-    const timestamp = isMounted
-      ? Date.now()
-      : Math.floor(Math.random() * 1000000)
-    const newColumn = {
-      id: `custom-${timestamp}`,
-      title: columnName,
-      status: `CUSTOM_${columnName.toUpperCase().replace(/\s+/g, '_')}`,
-    }
-
-    saveCustomColumns([...customColumns, newColumn])
-    toast.success('Column created')
-  }, [customColumns, saveCustomColumns, isMounted])
+  // Handle submit create column from modal
+  const handleSubmitCreateColumn = useCallback(
+    async (name: string) => {
+      await createColumnMutation.mutateAsync(name)
+    },
+    [createColumnMutation]
+  )
 
   // Handle edit column
   const handleEditColumn = useCallback(
     (columnId: string) => {
-      const column = customColumns.find((c) => c.id === columnId)
-      if (!column) return
+      const column = statusColumns?.find((c) => c.code === columnId)
+      if (!column || column.isDefault) {
+        toast.error('Cannot edit default columns')
+        return
+      }
 
-      const newName = prompt('Enter new column name:', column.title)
-      if (!newName) return
+      const newName = prompt('Enter new column name:', column.name)
+      if (!newName || newName.trim() === column.name) return
 
-      saveCustomColumns(
-        customColumns.map((c) =>
-          c.id === columnId ? { ...c, title: newName } : c
-        )
-      )
-      toast.success('Column updated')
+      // TODO: Implement update mutation
+      toast('Edit column feature coming soon')
     },
-    [customColumns, saveCustomColumns]
+    [statusColumns]
   )
 
   // Handle delete column
   const handleDeleteColumn = useCallback(
     (columnId: string) => {
+      const column = statusColumns?.find((c) => c.code === columnId)
+      if (!column || column.isDefault) {
+        toast.error('Cannot delete default columns')
+        return
+      }
+
       if (!confirm('Are you sure you want to delete this column?')) return
 
-      saveCustomColumns(customColumns.filter((c) => c.id !== columnId))
-      toast.success('Column deleted')
+      deleteColumnMutation.mutate(column.id)
     },
-    [customColumns, saveCustomColumns]
+    [statusColumns, deleteColumnMutation]
   )
 
   if (isLoading) {
@@ -493,6 +595,14 @@ export function ApplicationsKanbanPage({
         onDeleteColumn={handleDeleteColumn}
         onDownloadCV={handleDownloadCV}
         getUserInfo={getUserInfo}
+      />
+
+      {/* Create Column Modal */}
+      <CreateColumnModal
+        open={isCreateColumnModalOpen}
+        onOpenChange={setIsCreateColumnModalOpen}
+        onSubmit={handleSubmitCreateColumn}
+        existingColumnNames={statusColumns?.map((col) => col.name) || []}
       />
     </div>
   )

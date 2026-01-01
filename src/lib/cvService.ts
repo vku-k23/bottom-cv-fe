@@ -60,20 +60,49 @@ export const cvService = {
   },
 
   // Download CV file
+  // cvFile should be the objectName (e.g., "applications/123/filename.pdf")
   async downloadCV(cvFile: string): Promise<Blob> {
-    const response = await fetch(
-      `${apiClient['baseURL']}/files/download?filePath=${encodeURIComponent(cvFile)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${apiClient['token']}`,
-        },
+    try {
+      // First, try to get presigned URL (this is more reliable)
+      // Note: Spring path variable {objectName:.+} matches everything after /url/
+      // So we need to encode the entire objectName, but keep slashes
+      const urlResponse = await apiClient.get<{ success: boolean; fileUrl: string }>(
+        `/files/url/${cvFile.split('/').map(encodeURIComponent).join('/')}`
+      )
+      
+      if (urlResponse.success && urlResponse.fileUrl) {
+        // Use presigned URL to download (no auth needed for presigned URL)
+        const response = await fetch(urlResponse.fileUrl)
+        if (!response.ok) {
+          throw new Error(`Failed to download CV file from presigned URL: ${response.status}`)
+        }
+        return response.blob()
       }
-    )
+      
+      throw new Error('Failed to get presigned URL for CV file')
+    } catch (error) {
+      console.error('Error downloading CV:', error)
+      // If presigned URL fails, try direct download as fallback
+      try {
+        const encodedObjectName = cvFile.split('/').map(encodeURIComponent).join('/')
+        const response = await fetch(
+          `${apiClient['baseURL']}/files/download/${encodedObjectName}`,
+          {
+            headers: {
+              Authorization: `Bearer ${apiClient['token']}`,
+            },
+          }
+        )
 
-    if (!response.ok) {
-      throw new Error('Failed to download CV file')
+        if (!response.ok) {
+          throw new Error(`Failed to download CV file: ${response.status} ${response.statusText}`)
+        }
+
+        return response.blob()
+      } catch (fallbackError) {
+        console.error('Fallback download also failed:', fallbackError)
+        throw error // Throw original error
+      }
     }
-
-    return response.blob()
   },
 }
