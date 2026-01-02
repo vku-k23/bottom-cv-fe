@@ -72,3 +72,4 @@ export interface BlogStats {
   publishedCount: number
   draftCount: number
 }
+

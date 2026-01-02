@@ -90,3 +90,4 @@ export function BlogCard({ blog, isHighlighted = false }: BlogCardProps) {
     </article>
   )
 }
+
