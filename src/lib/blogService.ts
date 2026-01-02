@@ -87,4 +87,3 @@ export const blogService = {
     return apiClient.get<Blog[]>(`/front/blogs/${blogId}/related`)
   },
 }
-
