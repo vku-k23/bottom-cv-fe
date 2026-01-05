@@ -3,12 +3,104 @@
 import { PricingCard } from '@/components/pricing/PricingCard'
 import { pricingPlans } from '@/data/pricingPlans'
 import Image from 'next/image'
+import { useMutation } from '@tanstack/react-query'
+import { paymentService } from '@/lib/paymentService'
+import { useAuth } from '@/hooks/useAuth'
+import { toast } from 'react-hot-toast'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function PaymentPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { user } = useAuth()
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  // Check for success/cancel from Stripe redirect
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id')
+    const status = searchParams.get('status')
+
+    if (sessionId && status === 'success') {
+      toast.success('Payment successful! Your subscription is now active.')
+      // Redirect to jobs page after a short delay
+      setTimeout(() => {
+        router.push('/admin/jobs')
+      }, 2000)
+    } else if (status === 'cancel') {
+      toast.error('Payment was cancelled. Please try again if you want to subscribe.')
+    }
+  }, [searchParams, router])
+
+  // Get employer's company ID
+  const companyId = (user as { company?: { id: number } })?.company?.id
+
+  const createSessionMutation = useMutation({
+    mutationFn: async (planId: string) => {
+      if (!companyId) {
+        throw new Error('Company ID is required. Please set up your company profile first.')
+      }
+
+      // Map plan ID to plan type
+      const planTypeMap: Record<string, 'BASIC' | 'STANDARD' | 'PREMIUM'> = {
+        basic: 'BASIC',
+        standard: 'STANDARD',
+        premium: 'PREMIUM',
+      }
+
+      const planType = planTypeMap[planId.toLowerCase()]
+      if (!planType) {
+        throw new Error('Invalid plan selected')
+      }
+
+      setIsProcessing(true)
+      const response = await paymentService.createCheckoutSession(planType, companyId)
+
+      if (response.checkoutSessionUrl) {
+        // Redirect to Stripe checkout
+        window.location.href = response.checkoutSessionUrl
+      } else {
+        throw new Error('Failed to create checkout session')
+      }
+    },
+    onError: (error: unknown) => {
+      setIsProcessing(false)
+      const message = error instanceof Error ? error.message : 'Failed to create checkout session'
+      toast.error(message)
+    },
+  })
+
   const handleSelectPlan = (planId: string) => {
-    // Handle plan selection - could navigate to checkout or show modal
-    console.log('Selected plan:', planId)
-    // router.push(`/admin/checkout?plan=${planId}`)
+    if (!companyId) {
+      toast.error('Please set up your company profile first')
+      router.push('/admin/company-profile')
+      return
+    }
+
+    createSessionMutation.mutate(planId)
+  }
+
+  if (!companyId) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="flex h-96 items-center justify-center">
+          <div className="text-center">
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">
+              Company Profile Required
+            </h2>
+            <p className="mb-6 text-gray-600">
+              You need to set up your company profile before subscribing.
+            </p>
+            <button
+              onClick={() => router.push('/admin/company-profile')}
+              className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              Go to Company Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -20,9 +112,8 @@ export default function PaymentPage() {
             Buy Premium Subscription to Post a Job
           </h1>
           <p className="text-text-gray text-base leading-6 font-normal">
-            Donec eu dui ut dolor commodo ornare. Sed arcu libero, malesuada
-            quis justo sit amet, varius tempus neque. Quisque ultrices mi sed
-            lorem condimentum, vel tempus lectus ultricies.
+            Choose a subscription plan that fits your hiring needs. All plans include
+            access to our candidate database and job posting features.
           </p>
         </div>
 
@@ -48,6 +139,17 @@ export default function PaymentPage() {
           />
         ))}
       </div>
+
+      {isProcessing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="rounded-lg bg-white p-6 text-center">
+            <div className="mb-4 text-lg font-semibold">Processing...</div>
+            <div className="text-sm text-gray-600">
+              Redirecting to payment page...
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="pt-8 text-center">

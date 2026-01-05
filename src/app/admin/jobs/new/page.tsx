@@ -21,6 +21,8 @@ import { toast } from 'react-hot-toast'
 import { useForm, Controller } from 'react-hook-form'
 import { useAuth } from '@/hooks/useAuth'
 import { companyService } from '@/lib/companyService'
+import { useSubscription } from '@/hooks/useSubscription'
+import { useEffect } from 'react'
 
 interface JobFormData {
   title: string
@@ -97,6 +99,19 @@ export default function PostJobPage() {
   // Get employer's company ID from user object
   // Backend should now include company in UserResponse after our updates
   const employerCompanyId = (user as { company?: { id: number } })?.company?.id
+
+  // Check subscription for EMPLOYER
+  const { hasActiveSubscription, isLoading: isLoadingSubscription } = useSubscription()
+
+  // Redirect to payment page if employer doesn't have subscription
+  useEffect(() => {
+    if (isEmployer && !isAdmin && employerCompanyId && !isLoadingSubscription) {
+      if (!hasActiveSubscription) {
+        toast.error('Active subscription required to create jobs')
+        router.push('/admin/payment')
+      }
+    }
+  }, [isEmployer, isAdmin, employerCompanyId, hasActiveSubscription, isLoadingSubscription, router])
 
   // Fetch companies list for ADMIN
   const { data: companies } = useQuery({
@@ -177,6 +192,38 @@ export default function PostJobPage() {
       return
     }
     createMutation.mutate({ ...data, companyId: finalCompanyId })
+  }
+
+  // Show loading state while checking subscription
+  if (isEmployer && !isAdmin && isLoadingSubscription) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 text-lg font-semibold">Checking subscription...</div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error if employer doesn't have subscription
+  if (isEmployer && !isAdmin && employerCompanyId && !hasActiveSubscription) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">
+              Subscription Required
+            </h2>
+            <p className="mb-6 text-gray-600">
+              You need an active subscription to create jobs. Please subscribe to a plan to continue.
+            </p>
+            <Button onClick={() => router.push('/admin/payment')}>
+              Go to Payment Page
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   // Show error if employer doesn't have company
