@@ -16,6 +16,17 @@
 
   /* Job detail page design tokens */
   --color-blue-primary: #0a65cc;
+
+  /* Pricing page specific colors */
+  --color-pricing-border: #e4e5e8;
+  --color-pricing-divider: #e4e5e8;
+  --color-pricing-feature-icon: #0a65cc;
+  --color-pricing-text-body: #474c54;
+  --color-pricing-badge-bg: #0a65cc;
+  --color-pricing-badge-text: #ffffff;
+
+  /* Pricing card shadows */
+  --shadow-pricing-card: 0px 12px 48px rgba(0, 44, 109, 0.1);
   --color-text-dark: #18191c;
   --color-text-gray: #5e6670;
   --color-text-light-gray: #767f8c;
@@ -64,6 +75,12 @@
 
 @theme inline {
   --color-blue-primary: var(--color-blue-primary);
+  --color-pricing-border: var(--color-pricing-border);
+  --color-pricing-divider: var(--color-pricing-divider);
+  --color-pricing-feature-icon: var(--color-pricing-feature-icon);
+  --color-pricing-text-body: var(--color-pricing-text-body);
+  --color-pricing-badge-bg: var(--color-pricing-badge-bg);
+  --color-pricing-badge-text: var(--color-pricing-badge-text);
   --color-text-dark: var(--color-text-dark);
   --color-text-gray: var(--color-text-gray);
   --color-text-light-gray: var(--color-text-light-gray);
