@@ -14,7 +14,11 @@ export function useSubscription() {
     error,
   } = useQuery({
     queryKey: ['subscription', companyId],
-    queryFn: () => subscriptionService.getCompanySubscription(companyId!),
+    queryFn: async () => {
+      const result = await subscriptionService.getCompanySubscription(companyId!)
+      // Ensure we never return undefined (React Query requirement)
+      return result ?? null
+    },
     enabled: !!companyId,
     retry: false,
   })

@@ -17,11 +17,18 @@ export const subscriptionService = {
   /**
    * Get active subscription for a company
    */
-  async getCompanySubscription(companyId: number): Promise<Subscription> {
-    const response = await apiClient.get<Subscription>(
-      `/back/subscriptions/company/${companyId}`
-    )
-    return response.data
+  async getCompanySubscription(companyId: number): Promise<Subscription | null> {
+    try {
+      const response = await apiClient.get<Subscription>(
+        `/back/subscriptions/company/${companyId}`
+      )
+      // apiClient.get returns the data directly, not wrapped in .data
+      return response as Subscription
+    } catch (error) {
+      // If subscription doesn't exist (404), return null
+      console.error('Error fetching subscription:', error)
+      return null
+    }
   },
 
   /**
@@ -32,7 +39,8 @@ export const subscriptionService = {
       const response = await apiClient.get<SubscriptionVerification>(
         `/back/subscriptions/verify/${companyId}`
       )
-      return response.data.hasActiveSubscription
+      // apiClient.get returns the data directly, not wrapped in .data
+      return (response as SubscriptionVerification).hasActiveSubscription
     } catch (error) {
       // If subscription doesn't exist, return false
       return false

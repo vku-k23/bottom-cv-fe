@@ -42,10 +42,32 @@ export const paymentService = {
       companyId,
     }
 
-    const response = await apiClient.post<PaymentSessionResponse>(
-      '/back/payments/create-session',
-      request
-    )
-    return response.data
+    try {
+      const response = await apiClient.post<PaymentSessionResponse>(
+        '/back/payments/create-session',
+        request
+      )
+      // Backend returns PaymentResponse directly, not wrapped in data property
+      console.log('Payment service response:', response)
+      return response as PaymentSessionResponse
+    } catch (error) {
+      console.error('Error creating checkout session:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Verify Stripe checkout session
+   */
+  async verifySession(sessionId: string): Promise<PaymentSessionResponse> {
+    try {
+      const response = await apiClient.get<PaymentSessionResponse>(
+        `/back/payments/verify-session?sessionId=${encodeURIComponent(sessionId)}`
+      )
+      return response as PaymentSessionResponse
+    } catch (error) {
+      console.error('Error verifying session:', error)
+      throw error
+    }
   },
 }

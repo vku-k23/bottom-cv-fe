@@ -7,30 +7,13 @@ import { useMutation } from '@tanstack/react-query'
 import { paymentService } from '@/lib/paymentService'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'react-hot-toast'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function PaymentPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { user } = useAuth()
   const [isProcessing, setIsProcessing] = useState(false)
-
-  // Check for success/cancel from Stripe redirect
-  useEffect(() => {
-    const sessionId = searchParams.get('session_id')
-    const status = searchParams.get('status')
-
-    if (sessionId && status === 'success') {
-      toast.success('Payment successful! Your subscription is now active.')
-      // Redirect to jobs page after a short delay
-      setTimeout(() => {
-        router.push('/admin/jobs')
-      }, 2000)
-    } else if (status === 'cancel') {
-      toast.error('Payment was cancelled. Please try again if you want to subscribe.')
-    }
-  }, [searchParams, router])
 
   // Get employer's company ID
   const companyId = (user as { company?: { id: number } })?.company?.id
@@ -56,14 +39,18 @@ export default function PaymentPage() {
       setIsProcessing(true)
       const response = await paymentService.createCheckoutSession(planType, companyId)
 
-      if (response.checkoutSessionUrl) {
+      console.log('Payment response:', response)
+
+      if (response && response.checkoutSessionUrl) {
         // Redirect to Stripe checkout
         window.location.href = response.checkoutSessionUrl
       } else {
-        throw new Error('Failed to create checkout session')
+        console.error('Invalid response from payment service:', response)
+        throw new Error('Failed to create checkout session. Please try again.')
       }
     },
     onError: (error: unknown) => {
+      console.log(error)
       setIsProcessing(false)
       const message = error instanceof Error ? error.message : 'Failed to create checkout session'
       toast.error(message)
