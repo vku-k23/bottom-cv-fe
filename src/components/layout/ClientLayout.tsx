@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { useInitializeAuth } from '@/stores/authStore'
+import { ChatWidget } from '@/components/chat/ChatWidget'
 
 export default function ClientLayout({
   children,
@@ -23,6 +24,7 @@ export default function ClientLayout({
     return (
       <>
         {children}
+        <ChatWidget />
         <Toaster
           position="top-right"
           toastOptions={{
@@ -60,6 +62,7 @@ export default function ClientLayout({
         )}
       </main>
       {!isAuthPage && <Footer />}
+      <ChatWidget />
       <Toaster
         position="top-right"
         toastOptions={{
